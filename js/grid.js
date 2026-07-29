@@ -150,25 +150,29 @@ const Grid = (() => {
         ]);
         state.choiceStatuses = state.choiceOrder.map(() => 'active');
         state.choiceResolved = false;
+        state.correctWasClicked = false;
       }
 
       const buttonsHtml = state.choiceOrder.map((c, i) => {
         const status = state.choiceStatuses[i];
-        if (status === 'removed') return '';
 
         let cls = 'choice-btn';
         let mark = '';
         let disabled = state.choiceResolved;
 
-        if (status === 'wrong-shown' || status === 'fading') {
+        if (status === 'wrong-shown' || status === 'fading' || status === 'removed') {
           cls += ' choice-btn--wrong';
           mark = ' ✕';
           disabled = true;
         }
-        if (status === 'fading') cls += ' choice-btn--fading';
+        // 'removed' looks identical to 'fading' (fully faded) - it just
+        // never leaves the DOM, so its flex slot keeps the gap instead
+        // of the other buttons expanding to fill the space.
+        if (status === 'fading' || status === 'removed') cls += ' choice-btn--fading';
+
         if (c.correct && state.choiceResolved) {
           cls += ' choice-btn--correct';
-          mark = ' ✓';
+          mark = state.correctWasClicked ? ' ✓' : '';
         }
 
         return `<button class="${cls}" data-choice-index="${i}" ${disabled ? 'disabled' : ''}><span class="choice-btn__label">${escapeHtml(c.text)}${mark}</span></button>`;
@@ -246,19 +250,36 @@ const Grid = (() => {
     const chosen = state.choiceOrder[choiceIndex];
 
     if (chosen.correct) {
+      resolveWithCorrectClicked(state, squareIndex);
+      return;
+    }
+
+    // Wrong answer clicked.
+    state.wrongClickedIndices = state.wrongClickedIndices || [];
+    if (!state.wrongClickedIndices.includes(choiceIndex)) {
+      state.wrongClickedIndices.push(choiceIndex);
+    }
+    state.choiceStatuses[choiceIndex] = 'wrong-shown';
+    Sound.playIncorrect();
+
+    if (state.wrongClickedIndices.length >= 2) {
+      // Second distinct wrong option: auto-reveal the correct answer
+      // (green, no tick - it wasn't chosen), freeze everything, no
+      // fading or removal for anything from here on.
       state.choiceResolved = true;
-      state.choiceStatuses = state.choiceStatuses.map(s => (s === 'active' ? 'wrong-shown' : s));
-      Sound.playCorrect();
+      state.correctWasClicked = false;
+      // Un-fade anything that was mid-fade from the first wrong click,
+      // since both remaining options should stay fully visible now.
+      state.choiceStatuses = state.choiceStatuses.map((s, i) =>
+        state.choiceOrder[i].correct ? s : (s === 'fading' || s === 'removed' ? 'wrong-shown' : s)
+      );
       rerenderSquare(squareIndex);
       return;
     }
 
-    // Wrong: show it immediately, then fade and remove after a delay -
-    // the other two options stay live for another attempt.
-    state.choiceStatuses[choiceIndex] = 'wrong-shown';
-    Sound.playIncorrect();
+    // First wrong click: show it, then fade + leave a gap after a
+    // couple of seconds. The other two stay live for another attempt.
     rerenderSquare(squareIndex);
-
     setTimeout(() => {
       if (squareStates[squareIndex] !== state || state.choiceResolved) return;
       if (state.choiceStatuses[choiceIndex] !== 'wrong-shown') return;
@@ -271,7 +292,32 @@ const Grid = (() => {
         state.choiceStatuses[choiceIndex] = 'removed';
         rerenderSquare(squareIndex);
       }, 1000);
-    }, 3000);
+    }, 2000);
+  }
+
+  function resolveWithCorrectClicked(state, squareIndex) {
+    state.choiceResolved = true;
+    state.correctWasClicked = true;
+    Sound.playCorrect();
+
+    // Both wrong options show red/cross immediately (un-fading either
+    // if one was already mid-fade from an earlier wrong click).
+    state.choiceStatuses = state.choiceOrder.map((c, i) => (c.correct ? state.choiceStatuses[i] : 'wrong-shown'));
+    rerenderSquare(squareIndex);
+
+    // After a pause, both wrongs fade together and leave a gap - the
+    // correct answer stays green+ticked permanently, no rearranging.
+    setTimeout(() => {
+      if (squareStates[squareIndex] !== state) return;
+      state.choiceStatuses = state.choiceOrder.map((c, i) => (c.correct ? state.choiceStatuses[i] : 'fading'));
+      rerenderSquare(squareIndex);
+
+      setTimeout(() => {
+        if (squareStates[squareIndex] !== state) return;
+        state.choiceStatuses = state.choiceOrder.map((c, i) => (c.correct ? state.choiceStatuses[i] : 'removed'));
+        rerenderSquare(squareIndex);
+      }, 1000);
+    }, 2000);
   }
 
   function handleRefreshQuestion(index) {
@@ -347,6 +393,13 @@ const Grid = (() => {
     render();
   }
 
+  function revealAllShutters() {
+    squareStates.forEach(state => {
+      if (state) state.shuttered = false;
+    });
+    render();
+  }
+
   function flashNoAlternative(index) {
     const squareEl = el.container.querySelector(`.square[data-index="${index}"]`);
     if (!squareEl) return;
@@ -417,5 +470,5 @@ const Grid = (() => {
     return d.innerHTML;
   }
 
-  return { init, generate, generateFromSaved, getSaveData, toggleGlobalStudents, hideAllShutters, autosizeAll };
+  return { init, generate, generateFromSaved, getSaveData, toggleGlobalStudents, hideAllShutters, revealAllShutters, autosizeAll };
 })();

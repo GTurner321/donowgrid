@@ -14,9 +14,11 @@
 <div id="setupView">
 <header class="board">
   <h1 class="board__title">
+    <span class="board__title-fade2">Do Now 9</span>
     <span class="board__title-fade">Do Now 9</span>
     <span class="board__title-main">Do Now 9</span>
     <span class="board__title-fade">Do Now 9</span>
+    <span class="board__title-fade2">Do Now 9</span>
   </h1>
 </header>
 
@@ -43,13 +45,13 @@
       <div class="field field--spaced">
         <label for="methodSelect">Selection method</label>
         <select id="methodSelect">
-          <option value="recent">Most recent</option>
+          <option value="recent">Most recently added</option>
           <option value="weighted">Weighted towards recent</option>
           <option value="mix">Full mix</option>
         </select>
       </div>
 
-      <div class="field">
+      <div class="field field--spaced">
         <label class="checkbox" for="topicToggle">
           <input type="checkbox" id="topicToggle">
           Choose by topic
@@ -95,8 +97,12 @@
 <div id="gridView" hidden>
   <header class="board board--grid">
     <div class="board--grid__row">
-      <button type="button" class="icon-btn" id="backBtn" title="Back to setup">←</button>
-      <h1 class="board__title board__title--small">Do Now 9</h1>
+      <button type="button" class="icon-btn icon-btn--symbol" id="backBtn" title="Back to setup">←</button>
+      <h1 class="board__title board__title--small">
+        <span class="board__title-fade">Do Now 9</span>
+        <span class="board__title-main">Do Now 9</span>
+        <span class="board__title-fade">Do Now 9</span>
+      </h1>
       <div class="timer-inline">
         <span class="timer-inline__display" id="timerDisplay">00:00</span>
         <button type="button" class="icon-btn" id="timerAddMinute" title="Add 1 minute">+1</button>
@@ -108,7 +114,7 @@
         <button type="button" class="icon-btn" id="hideAllBtn" title="Cover all questions with shutters again">Hide</button>
         <button type="button" class="icon-btn" id="globalStudentBtn" title="Show/hide all students">Students</button>
         <button type="button" class="icon-btn" id="saveBtn" title="Save this quiz to this browser">Save</button>
-        <button type="button" class="icon-btn" id="fullscreenBtn" title="Fullscreen">⤢</button>
+        <button type="button" class="icon-btn icon-btn--symbol" id="fullscreenBtn" title="Fullscreen">⤢</button>
       </div>
     </div>
     <p class="save-confirm" id="saveConfirm" hidden></p>

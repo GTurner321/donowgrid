@@ -5,6 +5,7 @@
 
 const App = (() => {
   let el = {};
+  let shutterToggleState = 'hide'; // 'hide' | 'reveal' - describes the button's CURRENT label/action
 
   function init() {
     el.setupView = document.getElementById('setupView');
@@ -18,7 +19,7 @@ const App = (() => {
     el.saveConfirm = document.getElementById('saveConfirm');
 
     el.backBtn.addEventListener('click', backToSetup);
-    el.hideAllBtn.addEventListener('click', () => Grid.hideAllShutters());
+    el.hideAllBtn.addEventListener('click', onHideRevealClick);
     el.globalStudentBtn.addEventListener('click', () => Grid.toggleGlobalStudents());
     el.saveBtn.addEventListener('click', onSaveClick);
     el.fullscreenBtn.addEventListener('click', toggleFullscreen);
@@ -34,11 +35,29 @@ const App = (() => {
     Timer.init();
   }
 
+  function resetShutterToggle() {
+    shutterToggleState = 'hide';
+    el.hideAllBtn.textContent = 'Hide';
+  }
+
+  function onHideRevealClick() {
+    if (shutterToggleState === 'hide') {
+      Grid.hideAllShutters();
+      shutterToggleState = 'reveal';
+      el.hideAllBtn.textContent = 'Reveal';
+    } else {
+      Grid.revealAllShutters();
+      shutterToggleState = 'hide';
+      el.hideAllBtn.textContent = 'Hide';
+    }
+  }
+
   function showGrid(config) {
     el.setupView.hidden = true;
     el.gridView.hidden = false;
     Grid.generate(config);
     Timer.reset();
+    resetShutterToggle();
   }
 
   function showGridFromSaved(config, orderList) {
@@ -46,6 +65,7 @@ const App = (() => {
     el.gridView.hidden = false;
     Grid.generateFromSaved(config, orderList);
     Timer.reset();
+    resetShutterToggle();
   }
 
   function backToSetup() {

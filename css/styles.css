@@ -16,6 +16,7 @@
   --chalk-yellow: #F5E2A0;
   --chalk-yellow-dark: #E0C877;
   --chalk-yellow-faded: #8B826F;
+  --chalk-yellow-faded2: #4E5357;
   --chalk-blue: #6E9FB5;
   --line: #DDD6C6;
   --error: #B3453D;
@@ -38,6 +39,7 @@ body {
   color: var(--ink);
   font-family: var(--font-body);
   line-height: 1.5;
+  overflow-x: hidden;
 }
 
 /* ---------- Header ---------- */
@@ -49,6 +51,7 @@ body {
   padding: 22px 24px;
   border-bottom: 4px solid var(--chalk-yellow);
   text-align: center;
+  overflow: hidden;
 }
 
 .board__title {
@@ -62,15 +65,23 @@ body {
   justify-content: center;
   align-items: baseline;
   gap: 2.2rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
 .board__title-main {
   color: var(--chalk-yellow);
+  flex-shrink: 0;
 }
 
 .board__title-fade {
   color: var(--chalk-yellow-faded);
+  flex-shrink: 0;
+}
+
+.board__title-fade2 {
+  color: var(--chalk-yellow-faded2);
+  flex-shrink: 0;
 }
 
 /* ---------- Layout ---------- */
@@ -128,6 +139,24 @@ textarea {
   border-radius: 8px;
   background: var(--panel);
   color: var(--ink);
+}
+
+/* Native <select> chrome varies by OS/browser and can include a
+   coloured "valid" or "selected" highlight we don't control directly
+   (this is what shows as a dark rounded box around the dropdowns).
+   Removing native appearance entirely and supplying our own arrow
+   sidesteps it for good, rather than chasing each browser's quirk. */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 34px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path d='M5 8l5 5 5-5' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  box-shadow: none !important;
+  outline: none;
 }
 
 /* Some browsers (notably Firefox) apply a default green glow/outline
@@ -366,19 +395,26 @@ button:focus-visible {
 
 .icon-btn:hover { background: rgba(255,255,255,0.18); }
 
+.icon-btn--symbol {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
 /* ---------- Inline timer (sits directly left of the icon cluster) ---------- */
 
 .timer-inline {
   display: flex;
   align-items: center;
   gap: 4px;
+  margin-right: 14px; /* separates the timer group from the icon cluster */
 }
 
 .timer-inline__display {
   font-family: var(--font-mono);
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   font-weight: 700;
   color: var(--chalk-yellow);
+  margin-right: 8px; /* separates the number from its control buttons */
   min-width: 56px;
   text-align: center;
 }
