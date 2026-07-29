@@ -11,14 +11,22 @@ const App = (() => {
     el.gridView = document.getElementById('gridView');
 
     el.backBtn = document.getElementById('backBtn');
+    el.revealAllBtn = document.getElementById('revealAllBtn');
     el.globalStudentBtn = document.getElementById('globalStudentBtn');
     el.timerBtn = document.getElementById('timerBtn');
     el.fullscreenBtn = document.getElementById('fullscreenBtn');
 
     el.backBtn.addEventListener('click', backToSetup);
+    el.revealAllBtn.addEventListener('click', () => Grid.revealAllShutters());
     el.globalStudentBtn.addEventListener('click', () => Grid.toggleGlobalStudents());
     el.timerBtn.addEventListener('click', onTimerClick);
     el.fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+    document.addEventListener('fullscreenchange', () => {
+      // Layout dimensions change on entering/exiting fullscreen, so every
+      // piece of scaled text needs reassessing against its new box size.
+      requestAnimationFrame(() => Grid.autosizeAll());
+    });
 
     Setup.init();
     Grid.init();
@@ -29,6 +37,12 @@ const App = (() => {
     el.setupView.hidden = true;
     el.gridView.hidden = false;
     Grid.generate(config);
+
+    if (config.timer) {
+      Timer.show(config.timer.minutes, config.timer.seconds);
+    } else {
+      Timer.hide();
+    }
   }
 
   function backToSetup() {

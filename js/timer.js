@@ -1,56 +1,50 @@
-// Question Grid — timer widget
-// A small draggable panel with an adjustable countdown. Built custom
-// rather than an embedded third-party widget, so it can be freely
-// repositioned, restyled, and hooked up to the app's own sound effects.
+// Question Grid — timer
+// Sits inline in the grid header rather than as a floating widget.
+// Toggled visible/hidden by the timer icon; Start/Pause/Reset/+1 min
+// sit beside the display rather than below it.
 
 const Timer = (() => {
   let el = {};
   let remainingSeconds = 0;
   let intervalId = null;
-  let dragState = null;
 
   function init() {
-    el.widget = document.getElementById('timerWidget');
-    el.handle = document.getElementById('timerHandle');
+    el.bar = document.getElementById('timerInline');
     el.display = document.getElementById('timerDisplay');
     el.minutesInput = document.getElementById('timerMinutesInput');
     el.secondsInput = document.getElementById('timerSecondsInput');
     el.startBtn = document.getElementById('timerStart');
     el.pauseBtn = document.getElementById('timerPause');
     el.resetBtn = document.getElementById('timerReset');
-    el.closeBtn = document.getElementById('timerClose');
+    el.addMinuteBtn = document.getElementById('timerAddMinute');
 
     el.startBtn.addEventListener('click', start);
     el.pauseBtn.addEventListener('click', pause);
     el.resetBtn.addEventListener('click', resetFromInputs);
-    el.closeBtn.addEventListener('click', hide);
+    el.addMinuteBtn.addEventListener('click', addMinute);
 
     el.minutesInput.addEventListener('change', resetFromInputs);
     el.secondsInput.addEventListener('change', resetFromInputs);
-
-    el.handle.addEventListener('pointerdown', onDragStart);
-    window.addEventListener('pointermove', onDragMove);
-    window.addEventListener('pointerup', onDragEnd);
   }
 
   function show(presetMinutes, presetSeconds) {
     if (presetMinutes !== undefined) el.minutesInput.value = presetMinutes;
     if (presetSeconds !== undefined) el.secondsInput.value = presetSeconds;
     resetFromInputs();
-    el.widget.hidden = false;
-  }
-
-  function toggle(presetMinutes, presetSeconds) {
-    if (el.widget.hidden) {
-      show(presetMinutes, presetSeconds);
-    } else {
-      hide();
-    }
+    el.bar.hidden = false;
   }
 
   function hide() {
     pause();
-    el.widget.hidden = true;
+    el.bar.hidden = true;
+  }
+
+  function toggle(presetMinutes, presetSeconds) {
+    if (el.bar.hidden) {
+      show(presetMinutes, presetSeconds);
+    } else {
+      hide();
+    }
   }
 
   function resetFromInputs() {
@@ -80,35 +74,16 @@ const Timer = (() => {
     }
   }
 
+  function addMinute() {
+    remainingSeconds += 60;
+    updateDisplay();
+  }
+
   function updateDisplay() {
     const m = Math.floor(remainingSeconds / 60);
     const s = remainingSeconds % 60;
     el.display.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   }
 
-  // ---- Dragging ----
-
-  function onDragStart(e) {
-    const rect = el.widget.getBoundingClientRect();
-    dragState = {
-      offsetX: e.clientX - rect.left,
-      offsetY: e.clientY - rect.top
-    };
-    el.widget.setPointerCapture(e.pointerId);
-  }
-
-  function onDragMove(e) {
-    if (!dragState) return;
-    const x = e.clientX - dragState.offsetX;
-    const y = e.clientY - dragState.offsetY;
-    el.widget.style.left = `${Math.max(0, x)}px`;
-    el.widget.style.top = `${Math.max(0, y)}px`;
-    el.widget.style.right = 'auto';
-  }
-
-  function onDragEnd() {
-    dragState = null;
-  }
-
-  return { init, show, toggle, hide };
+  return { init, show, hide, toggle };
 })();

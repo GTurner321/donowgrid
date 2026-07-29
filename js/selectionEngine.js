@@ -1,11 +1,11 @@
 // Question Grid — selection engine
-// At this stage this only covers what the setup page needs (working out
-// which topics/levels are viable options for the current bank). The
-// full generate-16-squares logic, refresh logic, and student round-robin
-// get added here in the next build pass, once the grid view exists to
-// consume them.
+// Question picking: recency methods, level/topic rules, and
+// duplicate-free refresh, for a 3x3 (9-square) grid.
 
 const SelectionEngine = (() => {
+
+  const SQUARE_COUNT = 9;
+  const GRID_ROWS = 3;
 
   /**
    * Returns topics with enough eligible questions to be offered in the
@@ -36,11 +36,11 @@ const SelectionEngine = (() => {
     return tagged.length >= CONFIG.MIN_LEVEL_TAGGED_QUESTIONS;
   }
 
-  return { getEligibleTopics, bankHasUsableLevels, generate, refreshSlot };
+  return { getEligibleTopics, bankHasUsableLevels, generate, refreshSlot, SQUARE_COUNT };
 
   /**
-   * Builds the 16-square selection for a Generate action.
-   * Returns { squares, basePool } where squares is an array of 16
+   * Builds the 9-square (3x3) selection for a Generate action.
+   * Returns { squares, basePool } where squares is an array of 9
    * entries, each either:
    *   { question, levelTarget }   - a filled square
    *   null                        - a blank square (pool exhausted)
@@ -56,7 +56,7 @@ const SelectionEngine = (() => {
     const used = new Set();
     const squares = [];
 
-    for (let i = 0; i < 16; i++) {
+    for (let i = 0; i < SQUARE_COUNT; i++) {
       const levelTarget = levelTargets[i];
       const picked = pickForSlot(basePool, levelTarget, config.method, used);
       if (picked) {
@@ -86,15 +86,15 @@ const SelectionEngine = (() => {
   function computeLevelTargets(levelMode) {
     if (levelMode === 'progressive') {
       const targets = [];
-      for (let row = 0; row < 4; row++) {
-        for (let col = 0; col < 4; col++) targets.push(row + 1);
+      for (let row = 0; row < GRID_ROWS; row++) {
+        for (let col = 0; col < GRID_ROWS; col++) targets.push(row + 1);
       }
       return targets;
     }
-    if (['1', '2', '3', '4'].includes(levelMode)) {
-      return new Array(16).fill(Number(levelMode));
+    if (['1', '2', '3'].includes(levelMode)) {
+      return new Array(SQUARE_COUNT).fill(Number(levelMode));
     }
-    return new Array(16).fill(null); // 'mix'
+    return new Array(SQUARE_COUNT).fill(null); // 'mix'
   }
 
   /**

@@ -1,17 +1,33 @@
 // Question Grid — grid view controller
-// Owns the 16 squares once Generate has been pressed: rendering,
-// answer/hint/choices/explanation panels (one open at a time per
-// square), student assignment and reveal, and refresh (question and
-// student) - all operating on data already fetched, so it keeps
-// working through a connection drop.
+// Owns the 9 squares once Generate has been pressed: rendering,
+// shutters, answer/hint/choices/explanation panels (one open at a time
+// per square, hint/answer/explain replace the question entirely,
+// choices split top/bottom), student assignment and reveal, and
+// refresh - all operating on data already fetched, so it keeps working
+// through a connection drop.
 
 const Grid = (() => {
   let el = {};
   let config = null;
-  let squares = [];          // 16 entries: { question, levelTarget } | null
+  let squares = [];          // 9 entries: { question, levelTarget } | null
   let squareStates = [];     // per-square UI state, parallel to squares
   let studentQueue = null;   // round-robin queue for initial assignment
   let globalRevealed = false;
+  let cachedBasePool = null;
+
+  // Pastel palette: background + a darker shade of the same hue for
+  // text, so each square reads clearly without needing a separate
+  // contrast check per colour.
+  const PALETTE = [
+    { bg: '#FCE4E4', text: '#8B3A3A' },
+    { bg: '#FDF0D5', text: '#8A6A1E' },
+    { bg: '#FBF3C8', text: '#8A7A1E' },
+    { bg: '#E3F3E3', text: '#2E6B2E' },
+    { bg: '#E1F0F5', text: '#235C73' },
+    { bg: '#E9E3F5', text: '#4B3B7A' },
+    { bg: '#F5E3EF', text: '#7A3B63' },
+    { bg: '#F0E9DD', text: '#6B5A3E' }
+  ];
 
   function init() {
     el.container = document.getElementById('gridContainer');
@@ -20,6 +36,7 @@ const Grid = (() => {
 
   function generate(cfg) {
     config = cfg;
+    cachedBasePool = null;
     const result = SelectionEngine.generate(config);
     squares = result.squares;
 
@@ -30,10 +47,12 @@ const Grid = (() => {
       if (!square) return null;
       return {
         activePanel: null,           // null | 'answer' | 'choices' | 'hint' | 'explain'
-        choiceOrder: null,           // shuffled [text, isCorrect] pairs, built when opened
+        choiceOrder: null,
         choiceResolved: false,
         studentName: hasStudents ? StudentPicker.next(studentQueue) : null,
-        studentRevealed: false
+        studentRevealed: false,
+        shuttered: true,
+        color: PALETTE[Math.floor(Math.random() * PALETTE.length)]
       };
     });
 
@@ -46,7 +65,7 @@ const Grid = (() => {
     squares.forEach((square, i) => {
       el.container.appendChild(renderSquare(square, squareStates[i], i));
     });
-    requestAnimationFrame(autosizeAllQuestions);
+    requestAnimationFrame(autosizeAll);
   }
 
   // ---------------- Rendering ----------------
@@ -61,42 +80,38 @@ const Grid = (() => {
       return wrap;
     }
 
+    wrap.style.background = state.color.bg;
+    wrap.style.setProperty('--square-text', state.color.text);
+
     const q = square.question;
     const hasChoices = q.wrong1 && q.wrong2;
     const hasHint = !!q.hint;
     const hasExplain = !!q.workedAnswer;
     const hasStudents = config.students.length > 0;
-
-    if (state.activePanel) wrap.classList.add('square--panelOpen');
+    const isSplit = state.activePanel === 'choices';
 
     wrap.innerHTML = `
-      <div class="square__content">
-        <div class="square__question">${escapeHtml(q.question)}</div>
-        <div class="square__panel" ${state.activePanel ? '' : 'hidden'}>${renderPanel(q, state)}</div>
+      <div class="square__content ${isSplit ? 'square__content--split' : ''}">
+        <div class="square__question" ${state.activePanel && !isSplit ? 'hidden' : ''}>${escapeHtml(q.question)}</div>
+        ${state.activePanel ? renderPanel(q, state) : ''}
       </div>
-      ${hasStudents ? renderStudentBar(state) : ''}
-      <div class="square__icons">
-        <button class="icon" data-action="answer" title="Show answer" aria-pressed="${state.activePanel === 'answer'}">✓</button>
-        ${hasChoices ? `<button class="icon" data-action="choices" title="Show answer choices" aria-pressed="${state.activePanel === 'choices'}">☰</button>` : ''}
-        ${hasHint ? `<button class="icon" data-action="hint" title="Show hint" aria-pressed="${state.activePanel === 'hint'}">?</button>` : ''}
-        ${hasExplain ? `<button class="icon" data-action="explain" title="Show explanation" aria-pressed="${state.activePanel === 'explain'}">i</button>` : ''}
-        <button class="icon" data-action="refresh" title="Choose a different question">↻</button>
+      <div class="square__footer">
+        <div class="square__icons">
+          <button class="icon" data-action="answer" title="Show answer" aria-pressed="${state.activePanel === 'answer'}">✓</button>
+          ${hasChoices ? `<button class="icon" data-action="choices" title="Show answer choices" aria-pressed="${state.activePanel === 'choices'}">☰</button>` : ''}
+          ${hasHint ? `<button class="icon" data-action="hint" title="Show hint" aria-pressed="${state.activePanel === 'hint'}">?</button>` : ''}
+          ${hasExplain ? `<button class="icon" data-action="explain" title="Show explanation" aria-pressed="${state.activePanel === 'explain'}">i</button>` : ''}
+          <button class="icon" data-action="refresh" title="Choose a different question">↻</button>
+        </div>
+        ${hasStudents ? renderStudentChip(state) : ''}
       </div>
+      ${state.shuttered ? '<div class="square__shutter" data-shutter="true"></div>' : ''}
     `;
 
     return wrap;
   }
 
   function renderPanel(q, state) {
-    if (state.activePanel === 'answer') {
-      return `<div class="panel-text panel-text--answer">${escapeHtml(q.answer)}</div>`;
-    }
-    if (state.activePanel === 'hint') {
-      return `<div class="panel-text">${escapeHtml(q.hint)}</div>`;
-    }
-    if (state.activePanel === 'explain') {
-      return `<div class="panel-text">${escapeHtml(q.workedAnswer)}</div>`;
-    }
     if (state.activePanel === 'choices') {
       if (!state.choiceOrder) {
         state.choiceOrder = shuffle([
@@ -113,18 +128,23 @@ const Grid = (() => {
           cls += c.correct ? ' choice-btn--correct' : ' choice-btn--wrong';
           mark = c.correct ? ' ✓' : ' ✕';
         }
-        return `<button class="${cls}" data-choice-index="${i}" ${state.choiceResolved ? 'disabled' : ''}>${escapeHtml(c.text)}${mark}</button>`;
+        return `<button class="${cls}" data-choice-index="${i}" ${state.choiceResolved ? 'disabled' : ''}><span class="choice-btn__label">${escapeHtml(c.text)}${mark}</span></button>`;
       }).join('')}</div>`;
     }
-    return '';
+
+    let text = '';
+    if (state.activePanel === 'answer') text = q.answer;
+    if (state.activePanel === 'hint') text = q.hint;
+    if (state.activePanel === 'explain') text = q.workedAnswer;
+    return `<div class="square__panel-full"><div class="panel-text">${escapeHtml(text)}</div></div>`;
   }
 
-  function renderStudentBar(state) {
+  function renderStudentChip(state) {
     const revealed = state.studentRevealed;
     return `
-      <div class="square__studentbar ${revealed ? 'square__studentbar--revealed' : ''}">
-        <button class="student-icon" data-action="student" title="${revealed ? 'Pick a different student' : 'Reveal student'}">${revealed ? '↻' : '👤'}</button>
+      <div class="square__studentchip ${revealed ? 'square__studentchip--revealed' : ''}">
         <span class="student-name">${revealed ? escapeHtml(state.studentName || '') : ''}</span>
+        <button class="student-icon" data-action="student" title="${revealed ? 'Pick a different student' : 'Reveal student'}">${revealed ? '↻' : '👤'}</button>
       </div>
     `;
   }
@@ -138,6 +158,15 @@ const Grid = (() => {
     const square = squares[index];
     if (!square) return;
     const state = squareStates[index];
+
+    // A shutter intercepts every click while present - nothing beneath
+    // it is reachable until it's removed (one-way, no re-covering).
+    const shutter = e.target.closest('.square__shutter');
+    if (shutter) {
+      state.shuttered = false;
+      rerenderSquare(index);
+      return;
+    }
 
     const panelBtn = e.target.closest('.icon[data-action]');
     if (panelBtn) {
@@ -192,14 +221,13 @@ const Grid = (() => {
       choiceOrder: null,
       choiceResolved: false,
       studentName: squareStates[index].studentName,
-      studentRevealed: squareStates[index].studentRevealed
+      studentRevealed: squareStates[index].studentRevealed,
+      shuttered: false, // a square already interacted with (refreshed) stays unshuttered
+      color: squareStates[index].color
     };
     rerenderSquare(index);
   }
 
-  // basePool isn't stored on generate() return by reference in this
-  // module yet - recomputed here to keep refresh self-contained.
-  let cachedBasePool = null;
   function getBasePoolForRefresh() {
     if (cachedBasePool) return cachedBasePool;
     cachedBasePool = (config.topics && config.topics.length)
@@ -234,6 +262,13 @@ const Grid = (() => {
     render();
   }
 
+  function revealAllShutters() {
+    squareStates.forEach(state => {
+      if (state) state.shuttered = false;
+    });
+    render();
+  }
+
   function flashNoAlternative(index) {
     const squareEl = el.container.querySelector(`.square[data-index="${index}"]`);
     if (!squareEl) return;
@@ -245,23 +280,45 @@ const Grid = (() => {
     const oldEl = el.container.querySelector(`.square[data-index="${index}"]`);
     const newEl = renderSquare(squares[index], squareStates[index], index);
     oldEl.replaceWith(newEl);
-    autosizeQuestion(newEl);
+    autosizeSquare(newEl);
   }
 
   // ---------------- Text autosizing ----------------
+  // Applies to question text, full-replace panel text (hint/answer/
+  // explain), and choice button labels - anything whose container size
+  // is fixed and must never scroll. Re-run on fullscreen toggle too,
+  // since the boxes' pixel dimensions change.
 
-  function autosizeAllQuestions() {
-    el.container.querySelectorAll('.square__question').forEach(q => autosizeQuestion(q.closest('.square')));
+  function autosizeAll() {
+    el.container.querySelectorAll('.square').forEach(autosizeSquare);
   }
 
-  function autosizeQuestion(squareEl) {
-    const q = squareEl && squareEl.querySelector('.square__question');
-    if (!q) return;
-    let size = 1.3;
-    q.style.fontSize = size + 'rem';
-    while (q.scrollHeight > q.clientHeight && size > 0.75) {
-      size -= 0.05;
-      q.style.fontSize = size + 'rem';
+  function autosizeSquare(squareEl) {
+    if (!squareEl) return;
+    const question = squareEl.querySelector('.square__question:not([hidden])');
+    if (question) autosizeElement(question, 1.3, 0.7);
+
+    const panelText = squareEl.querySelector('.panel-text');
+    if (panelText) autosizeElement(panelText, 1.15, 0.65);
+
+    squareEl.querySelectorAll('.choice-btn__label').forEach(label => {
+      autosizeElement(label, 0.95, 0.6);
+    });
+  }
+
+  function autosizeElement(el, maxRem, minRem) {
+    const container = el.parentElement;
+    let size = maxRem;
+    el.style.fontSize = size + 'rem';
+    let guard = 0;
+    while (
+      (el.scrollHeight > container.clientHeight || el.scrollWidth > container.clientWidth) &&
+      size > minRem &&
+      guard < 40
+    ) {
+      size -= 0.03;
+      el.style.fontSize = size + 'rem';
+      guard++;
     }
   }
 
@@ -282,5 +339,5 @@ const Grid = (() => {
     return d.innerHTML;
   }
 
-  return { init, generate, toggleGlobalStudents };
+  return { init, generate, toggleGlobalStudents, revealAllShutters, autosizeAll };
 })();
