@@ -5,7 +5,7 @@
 
 const App = (() => {
   let el = {};
-  let shutterToggleState = 'hide'; // 'hide' | 'reveal' - describes the button's CURRENT label/action
+  let shutterToggleState = 'reveal'; // 'hide' | 'reveal' - describes the button's CURRENT label/action
 
   function init() {
     el.setupView = document.getElementById('setupView');
@@ -36,8 +36,9 @@ const App = (() => {
   }
 
   function resetShutterToggle() {
-    shutterToggleState = 'hide';
-    el.hideAllBtn.textContent = 'Hide';
+    shutterToggleState = 'reveal';
+    el.hideAllBtn.textContent = 'Reveal';
+    el.hideAllBtn.title = 'Reveal all questions';
   }
 
   function onHideRevealClick() {
@@ -45,10 +46,12 @@ const App = (() => {
       Grid.hideAllShutters();
       shutterToggleState = 'reveal';
       el.hideAllBtn.textContent = 'Reveal';
+      el.hideAllBtn.title = 'Reveal all questions';
     } else {
       Grid.revealAllShutters();
       shutterToggleState = 'hide';
       el.hideAllBtn.textContent = 'Hide';
+      el.hideAllBtn.title = 'Cover all questions with shutters again';
     }
   }
 
