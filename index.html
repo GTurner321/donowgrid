@@ -32,14 +32,16 @@
         <option value="recent">Most recent</option>
         <option value="weighted">Weighted towards recent</option>
         <option value="mix">Full mix</option>
-        <option value="topic">By topic</option>
       </select>
     </div>
 
-    <div class="field" id="topicWrap" hidden>
-      <span class="field__label">Topics</span>
-      <p class="hint">Tick one or more — questions will be drawn from all ticked topics combined.</p>
-      <div class="topic-checklist" id="topicChecklist">
+    <div class="field">
+      <label class="checkbox" for="topicToggle">
+        <input type="checkbox" id="topicToggle">
+        Choose by topic
+      </label>
+      <p class="hint" id="topicHelp">Questions will be chosen from the entire set.</p>
+      <div class="topic-checklist" id="topicChecklist" hidden>
         <p class="hint">Choose a bank first…</p>
       </div>
     </div>

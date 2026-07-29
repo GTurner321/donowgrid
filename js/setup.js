@@ -19,7 +19,8 @@ const Setup = (() => {
 
   function cacheElements() {
     el.bankSelect = document.getElementById('bankSelect');
-    el.topicWrap = document.getElementById('topicWrap');
+    el.topicToggle = document.getElementById('topicToggle');
+    el.topicHelp = document.getElementById('topicHelp');
     el.topicChecklist = document.getElementById('topicChecklist');
     el.methodSelect = document.getElementById('methodSelect');
     el.levelSelect = document.getElementById('levelSelect');
@@ -42,7 +43,7 @@ const Setup = (() => {
 
   function bindEvents() {
     el.bankSelect.addEventListener('change', onBankChange);
-    el.methodSelect.addEventListener('change', onMethodChange);
+    el.topicToggle.addEventListener('change', onTopicToggle);
 
     el.addStudentsBtn.addEventListener('click', () => {
       el.studentsPanel.hidden = !el.studentsPanel.hidden;
@@ -120,8 +121,16 @@ const Setup = (() => {
       });
     }
 
-    // Re-apply visibility in case "By topic" was already selected
-    onMethodChange();
+    // Keep checklist visibility consistent with the current toggle state
+    el.topicChecklist.hidden = !el.topicToggle.checked;
+  }
+
+  function onTopicToggle() {
+    const checked = el.topicToggle.checked;
+    el.topicChecklist.hidden = !checked;
+    el.topicHelp.textContent = checked
+      ? 'Tick one or more — questions will be drawn from all ticked topics combined.'
+      : 'Questions will be chosen from the entire set.';
   }
 
   function getSelectedTopics() {
@@ -178,7 +187,7 @@ const Setup = (() => {
       bank: currentBank,
       questions: currentQuestions,
       method,
-      topics: method === 'topic' ? getSelectedTopics() : [],
+      topics: el.topicToggle.checked ? getSelectedTopics() : [],
       levelMode: el.levelSelect.value,
       students: students.slice(),
       timer: el.timerEnabled.checked
@@ -193,8 +202,8 @@ const Setup = (() => {
   function onGenerate() {
     const config = buildConfig();
 
-    if (config.method === 'topic' && config.topics.length === 0) {
-      setStatus('Tick at least one topic before generating (Selection method is set to "By topic").', 'error');
+    if (el.topicToggle.checked && config.topics.length === 0) {
+      setStatus('Tick at least one topic, or turn off "Choose by topic".', 'error');
       return;
     }
 
