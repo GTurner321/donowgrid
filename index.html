@@ -1,11 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Question Grid — Lesson Setup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <h1>Hello, World!</h1>
+
+<header class="board">
+  <h1 class="board__title">Question Grid</h1>
+  <p class="board__subtitle">Lesson setup</p>
+</header>
+
+<main class="setup">
+  <div class="card">
+
+    <div class="field">
+      <label for="bankSelect">Question bank</label>
+      <select id="bankSelect" disabled>
+        <option value="" selected>Loading…</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="methodSelect">Selection method</label>
+      <select id="methodSelect">
+        <option value="recent">Most recent</option>
+        <option value="weighted">Weighted towards recent</option>
+        <option value="mix">Full mix</option>
+        <option value="topic">By topic</option>
+      </select>
+    </div>
+
+    <div class="field" id="topicWrap" hidden>
+      <span class="field__label">Topics</span>
+      <p class="hint">Tick one or more — questions will be drawn from all ticked topics combined.</p>
+      <div class="topic-checklist" id="topicChecklist">
+        <p class="hint">Choose a bank first…</p>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="levelSelect">Question level</label>
+      <select id="levelSelect">
+        <option value="mix">Full random mix (ignore levels)</option>
+        <option value="progressive" data-requires-levels>Level 1–4 progressive (top row easiest)</option>
+        <option value="1" data-requires-levels>Level 1 only</option>
+        <option value="2" data-requires-levels>Level 2 only</option>
+        <option value="3" data-requires-levels>Level 3 only</option>
+        <option value="4" data-requires-levels>Level 4 only</option>
+      </select>
+      <p class="hint" id="levelHint" hidden></p>
+    </div>
+
+    <div class="field">
+      <div class="field__row">
+        <span class="field__label">Students</span>
+        <button type="button" class="btn btn--ghost" id="addStudentsBtn">+ Add students</button>
+      </div>
+      <p class="hint" id="studentsSummary">No students added yet — question squares will show no student banner.</p>
+
+      <div class="students-panel" id="studentsPanel" hidden>
+        <label for="studentsInput">Paste names — one per line, or separated by commas/tabs</label>
+        <textarea id="studentsInput" rows="6" placeholder="Aisha Khan&#10;Ben Carter&#10;Chidi Okafor&#10;…"></textarea>
+        <button type="button" class="btn btn--primary" id="saveStudentsBtn">Save class list</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field__row">
+        <label for="timerEnabled" class="checkbox">
+          <input type="checkbox" id="timerEnabled">
+          Enable timer
+        </label>
+      </div>
+      <div class="field__row">
+        <label class="timer-input">
+          <span>Minutes</span>
+          <input type="number" id="timerMinutes" min="0" max="59" value="5" disabled>
+        </label>
+        <label class="timer-input">
+          <span>Seconds</span>
+          <input type="number" id="timerSeconds" min="0" max="59" value="0" disabled>
+        </label>
+      </div>
+    </div>
+
+    <p class="status" id="statusMessage" hidden></p>
+
+    <button type="button" class="btn btn--generate" id="generateBtn" disabled>Generate</button>
+  </div>
+
+  <section class="preview" id="previewPanel" hidden></section>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/dataService.js"></script>
+<script src="js/selectionEngine.js"></script>
+<script src="js/setup.js"></script>
 </body>
 </html>
