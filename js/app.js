@@ -20,6 +20,7 @@ const App = (() => {
     el.timerBtn.addEventListener('click', onTimerClick);
     el.fullscreenBtn.addEventListener('click', toggleFullscreen);
 
+    Setup.init();
     Grid.init();
     Timer.init();
   }
