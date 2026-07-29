@@ -148,17 +148,33 @@ const Grid = (() => {
           { text: q.wrong1, correct: false },
           { text: q.wrong2, correct: false }
         ]);
+        state.choiceStatuses = state.choiceOrder.map(() => 'active');
         state.choiceResolved = false;
       }
-      return `<div class="choices">${state.choiceOrder.map((c, i) => {
+
+      const buttonsHtml = state.choiceOrder.map((c, i) => {
+        const status = state.choiceStatuses[i];
+        if (status === 'removed') return '';
+
         let cls = 'choice-btn';
         let mark = '';
-        if (state.choiceResolved) {
-          cls += c.correct ? ' choice-btn--correct' : ' choice-btn--wrong';
-          mark = c.correct ? ' ✓' : ' ✕';
+        let disabled = state.choiceResolved;
+
+        if (status === 'wrong-shown' || status === 'fading') {
+          cls += ' choice-btn--wrong';
+          mark = ' ✕';
+          disabled = true;
         }
-        return `<button class="${cls}" data-choice-index="${i}" ${state.choiceResolved ? 'disabled' : ''}><span class="choice-btn__label">${escapeHtml(c.text)}${mark}</span></button>`;
-      }).join('')}</div>`;
+        if (status === 'fading') cls += ' choice-btn--fading';
+        if (c.correct && state.choiceResolved) {
+          cls += ' choice-btn--correct';
+          mark = ' ✓';
+        }
+
+        return `<button class="${cls}" data-choice-index="${i}" ${disabled ? 'disabled' : ''}><span class="choice-btn__label">${escapeHtml(c.text)}${mark}</span></button>`;
+      }).join('');
+
+      return `<div class="choices">${buttonsHtml}</div>`;
     }
 
     let text = '';
@@ -216,13 +232,46 @@ const Grid = (() => {
     }
 
     const choiceBtn = e.target.closest('.choice-btn[data-choice-index]');
-    if (choiceBtn && !state.choiceResolved) {
-      const chosen = state.choiceOrder[Number(choiceBtn.dataset.choiceIndex)];
-      state.choiceResolved = true;
-      chosen.correct ? Sound.playCorrect() : Sound.playIncorrect();
-      rerenderSquare(index);
+    if (choiceBtn) {
+      handleChoiceClick(index, Number(choiceBtn.dataset.choiceIndex));
       return;
     }
+  }
+
+  function handleChoiceClick(squareIndex, choiceIndex) {
+    const state = squareStates[squareIndex];
+    if (!state || state.choiceResolved) return;
+    if (state.choiceStatuses[choiceIndex] !== 'active') return;
+
+    const chosen = state.choiceOrder[choiceIndex];
+
+    if (chosen.correct) {
+      state.choiceResolved = true;
+      state.choiceStatuses = state.choiceStatuses.map(s => (s === 'active' ? 'wrong-shown' : s));
+      Sound.playCorrect();
+      rerenderSquare(squareIndex);
+      return;
+    }
+
+    // Wrong: show it immediately, then fade and remove after a delay -
+    // the other two options stay live for another attempt.
+    state.choiceStatuses[choiceIndex] = 'wrong-shown';
+    Sound.playIncorrect();
+    rerenderSquare(squareIndex);
+
+    setTimeout(() => {
+      if (squareStates[squareIndex] !== state || state.choiceResolved) return;
+      if (state.choiceStatuses[choiceIndex] !== 'wrong-shown') return;
+      state.choiceStatuses[choiceIndex] = 'fading';
+      rerenderSquare(squareIndex);
+
+      setTimeout(() => {
+        if (squareStates[squareIndex] !== state || state.choiceResolved) return;
+        if (state.choiceStatuses[choiceIndex] !== 'fading') return;
+        state.choiceStatuses[choiceIndex] = 'removed';
+        rerenderSquare(squareIndex);
+      }, 1000);
+    }, 3000);
   }
 
   function handleRefreshQuestion(index) {
@@ -291,9 +340,9 @@ const Grid = (() => {
     render();
   }
 
-  function revealAllShutters() {
+  function hideAllShutters() {
     squareStates.forEach(state => {
-      if (state) state.shuttered = false;
+      if (state) state.shuttered = true;
     });
     render();
   }
@@ -368,5 +417,5 @@ const Grid = (() => {
     return d.innerHTML;
   }
 
-  return { init, generate, generateFromSaved, getSaveData, toggleGlobalStudents, revealAllShutters, autosizeAll };
+  return { init, generate, generateFromSaved, getSaveData, toggleGlobalStudents, hideAllShutters, autosizeAll };
 })();

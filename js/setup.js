@@ -33,7 +33,6 @@ const Setup = (() => {
     el.levelSelect = document.getElementById('levelSelect');
     el.levelHint = document.getElementById('levelHint');
 
-    el.addStudentsBtn = document.getElementById('addStudentsBtn');
     el.studentsPanel = document.getElementById('studentsPanel');
     el.studentsInput = document.getElementById('studentsInput');
     el.saveStudentsBtn = document.getElementById('saveStudentsBtn');
@@ -48,11 +47,6 @@ const Setup = (() => {
 
     el.bankSelect.addEventListener('change', onBankChange);
     el.topicToggle.addEventListener('change', onTopicToggle);
-
-    el.addStudentsBtn.addEventListener('click', () => {
-      el.studentsPanel.hidden = !el.studentsPanel.hidden;
-      if (!el.studentsPanel.hidden) el.studentsInput.focus();
-    });
 
     el.saveStudentsBtn.addEventListener('click', onSaveStudents);
 
@@ -216,8 +210,6 @@ const Setup = (() => {
     // switches from its default pale-yellow to pale-green briefly.
     el.studentsSummary.classList.add('hint-box--saved');
     setTimeout(() => el.studentsSummary.classList.remove('hint-box--saved'), 2200);
-
-    el.studentsPanel.hidden = true;
   }
 
   // ---------------- Generate / Load ----------------

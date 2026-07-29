@@ -13,7 +13,11 @@
 
 <div id="setupView">
 <header class="board">
-  <h1 class="board__title">Do Now 9</h1>
+  <h1 class="board__title">
+    <span class="board__title-fade">Do Now 9</span>
+    <span class="board__title-main">Do Now 9</span>
+    <span class="board__title-fade">Do Now 9</span>
+  </h1>
 </header>
 
 <main class="setup">
@@ -36,7 +40,7 @@
         </select>
       </div>
 
-      <div class="field">
+      <div class="field field--spaced">
         <label for="methodSelect">Selection method</label>
         <select id="methodSelect">
           <option value="recent">Most recent</option>
@@ -56,7 +60,7 @@
         </div>
       </div>
 
-      <div class="field">
+      <div class="field field--spaced">
         <label for="levelSelect">Question level</label>
         <select id="levelSelect">
           <option value="mix">Full random mix (ignore levels)</option>
@@ -71,13 +75,10 @@
     </div>
 
     <div class="field">
-      <div class="field__row">
-        <span class="field__label">Students</span>
-        <button type="button" class="btn btn--ghost" id="addStudentsBtn">+ Add students</button>
-      </div>
+      <span class="field__label">Add Students</span>
       <p class="hint hint-box" id="studentsSummary">No students added yet — question squares will show no student banner.</p>
 
-      <div class="students-panel" id="studentsPanel" hidden>
+      <div class="students-panel" id="studentsPanel">
         <label for="studentsInput">Paste names — one per line, or separated by commas/tabs</label>
         <textarea id="studentsInput" rows="6" placeholder="Aisha Khan&#10;Ben Carter&#10;Chidi Okafor&#10;…"></textarea>
         <button type="button" class="btn btn--primary" id="saveStudentsBtn">Save class list</button>
@@ -94,7 +95,7 @@
 <div id="gridView" hidden>
   <header class="board board--grid">
     <div class="board--grid__row">
-      <button type="button" class="icon-btn" id="backBtn" title="Back to setup">← Setup</button>
+      <button type="button" class="icon-btn" id="backBtn" title="Back to setup">←</button>
       <h1 class="board__title board__title--small">Do Now 9</h1>
       <div class="timer-inline">
         <span class="timer-inline__display" id="timerDisplay">00:00</span>
@@ -104,10 +105,10 @@
         <button type="button" class="icon-btn" id="timerPause" title="Pause">⏸</button>
       </div>
       <div class="grid-header-actions">
-        <button type="button" class="icon-btn" id="revealAllBtn" title="Reveal all questions">Reveal</button>
+        <button type="button" class="icon-btn" id="hideAllBtn" title="Cover all questions with shutters again">Hide</button>
         <button type="button" class="icon-btn" id="globalStudentBtn" title="Show/hide all students">Students</button>
         <button type="button" class="icon-btn" id="saveBtn" title="Save this quiz to this browser">Save</button>
-        <button type="button" class="icon-btn" id="fullscreenBtn" title="Fullscreen">⤢ Full screen</button>
+        <button type="button" class="icon-btn" id="fullscreenBtn" title="Fullscreen">⤢</button>
       </div>
     </div>
     <p class="save-confirm" id="saveConfirm" hidden></p>

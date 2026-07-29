@@ -15,6 +15,7 @@
   --board-line: #2A3B63;
   --chalk-yellow: #F5E2A0;
   --chalk-yellow-dark: #E0C877;
+  --chalk-yellow-faded: #8B826F;
   --chalk-blue: #6E9FB5;
   --line: #DDD6C6;
   --error: #B3453D;
@@ -57,6 +58,19 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 2.2rem;
+  flex-wrap: wrap;
+}
+
+.board__title-main {
+  color: var(--chalk-yellow);
+}
+
+.board__title-fade {
+  color: var(--chalk-yellow-faded);
 }
 
 /* ---------- Layout ---------- */
@@ -100,6 +114,10 @@ body {
   flex-wrap: wrap;
 }
 
+.field--spaced {
+  margin-top: 6px;
+}
+
 select,
 input[type="number"],
 textarea {
@@ -110,6 +128,16 @@ textarea {
   border-radius: 8px;
   background: var(--panel);
   color: var(--ink);
+}
+
+/* Some browsers (notably Firefox) apply a default green glow/outline
+   to form controls it considers "valid" - our selects have no real
+   validation rules, so this reads as an unintended highlight. */
+select:valid,
+input:valid,
+select:-moz-ui-valid,
+input:-moz-ui-valid {
+  box-shadow: none;
 }
 
 select:disabled,
@@ -487,6 +515,7 @@ button:focus-visible {
   padding: 6px;
   cursor: pointer;
   overflow: hidden;
+  transition: opacity 1s ease;
 }
 
 .choice-btn:hover:not(:disabled) { background: rgba(255,255,255,0.9); }
@@ -514,7 +543,12 @@ button:focus-visible {
   background: var(--error-bg);
   border-color: var(--error);
 }
-.choice-btn--wrong .choice-btn__label { color: var(--error); text-decoration: line-through; }
+.choice-btn--wrong .choice-btn__label { color: var(--error); }
+
+.choice-btn--fading {
+  opacity: 0;
+  pointer-events: none;
+}
 
 /* ---------- Footer bar: icons left, student chip right ---------- */
 

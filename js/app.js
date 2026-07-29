@@ -11,14 +11,14 @@ const App = (() => {
     el.gridView = document.getElementById('gridView');
 
     el.backBtn = document.getElementById('backBtn');
-    el.revealAllBtn = document.getElementById('revealAllBtn');
+    el.hideAllBtn = document.getElementById('hideAllBtn');
     el.globalStudentBtn = document.getElementById('globalStudentBtn');
     el.saveBtn = document.getElementById('saveBtn');
     el.fullscreenBtn = document.getElementById('fullscreenBtn');
     el.saveConfirm = document.getElementById('saveConfirm');
 
     el.backBtn.addEventListener('click', backToSetup);
-    el.revealAllBtn.addEventListener('click', () => Grid.revealAllShutters());
+    el.hideAllBtn.addEventListener('click', () => Grid.hideAllShutters());
     el.globalStudentBtn.addEventListener('click', () => Grid.toggleGlobalStudents());
     el.saveBtn.addEventListener('click', onSaveClick);
     el.fullscreenBtn.addEventListener('click', toggleFullscreen);
