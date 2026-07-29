@@ -12,5 +12,11 @@ const CONFIG = {
   // Minimum number of level-tagged questions (level 1-4) a bank needs
   // before level-specific selection options are offered. Below this,
   // the level dropdown falls back to "Full random mix" only.
-  MIN_LEVEL_TAGGED_QUESTIONS: 4
+  MIN_LEVEL_TAGGED_QUESTIONS: 4,
+
+  // "Most recent" draws from the newest slice of the eligible pool;
+  // this is how big that slice is, as a fraction of the pool (min 1
+  // question). "Weighted towards recent" uses the whole pool but
+  // weights the random draw linearly by recency rank.
+  RECENT_WINDOW_FRACTION: 0.3
 };

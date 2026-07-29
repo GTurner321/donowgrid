@@ -6,14 +6,14 @@
 <title>Question Grid — Lesson Setup</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
+<div id="setupView">
 <header class="board">
-  <h1 class="board__title">Question Grid</h1>
-  <p class="board__subtitle">Lesson setup</p>
+  <h1 class="board__title">Do Now 16</h1>
 </header>
 
 <main class="setup">
@@ -96,13 +96,44 @@
 
     <button type="button" class="btn btn--generate" id="generateBtn" disabled>Generate</button>
   </div>
-
-  <section class="preview" id="previewPanel" hidden></section>
 </main>
+</div>
+
+<div id="gridView" hidden>
+  <header class="board board--grid">
+    <button type="button" class="icon-btn" id="backBtn" title="Back to setup">← Setup</button>
+    <h1 class="board__title board__title--small">Do Now 16</h1>
+    <div class="grid-header-actions">
+      <button type="button" class="icon-btn" id="globalStudentBtn" title="Show/hide all students">👥</button>
+      <button type="button" class="icon-btn" id="timerBtn" title="Timer">⏱</button>
+      <button type="button" class="icon-btn" id="fullscreenBtn" title="Fullscreen">⤢</button>
+    </div>
+  </header>
+  <div class="grid" id="gridContainer"></div>
+</div>
+
+<div class="timer-widget" id="timerWidget" hidden>
+  <div class="timer-widget__handle" id="timerHandle">⠿ Timer <button type="button" class="timer-widget__close" id="timerClose">✕</button></div>
+  <div class="timer-widget__display" id="timerDisplay">05:00</div>
+  <div class="timer-widget__setters">
+    <label>Min <input type="number" id="timerMinutesInput" min="0" max="59" value="5"></label>
+    <label>Sec <input type="number" id="timerSecondsInput" min="0" max="59" value="0"></label>
+  </div>
+  <div class="timer-widget__controls">
+    <button type="button" id="timerStart">Start</button>
+    <button type="button" id="timerPause">Pause</button>
+    <button type="button" id="timerReset">Reset</button>
+  </div>
+</div>
 
 <script src="js/config.js"></script>
 <script src="js/dataService.js"></script>
 <script src="js/selectionEngine.js"></script>
+<script src="js/studentPicker.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/timer.js"></script>
+<script src="js/grid.js"></script>
 <script src="js/setup.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>

@@ -38,7 +38,6 @@ const Setup = (() => {
 
     el.generateBtn = document.getElementById('generateBtn');
     el.statusMessage = document.getElementById('statusMessage');
-    el.previewPanel = document.getElementById('previewPanel');
   }
 
   function bindEvents() {
@@ -207,27 +206,7 @@ const Setup = (() => {
       return;
     }
 
-    // TEMPORARY: the grid view isn't built yet, so this just proves the
-    // full setup pipeline works end-to-end. This gets replaced with
-    // Grid.generate(config) in the next build pass.
-    renderPreview(config);
-  }
-
-  function renderPreview(config) {
-    el.previewPanel.hidden = false;
-    el.previewPanel.innerHTML = `
-      <h2>Setup captured ✓</h2>
-      <p>This is a temporary preview — the actual 16-square grid is the next piece to build.</p>
-      <dl>
-        <dt>Bank</dt><dd>${escapeHtml(config.bank)} (${config.questions.length} eligible questions)</dd>
-        <dt>Selection method</dt><dd>${escapeHtml(config.method)}</dd>
-        <dt>Topics</dt><dd>${config.topics.length ? escapeHtml(config.topics.join(', ')) : '—'}</dd>
-        <dt>Question level mode</dt><dd>${escapeHtml(config.levelMode)}</dd>
-        <dt>Students</dt><dd>${config.students.length ? escapeHtml(config.students.join(', ')) : 'None added'}</dd>
-        <dt>Timer</dt><dd>${config.timer ? `${config.timer.minutes}m ${config.timer.seconds}s` : 'Off'}</dd>
-      </dl>
-    `;
-    el.previewPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    App.showGrid(config);
   }
 
   function setStatus(message, kind) {
@@ -244,5 +223,3 @@ const Setup = (() => {
 
   return { init };
 })();
-
-document.addEventListener('DOMContentLoaded', Setup.init);
