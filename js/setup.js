@@ -1,13 +1,14 @@
 // Question Grid — setup view controller
 // Owns everything on the landing page: loading banks, reacting to
-// dropdown changes, the student paste-in box, and building the config
-// object that Generate hands off to the grid view.
+// dropdown changes, the student paste-in box, the saved-quiz picker,
+// and building the config object that Generate hands off to the grid.
 
 const Setup = (() => {
 
   let currentBank = null;       // name of the selected bank
   let currentQuestions = [];    // full question array for that bank
   let students = [];            // parsed, deduped student names
+  let savedQuizzes = [];        // valid (non-expired) saved quizzes
 
   const el = {}; // populated in init() once the DOM exists
 
@@ -15,9 +16,15 @@ const Setup = (() => {
     cacheElements();
     bindEvents();
     loadBanks();
+    loadSavedQuizzes();
   }
 
   function cacheElements() {
+    el.savedQuizField = document.getElementById('savedQuizField');
+    el.savedQuizSelect = document.getElementById('savedQuizSelect');
+    el.savedQuizHint = document.getElementById('savedQuizHint');
+    el.normalFields = document.getElementById('normalFields');
+
     el.bankSelect = document.getElementById('bankSelect');
     el.topicToggle = document.getElementById('topicToggle');
     el.topicHelp = document.getElementById('topicHelp');
@@ -32,15 +39,13 @@ const Setup = (() => {
     el.saveStudentsBtn = document.getElementById('saveStudentsBtn');
     el.studentsSummary = document.getElementById('studentsSummary');
 
-    el.timerEnabled = document.getElementById('timerEnabled');
-    el.timerMinutes = document.getElementById('timerMinutes');
-    el.timerSeconds = document.getElementById('timerSeconds');
-
     el.generateBtn = document.getElementById('generateBtn');
     el.statusMessage = document.getElementById('statusMessage');
   }
 
   function bindEvents() {
+    el.savedQuizSelect.addEventListener('change', onSavedQuizChange);
+
     el.bankSelect.addEventListener('change', onBankChange);
     el.topicToggle.addEventListener('change', onTopicToggle);
 
@@ -51,14 +56,47 @@ const Setup = (() => {
 
     el.saveStudentsBtn.addEventListener('click', onSaveStudents);
 
-    el.timerEnabled.addEventListener('change', () => {
-      const on = el.timerEnabled.checked;
-      el.timerMinutes.disabled = !on;
-      el.timerSeconds.disabled = !on;
-    });
-
     el.generateBtn.addEventListener('click', onGenerate);
   }
+
+  // ---------------- Saved quizzes ----------------
+
+  function loadSavedQuizzes() {
+    savedQuizzes = SaveQuiz.listValid();
+    if (!savedQuizzes.length) {
+      el.savedQuizField.hidden = true;
+      return;
+    }
+
+    el.savedQuizSelect.innerHTML = '<option value="none">None (start fresh)</option>';
+    savedQuizzes.forEach(q => {
+      const opt = document.createElement('option');
+      opt.value = String(q.slot);
+      opt.textContent = `quiz${q.slot} — ${q.bank} (${SaveQuiz.relativeTime(q.savedAt)})`;
+      el.savedQuizSelect.appendChild(opt);
+    });
+    el.savedQuizField.hidden = false;
+  }
+
+  function onSavedQuizChange() {
+    const usingSaved = el.savedQuizSelect.value !== 'none';
+    el.normalFields.hidden = usingSaved;
+    el.savedQuizHint.hidden = !usingSaved;
+    el.generateBtn.textContent = usingSaved ? 'Load saved quiz' : 'Generate';
+
+    // A saved quiz doesn't need a bank picked separately, but Generate
+    // is disabled by default until a bank load enables it - re-enable
+    // here since the saved quiz already has its own valid bank.
+    if (usingSaved) el.generateBtn.disabled = false;
+  }
+
+  function getSelectedSavedQuiz() {
+    const val = el.savedQuizSelect.value;
+    if (val === 'none') return null;
+    return savedQuizzes.find(q => String(q.slot) === val) || null;
+  }
+
+  // ---------------- Normal bank flow ----------------
 
   async function loadBanks() {
     setStatus('Loading question banks…', 'info');
@@ -152,10 +190,7 @@ const Setup = (() => {
     }
   }
 
-  function onMethodChange() {
-    const isTopic = el.methodSelect.value === 'topic';
-    el.topicWrap.hidden = !isTopic;
-  }
+  // ---------------- Students ----------------
 
   function onSaveStudents() {
     const raw = el.studentsInput.value;
@@ -177,8 +212,15 @@ const Setup = (() => {
       ? `${students.length} student${students.length === 1 ? '' : 's'} added.`
       : 'No students added yet — question squares will show no student banner.';
 
+    // Visible confirmation that the save actually registered - the box
+    // switches from its default pale-yellow to pale-green briefly.
+    el.studentsSummary.classList.add('hint-box--saved');
+    setTimeout(() => el.studentsSummary.classList.remove('hint-box--saved'), 2200);
+
     el.studentsPanel.hidden = true;
   }
+
+  // ---------------- Generate / Load ----------------
 
   function buildConfig() {
     const method = el.methodSelect.value;
@@ -188,17 +230,18 @@ const Setup = (() => {
       method,
       topics: el.topicToggle.checked ? getSelectedTopics() : [],
       levelMode: el.levelSelect.value,
-      students: students.slice(),
-      timer: el.timerEnabled.checked
-        ? {
-            minutes: Number(el.timerMinutes.value) || 0,
-            seconds: Number(el.timerSeconds.value) || 0
-          }
-        : null
+      students: students.slice()
     };
   }
 
-  function onGenerate() {
+  async function onGenerate() {
+    const savedQuiz = getSelectedSavedQuiz();
+
+    if (savedQuiz) {
+      await loadSavedQuiz(savedQuiz);
+      return;
+    }
+
     const config = buildConfig();
 
     if (el.topicToggle.checked && config.topics.length === 0) {
@@ -207,6 +250,26 @@ const Setup = (() => {
     }
 
     App.showGrid(config);
+  }
+
+  async function loadSavedQuiz(savedQuiz) {
+    setStatus(`Loading "${savedQuiz.bank}"…`, 'info');
+    el.generateBtn.disabled = true;
+    try {
+      const questions = await DataService.getBank(savedQuiz.bank);
+      const config = {
+        bank: savedQuiz.bank,
+        questions,
+        method: 'mix',
+        topics: [],
+        levelMode: 'mix',
+        students: students.slice()
+      };
+      App.showGridFromSaved(config, savedQuiz.order);
+    } catch (err) {
+      setStatus(`Couldn't load saved quiz: ${err.message}`, 'error');
+      el.generateBtn.disabled = false;
+    }
   }
 
   function setStatus(message, kind) {

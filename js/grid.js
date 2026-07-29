@@ -39,14 +39,43 @@ const Grid = (() => {
     cachedBasePool = null;
     const result = SelectionEngine.generate(config);
     squares = result.squares;
+    buildStatesAndRender();
+  }
 
+  function generateFromSaved(cfg, orderList) {
+    config = cfg;
+    cachedBasePool = null;
+
+    squares = orderList.map(orderVal => {
+      if (orderVal === null || orderVal === undefined) return null;
+      const found = config.questions.find(q => String(q.orderAdded) === String(orderVal));
+      return found ? { question: found, levelTarget: found.level } : null;
+    });
+
+    buildStatesAndRender();
+  }
+
+  /**
+   * Returns { bank, order } describing the current 9-box layout, ready
+   * to hand to SaveQuiz.save(). order[i] is the question's orderAdded
+   * value, or null for a blank box.
+   */
+  function getSaveData() {
+    if (!config) return null;
+    return {
+      bank: config.bank,
+      order: squares.map(s => s ? s.question.orderAdded : null)
+    };
+  }
+
+  function buildStatesAndRender() {
     const hasStudents = config.students.length > 0;
     studentQueue = hasStudents ? StudentPicker.createQueue(config.students) : null;
 
     squareStates = squares.map(square => {
       if (!square) return null;
       return {
-        activePanel: null,           // null | 'answer' | 'choices' | 'hint' | 'explain'
+        activePanel: null,
         choiceOrder: null,
         choiceResolved: false,
         studentName: hasStudents ? StudentPicker.next(studentQueue) : null,
@@ -339,5 +368,5 @@ const Grid = (() => {
     return d.innerHTML;
   }
 
-  return { init, generate, toggleGlobalStudents, revealAllShutters, autosizeAll };
+  return { init, generate, generateFromSaved, getSaveData, toggleGlobalStudents, revealAllShutters, autosizeAll };
 })();

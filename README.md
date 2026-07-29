@@ -33,22 +33,24 @@ Grid view:
 - Answer choices: click one, correct highlights green, both wrong ones show red with a strike-through, with a short correct/incorrect tone
 - ↻ refresh picks a different question for that square only, never duplicating what's showing elsewhere
 - Student banner (only shown if a class list was pasted): first reveal uses a fair round-robin so everyone's used once before anyone repeats; the icon becomes a refresh after reveal for a genuinely random re-pick (never clashing with names currently shown elsewhere)
-- Header: back to setup, global student show/hide-all, timer (draggable, adjustable panel), fullscreen
-- Question text auto-shrinks to fit its square
+- Header: back to setup, reveal-all (shutters), global student show/hide-all, save, fullscreen; a stopwatch (00:00, +1/-1 min, start/pause) sits inline in the header row
+- Question text auto-shrinks to fit its square, and re-checks on entering/exiting fullscreen
+- Save: stores just the bank name + each box's question (by "order added") to this browser's localStorage, expiring after 2 days; the setup page shows a "Use saved quiz" picker when any exist, which collapses everything down to just the student list
 
 ## File overview
 
 ```
-index.html               Setup view + grid view + timer widget markup
+index.html               Setup view + grid view markup
 css/styles.css            All styling
 js/config.js               Apps Script URL + tunable thresholds
 js/dataService.js          Talks to the Apps Script backend
 js/selectionEngine.js      Question picking: recency methods, level/topic rules, duplicate-free refresh
 js/studentPicker.js        Fair round-robin (Generate) + random-excluding (refresh)
-js/audio.js                 Synthesized correct/incorrect/timer tones
-js/timer.js                 Draggable, adjustable countdown widget
-js/grid.js                  Renders and manages the 16 squares
-js/setup.js                 Setup page controller
+js/saveQuiz.js              Save/load a fixed 9-question layout to this browser (2-day expiry)
+js/audio.js                 Synthesized correct/incorrect tones
+js/timer.js                  Header stopwatch: 00:00 start, +1/-1 min, start/pause
+js/grid.js                  Renders and manages the 9 squares, shutters, pastel colours
+js/setup.js                 Setup page controller, including the saved-quiz picker
 js/app.js                   View switching + grid header controls
 ```
 

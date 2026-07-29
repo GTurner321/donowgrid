@@ -1,7 +1,7 @@
 // Question Grid — app controller
 // Thin layer that owns which view is visible and the grid header
-// controls (back, global student reveal, timer, fullscreen). All the
-// real logic lives in Setup and Grid.
+// controls (back, reveal-all, global student reveal, save, fullscreen).
+// All the real logic lives in Setup, Grid, Timer and SaveQuiz.
 
 const App = (() => {
   let el = {};
@@ -13,13 +13,14 @@ const App = (() => {
     el.backBtn = document.getElementById('backBtn');
     el.revealAllBtn = document.getElementById('revealAllBtn');
     el.globalStudentBtn = document.getElementById('globalStudentBtn');
-    el.timerBtn = document.getElementById('timerBtn');
+    el.saveBtn = document.getElementById('saveBtn');
     el.fullscreenBtn = document.getElementById('fullscreenBtn');
+    el.saveConfirm = document.getElementById('saveConfirm');
 
     el.backBtn.addEventListener('click', backToSetup);
     el.revealAllBtn.addEventListener('click', () => Grid.revealAllShutters());
     el.globalStudentBtn.addEventListener('click', () => Grid.toggleGlobalStudents());
-    el.timerBtn.addEventListener('click', onTimerClick);
+    el.saveBtn.addEventListener('click', onSaveClick);
     el.fullscreenBtn.addEventListener('click', toggleFullscreen);
 
     document.addEventListener('fullscreenchange', () => {
@@ -37,12 +38,14 @@ const App = (() => {
     el.setupView.hidden = true;
     el.gridView.hidden = false;
     Grid.generate(config);
+    Timer.reset();
+  }
 
-    if (config.timer) {
-      Timer.show(config.timer.minutes, config.timer.seconds);
-    } else {
-      Timer.hide();
-    }
+  function showGridFromSaved(config, orderList) {
+    el.setupView.hidden = true;
+    el.gridView.hidden = false;
+    Grid.generateFromSaved(config, orderList);
+    Timer.reset();
   }
 
   function backToSetup() {
@@ -53,8 +56,13 @@ const App = (() => {
     el.setupView.hidden = false;
   }
 
-  function onTimerClick() {
-    Timer.toggle();
+  function onSaveClick() {
+    const data = Grid.getSaveData();
+    if (!data) return;
+    const slotName = SaveQuiz.save(data.bank, data.order);
+    el.saveConfirm.textContent = `Saved as ${slotName} — expires in 2 days, only visible in this browser.`;
+    el.saveConfirm.hidden = false;
+    setTimeout(() => { el.saveConfirm.hidden = true; }, 5000);
   }
 
   function toggleFullscreen() {
@@ -65,7 +73,7 @@ const App = (() => {
     }
   }
 
-  return { init, showGrid };
+  return { init, showGrid, showGridFromSaved };
 })();
 
 document.addEventListener('DOMContentLoaded', App.init);

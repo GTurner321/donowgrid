@@ -1,69 +1,41 @@
 // Question Grid — timer
-// Sits inline in the grid header rather than as a floating widget.
-// Toggled visible/hidden by the timer icon; Start/Pause/Reset/+1 min
-// sit beside the display rather than below it.
+// A simple stopwatch built into the grid header: starts at 0:00, counts
+// up while running, +1/-1 adjust the displayed time by a minute at any
+// point (running or paused), start/pause control ticking. No preset
+// duration or setup-page configuration - it's always available, always
+// starts fresh at 0:00 when a new grid is generated.
 
 const Timer = (() => {
   let el = {};
-  let remainingSeconds = 0;
+  let elapsedSeconds = 0;
   let intervalId = null;
 
   function init() {
-    el.bar = document.getElementById('timerInline');
     el.display = document.getElementById('timerDisplay');
-    el.minutesInput = document.getElementById('timerMinutesInput');
-    el.secondsInput = document.getElementById('timerSecondsInput');
     el.startBtn = document.getElementById('timerStart');
     el.pauseBtn = document.getElementById('timerPause');
-    el.resetBtn = document.getElementById('timerReset');
     el.addMinuteBtn = document.getElementById('timerAddMinute');
+    el.subMinuteBtn = document.getElementById('timerSubMinute');
 
     el.startBtn.addEventListener('click', start);
     el.pauseBtn.addEventListener('click', pause);
-    el.resetBtn.addEventListener('click', resetFromInputs);
-    el.addMinuteBtn.addEventListener('click', addMinute);
+    el.addMinuteBtn.addEventListener('click', () => adjust(60));
+    el.subMinuteBtn.addEventListener('click', () => adjust(-60));
 
-    el.minutesInput.addEventListener('change', resetFromInputs);
-    el.secondsInput.addEventListener('change', resetFromInputs);
+    reset();
   }
 
-  function show(presetMinutes, presetSeconds) {
-    if (presetMinutes !== undefined) el.minutesInput.value = presetMinutes;
-    if (presetSeconds !== undefined) el.secondsInput.value = presetSeconds;
-    resetFromInputs();
-    el.bar.hidden = false;
-  }
-
-  function hide() {
+  function reset() {
     pause();
-    el.bar.hidden = true;
-  }
-
-  function toggle(presetMinutes, presetSeconds) {
-    if (el.bar.hidden) {
-      show(presetMinutes, presetSeconds);
-    } else {
-      hide();
-    }
-  }
-
-  function resetFromInputs() {
-    pause();
-    const mins = Math.max(0, Number(el.minutesInput.value) || 0);
-    const secs = Math.max(0, Math.min(59, Number(el.secondsInput.value) || 0));
-    remainingSeconds = mins * 60 + secs;
+    elapsedSeconds = 0;
     updateDisplay();
   }
 
   function start() {
-    if (intervalId || remainingSeconds <= 0) return;
+    if (intervalId) return;
     intervalId = setInterval(() => {
-      remainingSeconds--;
+      elapsedSeconds++;
       updateDisplay();
-      if (remainingSeconds <= 0) {
-        pause();
-        Sound.playTimerEnd();
-      }
     }, 1000);
   }
 
@@ -74,16 +46,16 @@ const Timer = (() => {
     }
   }
 
-  function addMinute() {
-    remainingSeconds += 60;
+  function adjust(deltaSeconds) {
+    elapsedSeconds = Math.max(0, elapsedSeconds + deltaSeconds);
     updateDisplay();
   }
 
   function updateDisplay() {
-    const m = Math.floor(remainingSeconds / 60);
-    const s = remainingSeconds % 60;
+    const m = Math.floor(elapsedSeconds / 60);
+    const s = elapsedSeconds % 60;
     el.display.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   }
 
-  return { init, show, hide, toggle };
+  return { init, reset };
 })();

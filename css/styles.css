@@ -24,7 +24,7 @@
   --warn: #9C7A2E;
   --warn-bg: #FBF3E0;
   --radius: 10px;
-  --font-display: 'Anton', 'Arial Narrow', sans-serif;
+  --font-display: 'Josefin Sans', 'Arial Narrow', sans-serif;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
@@ -52,7 +52,7 @@ body {
 
 .board__title {
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: 700;
   font-size: 2.4rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -132,6 +132,20 @@ button:focus-visible {
   color: var(--muted);
 }
 
+.hint-box {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #FBF3D9;
+  border: 1px solid var(--chalk-yellow-dark);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.hint-box--saved {
+  background: var(--success-bg);
+  border-color: var(--success);
+  color: var(--success);
+}
+
 /* ---------- Students ---------- */
 
 .students-panel {
@@ -194,7 +208,7 @@ button:focus-visible {
   margin-left: auto;
 }
 
-/* ---------- Timer ---------- */
+/* ---------- Checkbox rows ---------- */
 
 .checkbox {
   display: flex;
@@ -207,19 +221,6 @@ button:focus-visible {
 .checkbox input {
   width: 18px;
   height: 18px;
-}
-
-.timer-input {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-
-.timer-input input {
-  width: 70px;
-  font-family: var(--font-mono);
 }
 
 /* ---------- Buttons ---------- */
@@ -306,78 +307,71 @@ button:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .board__title--small {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   text-align: center;
   flex: 1;
+  min-width: 90px;
 }
 
 .grid-header-actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 .icon-btn {
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.25);
   color: var(--chalk-yellow);
-  font-size: 1.1rem;
-  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 10px;
   border-radius: 8px;
   cursor: pointer;
   font-family: var(--font-body);
+  white-space: nowrap;
 }
 
 .icon-btn:hover { background: rgba(255,255,255,0.18); }
 
-/* ---------- Inline timer bar ---------- */
+/* ---------- Inline timer (sits directly left of the icon cluster) ---------- */
 
 .timer-inline {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 10px;
-  padding: 8px 12px;
-  background: rgba(255,255,255,0.06);
-  border-radius: 8px;
-  flex-wrap: wrap;
+  gap: 4px;
 }
-
-.timer-inline input[type="number"] {
-  width: 48px;
-  padding: 4px;
-  border-radius: 6px;
-  border: none;
-  font-family: var(--font-mono);
-  text-align: center;
-}
-
-.timer-inline span { color: var(--chalk-yellow); }
 
 .timer-inline__display {
   font-family: var(--font-mono);
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  min-width: 70px;
+  color: var(--chalk-yellow);
+  min-width: 56px;
   text-align: center;
 }
 
-.timer-inline button {
-  padding: 6px 14px;
-  border: none;
-  border-radius: 6px;
-  background: var(--chalk-yellow);
-  color: var(--board);
-  font-weight: 700;
-  cursor: pointer;
-  font-size: 0.85rem;
+.timer-inline .icon-btn {
+  padding: 5px 9px;
+  font-size: 0.9rem;
 }
 
-.timer-inline button:hover { background: #EBD9A0; }
+/* ---------- Save confirmation banner ---------- */
+
+.save-confirm {
+  margin: 8px 0 0;
+  padding: 6px 12px;
+  background: var(--chalk-yellow);
+  color: var(--board);
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 6px;
+  text-align: center;
+}
 
 /* ---------- Grid layout (3x3) ---------- */
 
