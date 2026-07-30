@@ -26,7 +26,7 @@ const Setup = (() => {
     el.savedQuizField = document.getElementById('savedQuizField');
     el.savedQuizSelect = document.getElementById('savedQuizSelect');
     el.savedQuizHint = document.getElementById('savedQuizHint');
-    el.quizOptionsCol = document.getElementById('quizOptionsCol');
+    el.quizNormalFields = document.getElementById('quizNormalFields');
 
     el.bankSelect = document.getElementById('bankSelect');
     el.topicToggle = document.getElementById('topicToggle');
@@ -83,7 +83,7 @@ const Setup = (() => {
 
   function onSavedQuizChange() {
     const usingSaved = el.savedQuizSelect.value !== 'none';
-    el.quizOptionsCol.hidden = usingSaved;
+    el.quizNormalFields.hidden = usingSaved;
     el.savedQuizHint.hidden = !usingSaved;
     el.generateBtn.textContent = usingSaved ? 'Load saved quiz' : 'Generate';
 

@@ -29,10 +29,60 @@ const Grid = (() => {
     { bg: '#F0E9DD', text: '#6B5A3E' }
   ];
 
+  // ---------------- Math markup ----------------
+  // Plain-text question data can embed a small, unambiguous markup for
+  // the handful of maths constructs that turn up in GCSE/A-level "do
+  // now" questions. Deliberately not relying on Unicode fraction/
+  // superscript glyphs - font support is patchy and they render too
+  // small on a projector - so each construct is rendered as real HTML/
+  // CSS instead, which scales cleanly with the existing autosize logic.
+  //
+  //   {num/den}        ->  stacked fraction (num/den can be anything,
+  //                         e.g. {3/4} or {(3x+2)/(x-2)}; a leading
+  //                         whole number like 1{3/4} makes a mixed
+  //                         number for free, since it's just adjacent
+  //                         text)
+  //   base^exp          ->  superscript; use base^{expr} for anything
+  //                         longer than one character, e.g. 5^2 or
+  //                         (x+1)^{2}
+  //   sqrt{expr}         ->  square root with an overline spanning expr
+  //   cbrt{expr}         ->  cube root with an overline spanning expr
+  //
+  // Constructs don't nest inside each other's braces (no fraction
+  // inside a root, etc.) - rare enough at this level to leave out
+  // rather than write a recursive parser for it.
+
+  function renderMath(rawText) {
+    let text = escapeHtml(rawText == null ? '' : String(rawText));
+
+    // Roots first, since they also consume a {...} span.
+    text = text.replace(/sqrt\{([^{}]+)\}/g, (m, inner) =>
+      `<span class="radical"><span class="radical__sym">√</span><span class="radical__body">${inner}</span></span>`);
+    text = text.replace(/cbrt\{([^{}]+)\}/g, (m, inner) =>
+      `<span class="radical radical--cube"><span class="radical__sym">∛</span><span class="radical__body">${inner}</span></span>`);
+
+    // Any {...} left with a slash inside is a fraction.
+    text = text.replace(/\{([^{}]+)\}/g, (m, inner) => {
+      const slashIndex = inner.indexOf('/');
+      if (slashIndex === -1) return m; // no slash - leave the braces as literal text
+      const num = inner.slice(0, slashIndex);
+      const den = inner.slice(slashIndex + 1);
+      return `<span class="frac"><span class="frac__num">${num}</span><span class="frac__den">${den}</span></span>`;
+    });
+
+    // Exponents last, so ^{...} doesn't collide with fraction braces.
+    text = text.replace(/\^(\{[^{}]+\}|-?[A-Za-z0-9])/g, (m, exp) =>
+      `<sup>${exp.startsWith('{') ? exp.slice(1, -1) : exp}</sup>`);
+
+    return text;
+  }
+
   function init() {
     el.container = document.getElementById('gridContainer');
     el.container.addEventListener('click', onGridClick);
   }
+
+
 
   function generate(cfg) {
     config = cfg;
@@ -121,7 +171,7 @@ const Grid = (() => {
 
     wrap.innerHTML = `
       <div class="square__content ${isSplit ? 'square__content--split' : ''}">
-        <div class="square__question" ${state.activePanel && !isSplit ? 'hidden' : ''}>${escapeHtml(q.question)}</div>
+        <div class="square__question" ${state.activePanel && !isSplit ? 'hidden' : ''}>${renderMath(q.question)}</div>
         ${state.activePanel ? renderPanel(q, state) : ''}
       </div>
       <div class="square__footer">
@@ -175,7 +225,7 @@ const Grid = (() => {
           mark = state.correctWasClicked ? ' ✓' : '';
         }
 
-        return `<button class="${cls}" data-choice-index="${i}" ${disabled ? 'disabled' : ''}><span class="choice-btn__label">${escapeHtml(c.text)}${mark}</span></button>`;
+        return `<button class="${cls}" data-choice-index="${i}" ${disabled ? 'disabled' : ''}><span class="choice-btn__label">${renderMath(c.text)}${mark}</span></button>`;
       }).join('');
 
       return `<div class="choices">${buttonsHtml}</div>`;
@@ -185,13 +235,16 @@ const Grid = (() => {
       // Same visual language as the revealed-correct choice button
       // (green box, centered, bold) - just delivered as a single box
       // rather than picked from three, since there's nothing to choose.
-      return `<div class="square__panel-full"><div class="answer-box">${escapeHtml(q.answer)}</div></div>`;
+      // The box itself shrink-wraps to the answer text (answer-box-wrap
+      // centers it within the full panel area) rather than stretching
+      // the border edge-to-edge regardless of how short the answer is.
+      return `<div class="square__panel-full answer-box-wrap"><div class="answer-box">${renderMath(q.answer)}</div></div>`;
     }
 
     let text = '';
     if (state.activePanel === 'hint') text = q.hint;
     if (state.activePanel === 'explain') text = q.workedAnswer;
-    return `<div class="square__panel-full"><div class="panel-text">${escapeHtml(text)}</div></div>`;
+    return `<div class="square__panel-full"><div class="panel-text">${renderMath(text)}</div></div>`;
   }
 
   function renderStudentChip(state) {
@@ -284,15 +337,19 @@ const Grid = (() => {
 
     // First wrong click: show it, then fade + leave a gap after a
     // couple of seconds. The other two stay live for another attempt.
+    // This timeline runs to completion even if a second wrong click
+    // resolves the square in the meantime (checked below via
+    // state.choiceStatuses, not state.choiceResolved) - a fast double
+    // wrong-click shouldn't rob the first pick of its fade-out.
     rerenderSquare(squareIndex);
     setTimeout(() => {
-      if (squareStates[squareIndex] !== state || state.choiceResolved) return;
+      if (squareStates[squareIndex] !== state) return;
       if (state.choiceStatuses[choiceIndex] !== 'wrong-shown') return;
       state.choiceStatuses[choiceIndex] = 'fading';
       rerenderSquare(squareIndex);
 
       setTimeout(() => {
-        if (squareStates[squareIndex] !== state || state.choiceResolved) return;
+        if (squareStates[squareIndex] !== state) return;
         if (state.choiceStatuses[choiceIndex] !== 'fading') return;
         state.choiceStatuses[choiceIndex] = 'removed';
         rerenderSquare(squareIndex);
@@ -434,8 +491,11 @@ const Grid = (() => {
     const question = squareEl.querySelector('.square__question:not([hidden])');
     if (question) autosizeElement(question, 1.3, 0.7);
 
-    const panelText = squareEl.querySelector('.panel-text, .answer-box');
+    const panelText = squareEl.querySelector('.panel-text');
     if (panelText) autosizeElement(panelText, 1.15, 0.65);
+
+    const answerBox = squareEl.querySelector('.answer-box');
+    if (answerBox) autosizeElement(answerBox, 1.15, 0.65);
 
     squareEl.querySelectorAll('.choice-btn__label').forEach(label => {
       autosizeElement(label, 0.95, 0.6);
