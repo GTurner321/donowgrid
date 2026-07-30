@@ -667,8 +667,7 @@ button:focus-visible {
 /* A bare number fraction ({3/4}) can afford to be small and still
    read cleanly. An algebraic fraction needs the extra size to stay
    legible, so it keeps closer to full text size. */
-.frac { font-size: 0.72em; }
-.frac--numeric { font-size: 0.55em; }
+.frac { font-size: 0.85em; }
 
 .frac__num,
 .frac__den {
