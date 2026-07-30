@@ -61,13 +61,18 @@ const Grid = (() => {
     text = text.replace(/cbrt\{([^{}]+)\}/g, (m, inner) =>
       `<span class="radical radical--cube"><span class="radical__sym">∛</span><span class="radical__body">${inner}</span></span>`);
 
-    // Any {...} left with a slash inside is a fraction.
+    // Any {...} left with a slash inside is a fraction. Purely numeric
+    // fractions (e.g. {3/4}) render smaller than algebraic ones (e.g.
+    // {(3x+2)/(x-2)}) - a bare number reads fine tiny, but an algebraic
+    // expression needs to stay legible.
     text = text.replace(/\{([^{}]+)\}/g, (m, inner) => {
       const slashIndex = inner.indexOf('/');
       if (slashIndex === -1) return m; // no slash - leave the braces as literal text
       const num = inner.slice(0, slashIndex);
       const den = inner.slice(slashIndex + 1);
-      return `<span class="frac"><span class="frac__num">${num}</span><span class="frac__den">${den}</span></span>`;
+      const isNumeric = /^-?\d+$/.test(num.trim()) && /^-?\d+$/.test(den.trim());
+      const fracClass = isNumeric ? 'frac frac--numeric' : 'frac';
+      return `<span class="${fracClass}"><span class="frac__num">${num}</span><span class="frac__den">${den}</span></span>`;
     });
 
     // Exponents last, so ^{...} doesn't collide with fraction braces.
