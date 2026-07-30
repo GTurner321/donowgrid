@@ -33,63 +33,83 @@
       <p class="hint" id="savedQuizHint" hidden>This picks up exactly the same 9 questions as when it was saved — just add the class list and load.</p>
     </div>
 
-    <div id="normalFields">
+    <div class="setup-columns">
 
-      <div class="field">
-        <label for="bankSelect">Question bank</label>
-        <select id="bankSelect" disabled>
-          <option value="" selected>Loading…</option>
-        </select>
+      <div class="setup-col setup-col--quiz" id="quizOptionsCol">
+
+        <div class="field">
+          <label for="bankSelect">Question bank</label>
+          <select id="bankSelect" disabled>
+            <option value="" selected>Loading…</option>
+          </select>
+        </div>
+
+        <div class="field field--spaced">
+          <label for="methodSelect">Selection method</label>
+          <select id="methodSelect">
+            <option value="recent">Most recently added</option>
+            <option value="weighted">Weighted towards recent</option>
+            <option value="mix">Full mix</option>
+          </select>
+        </div>
+
+        <div class="field field--spaced">
+          <label class="checkbox" for="topicToggle">
+            <input type="checkbox" id="topicToggle">
+            Choose by topic
+          </label>
+          <p class="hint" id="topicHelp">Questions will be chosen from the entire set.</p>
+          <div class="topic-checklist" id="topicChecklist" hidden>
+            <p class="hint">Choose a bank first…</p>
+          </div>
+        </div>
+
+        <div class="field field--spaced">
+          <label for="levelSelect">Question level</label>
+          <select id="levelSelect">
+            <option value="mix">Full random mix (ignore levels)</option>
+            <option value="progressive" data-requires-levels>Level 1–3 progressive (top row easiest)</option>
+            <option value="1" data-requires-levels>Level 1 only</option>
+            <option value="2" data-requires-levels>Level 2 only</option>
+            <option value="3" data-requires-levels>Level 3 only</option>
+          </select>
+          <p class="hint" id="levelHint" hidden></p>
+        </div>
+
       </div>
 
-      <div class="field field--spaced">
-        <label for="methodSelect">Selection method</label>
-        <select id="methodSelect">
-          <option value="recent">Most recently added</option>
-          <option value="weighted">Weighted towards recent</option>
-          <option value="mix">Full mix</option>
-        </select>
-      </div>
+      <div class="setup-col setup-col--students">
+        <span class="field__label">Add Students</span>
 
-      <div class="field field--spaced">
-        <label class="checkbox" for="topicToggle">
-          <input type="checkbox" id="topicToggle">
-          Choose by topic
-        </label>
-        <p class="hint" id="topicHelp">Questions will be chosen from the entire set.</p>
-        <div class="topic-checklist" id="topicChecklist" hidden>
-          <p class="hint">Choose a bank first…</p>
+        <div class="field" id="savedGroupField" hidden>
+          <label for="savedGroupSelect">Use saved group</label>
+          <select id="savedGroupSelect">
+            <option value="none">None (start fresh)</option>
+          </select>
+        </div>
+
+        <div id="studentsNormalFields">
+          <p class="hint hint-box" id="studentsSummary">No students added yet — question squares will show no student banner.</p>
+
+          <div class="students-panel" id="studentsPanel">
+            <label for="studentsInput">Paste names — one per line, or separated by commas/tabs</label>
+            <textarea id="studentsInput" rows="6" placeholder="Aisha Khan&#10;Ben Carter&#10;Chidi Okafor&#10;…"></textarea>
+            <div class="students-btn-row">
+              <button type="button" class="btn btn--primary" id="addStudentsBtn" title="Add students for one-time random question assigning">Add students</button>
+              <button type="button" class="btn btn--ghost" id="saveClassListBtn" title="Saves list locally for future use; max 10 groups, 11th saves back as group1">Save class list</button>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="field field--spaced">
-        <label for="levelSelect">Question level</label>
-        <select id="levelSelect">
-          <option value="mix">Full random mix (ignore levels)</option>
-          <option value="progressive" data-requires-levels>Level 1–3 progressive (top row easiest)</option>
-          <option value="1" data-requires-levels>Level 1 only</option>
-          <option value="2" data-requires-levels>Level 2 only</option>
-          <option value="3" data-requires-levels>Level 3 only</option>
-        </select>
-        <p class="hint" id="levelHint" hidden></p>
-      </div>
-
-    </div>
-
-    <div class="field">
-      <span class="field__label">Add Students</span>
-      <p class="hint hint-box" id="studentsSummary">No students added yet — question squares will show no student banner.</p>
-
-      <div class="students-panel" id="studentsPanel">
-        <label for="studentsInput">Paste names — one per line, or separated by commas/tabs</label>
-        <textarea id="studentsInput" rows="6" placeholder="Aisha Khan&#10;Ben Carter&#10;Chidi Okafor&#10;…"></textarea>
-        <button type="button" class="btn btn--primary" id="saveStudentsBtn">Save class list</button>
-      </div>
     </div>
 
     <p class="status" id="statusMessage" hidden></p>
 
-    <button type="button" class="btn btn--generate" id="generateBtn" disabled>Generate</button>
+    <div class="setup-actions">
+      <button type="button" class="btn btn--generate" id="generateBtn" disabled>Generate</button>
+      <button type="button" class="btn btn--generate btn--secondary" id="returnQuizBtn" hidden>Return to quiz</button>
+    </div>
   </div>
 </main>
 </div>
@@ -111,9 +131,15 @@
         <button type="button" class="icon-btn" id="timerPause" title="Pause">⏸</button>
       </div>
       <div class="grid-header-actions">
-        <button type="button" class="icon-btn" id="hideAllBtn" title="Reveal all questions">Reveal</button>
-        <button type="button" class="icon-btn" id="globalStudentBtn" title="Show/hide all students">Students</button>
-        <button type="button" class="icon-btn" id="saveBtn" title="Save this quiz to this browser">Save</button>
+        <button type="button" class="icon-btn" id="hideAllBtn" title="Reveal all questions">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+        <button type="button" class="icon-btn" id="globalStudentBtn" title="Show/hide all students">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </button>
+        <button type="button" class="icon-btn" id="saveBtn" title="Save this quiz to this browser">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>
+        </button>
         <button type="button" class="icon-btn icon-btn--symbol" id="fullscreenBtn" title="Fullscreen">⤢</button>
       </div>
     </div>
@@ -127,6 +153,7 @@
 <script src="js/selectionEngine.js"></script>
 <script src="js/studentPicker.js"></script>
 <script src="js/saveQuiz.js"></script>
+<script src="js/saveClass.js"></script>
 <script src="js/audio.js"></script>
 <script src="js/timer.js"></script>
 <script src="js/grid.js"></script>

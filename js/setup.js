@@ -1,7 +1,8 @@
 // Question Grid — setup view controller
 // Owns everything on the landing page: loading banks, reacting to
 // dropdown changes, the student paste-in box, the saved-quiz picker,
-// and building the config object that Generate hands off to the grid.
+// the saved-class-list picker, and building the config object that
+// Generate hands off to the grid.
 
 const Setup = (() => {
 
@@ -9,6 +10,7 @@ const Setup = (() => {
   let currentQuestions = [];    // full question array for that bank
   let students = [];            // parsed, deduped student names
   let savedQuizzes = [];        // valid (non-expired) saved quizzes
+  let savedGroups = [];         // saved class lists (group1..group10)
 
   const el = {}; // populated in init() once the DOM exists
 
@@ -17,13 +19,14 @@ const Setup = (() => {
     bindEvents();
     loadBanks();
     loadSavedQuizzes();
+    loadSavedGroups();
   }
 
   function cacheElements() {
     el.savedQuizField = document.getElementById('savedQuizField');
     el.savedQuizSelect = document.getElementById('savedQuizSelect');
     el.savedQuizHint = document.getElementById('savedQuizHint');
-    el.normalFields = document.getElementById('normalFields');
+    el.quizOptionsCol = document.getElementById('quizOptionsCol');
 
     el.bankSelect = document.getElementById('bankSelect');
     el.topicToggle = document.getElementById('topicToggle');
@@ -33,9 +36,13 @@ const Setup = (() => {
     el.levelSelect = document.getElementById('levelSelect');
     el.levelHint = document.getElementById('levelHint');
 
+    el.savedGroupField = document.getElementById('savedGroupField');
+    el.savedGroupSelect = document.getElementById('savedGroupSelect');
+    el.studentsNormalFields = document.getElementById('studentsNormalFields');
     el.studentsPanel = document.getElementById('studentsPanel');
     el.studentsInput = document.getElementById('studentsInput');
-    el.saveStudentsBtn = document.getElementById('saveStudentsBtn');
+    el.addStudentsBtn = document.getElementById('addStudentsBtn');
+    el.saveClassListBtn = document.getElementById('saveClassListBtn');
     el.studentsSummary = document.getElementById('studentsSummary');
 
     el.generateBtn = document.getElementById('generateBtn');
@@ -44,11 +51,13 @@ const Setup = (() => {
 
   function bindEvents() {
     el.savedQuizSelect.addEventListener('change', onSavedQuizChange);
+    el.savedGroupSelect.addEventListener('change', onSavedGroupChange);
 
     el.bankSelect.addEventListener('change', onBankChange);
     el.topicToggle.addEventListener('change', onTopicToggle);
 
-    el.saveStudentsBtn.addEventListener('click', onSaveStudents);
+    el.addStudentsBtn.addEventListener('click', onAddStudents);
+    el.saveClassListBtn.addEventListener('click', onSaveClassList);
 
     el.generateBtn.addEventListener('click', onGenerate);
   }
@@ -74,7 +83,7 @@ const Setup = (() => {
 
   function onSavedQuizChange() {
     const usingSaved = el.savedQuizSelect.value !== 'none';
-    el.normalFields.hidden = usingSaved;
+    el.quizOptionsCol.hidden = usingSaved;
     el.savedQuizHint.hidden = !usingSaved;
     el.generateBtn.textContent = usingSaved ? 'Load saved quiz' : 'Generate';
 
@@ -88,6 +97,43 @@ const Setup = (() => {
     const val = el.savedQuizSelect.value;
     if (val === 'none') return null;
     return savedQuizzes.find(q => String(q.slot) === val) || null;
+  }
+
+  // ---------------- Saved class lists (groups) ----------------
+
+  function loadSavedGroups() {
+    savedGroups = SaveClass.listValid();
+    if (!savedGroups.length) {
+      el.savedGroupField.hidden = true;
+      return;
+    }
+
+    el.savedGroupSelect.innerHTML = '<option value="none">None (start fresh)</option>';
+    savedGroups.forEach(g => {
+      const opt = document.createElement('option');
+      opt.value = String(g.slot);
+      opt.textContent = `group${g.slot} — ${g.students.length} student${g.students.length === 1 ? '' : 's'} (${SaveQuiz.relativeTime(g.savedAt)})`;
+      el.savedGroupSelect.appendChild(opt);
+    });
+    el.savedGroupField.hidden = false;
+  }
+
+  function onSavedGroupChange() {
+    const val = el.savedGroupSelect.value;
+    const usingSaved = val !== 'none';
+    el.studentsNormalFields.hidden = usingSaved;
+
+    if (usingSaved) {
+      const group = savedGroups.find(g => String(g.slot) === val);
+      if (group) {
+        students = group.students.slice();
+        el.studentsSummary.textContent =
+          `${students.length} student${students.length === 1 ? '' : 's'} loaded from group${group.slot} (${SaveQuiz.relativeTime(group.savedAt)}).`;
+      }
+    } else {
+      students = [];
+      el.studentsSummary.textContent = 'No students added yet — question squares will show no student banner.';
+    }
   }
 
   // ---------------- Normal bank flow ----------------
@@ -186,7 +232,7 @@ const Setup = (() => {
 
   // ---------------- Students ----------------
 
-  function onSaveStudents() {
+  function parseStudentsFromTextarea() {
     const raw = el.studentsInput.value;
     const parsed = raw
       .split(/[\n,\t]+/)
@@ -195,21 +241,41 @@ const Setup = (() => {
 
     // Dedupe while preserving first-seen order
     const seen = new Set();
-    students = parsed.filter(name => {
+    return parsed.filter(name => {
       const key = name.toLowerCase();
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
     });
+  }
 
-    el.studentsSummary.textContent = students.length
-      ? `${students.length} student${students.length === 1 ? '' : 's'} added.`
-      : 'No students added yet — question squares will show no student banner.';
-
-    // Visible confirmation that the save actually registered - the box
+  function flashSummarySaved() {
+    // Visible confirmation that the action actually registered - the box
     // switches from its default pale-yellow to pale-green briefly.
     el.studentsSummary.classList.add('hint-box--saved');
     setTimeout(() => el.studentsSummary.classList.remove('hint-box--saved'), 2200);
+  }
+
+  function onAddStudents() {
+    students = parseStudentsFromTextarea();
+    el.studentsSummary.textContent = students.length
+      ? `${students.length} student${students.length === 1 ? '' : 's'} added, assigned randomly to questions.`
+      : 'No students added yet — question squares will show no student banner.';
+    flashSummarySaved();
+  }
+
+  function onSaveClassList() {
+    const parsed = parseStudentsFromTextarea();
+    if (!parsed.length) {
+      el.studentsSummary.textContent = 'Paste at least one name before saving a class list.';
+      el.studentsSummary.classList.remove('hint-box--saved');
+      return;
+    }
+    students = parsed;
+    const slotName = SaveClass.save(students);
+    el.studentsSummary.textContent = `${students.length} student${students.length === 1 ? '' : 's'} saved as ${slotName} in local storage.`;
+    flashSummarySaved();
+    loadSavedGroups();
   }
 
   // ---------------- Generate / Load ----------------

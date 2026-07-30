@@ -181,8 +181,14 @@ const Grid = (() => {
       return `<div class="choices">${buttonsHtml}</div>`;
     }
 
+    if (state.activePanel === 'answer') {
+      // Same visual language as the revealed-correct choice button
+      // (green box, centered, bold) - just delivered as a single box
+      // rather than picked from three, since there's nothing to choose.
+      return `<div class="square__panel-full"><div class="answer-box">${escapeHtml(q.answer)}</div></div>`;
+    }
+
     let text = '';
-    if (state.activePanel === 'answer') text = q.answer;
     if (state.activePanel === 'hint') text = q.hint;
     if (state.activePanel === 'explain') text = q.workedAnswer;
     return `<div class="square__panel-full"><div class="panel-text">${escapeHtml(text)}</div></div>`;
@@ -265,14 +271,13 @@ const Grid = (() => {
     if (state.wrongClickedIndices.length >= 2) {
       // Second distinct wrong option: auto-reveal the correct answer
       // (green, no tick - it wasn't chosen), freeze everything, no
-      // fading or removal for anything from here on.
+      // further fading or removal from here on. The first wrong option
+      // is left exactly as it already was (mid-fade, fully removed, or
+      // still shown if the second click came in fast) - it must never
+      // pop back into view. In the steady-state case that leaves just
+      // two items visible: the correct answer and this last wrong pick.
       state.choiceResolved = true;
       state.correctWasClicked = false;
-      // Un-fade anything that was mid-fade from the first wrong click,
-      // since both remaining options should stay fully visible now.
-      state.choiceStatuses = state.choiceStatuses.map((s, i) =>
-        state.choiceOrder[i].correct ? s : (s === 'fading' || s === 'removed' ? 'wrong-shown' : s)
-      );
       rerenderSquare(squareIndex);
       return;
     }
@@ -429,7 +434,7 @@ const Grid = (() => {
     const question = squareEl.querySelector('.square__question:not([hidden])');
     if (question) autosizeElement(question, 1.3, 0.7);
 
-    const panelText = squareEl.querySelector('.panel-text');
+    const panelText = squareEl.querySelector('.panel-text, .answer-box');
     if (panelText) autosizeElement(panelText, 1.15, 0.65);
 
     squareEl.querySelectorAll('.choice-btn__label').forEach(label => {
