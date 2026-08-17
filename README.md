@@ -7,6 +7,7 @@
    - `index.html`
    - the `css` folder (with `styles.css` inside)
    - the `js` folder (with all the `.js` files inside)
+   - the `csv` folder (with `pearson_books.csv` and `practice_set.csv` inside — export these from `Do_now_grid.xlsx`'s "Pearson books" and "Practice set" tabs)
    - If GitHub flattens folders on upload, create files individually instead via **Add file → Create new file** and type the path (e.g. `css/styles.css`) into the filename box — GitHub creates the folder automatically.
 3. Commit the files.
 4. Go to **Settings → Pages**.
@@ -15,14 +16,26 @@
 
 ## Current status
 
-**Both the setup page and the 16-square grid are built and wired together.**
+**Both the setup page and the 9-square grid are built and wired together.**
+Question data now comes from two committed CSV files instead of a shared
+Google Sheet + Apps Script backend — no server involved.
 
-Setup page:
-- Loads live question banks from the Apps Script backend
-- Multi-select topic checklist (only shown if "Choose by topic" is ticked)
-- Question level dropdown (full mix / progressive / single level), auto-disabled if the bank lacks enough level-tagged questions
-- Pasted student list, deduped
-- Timer preset (minutes/seconds)
+Setup page — three ways to choose a set of questions, picked via tabs:
+- **Pearson book**: pick a book, then multi-select chapters. Each chapter's
+  hidden Dr Frost ref numbers (from `pearson_books.csv`) are unioned and
+  used to filter `practice_set.csv`.
+- **Dr Frost skills**: type skill numbers directly, comma-separated
+  (e.g. `112, 115`). A "look up skill numbers" link points at your shared
+  reference sheet once `DF_REFS_SHEET_URL` is set in `js/config.js`.
+- **Saved starter**: reload a previously saved 9-box layout — rebuilds the
+  same pool from a saved descriptor, then re-fetches live question text.
+
+If a selection has no matching questions, Generate shows a plain warning
+rather than silently producing an empty/half-empty grid.
+
+Also on the setup page:
+- Question level dropdown (full mix / progressive / single level)
+- Pasted student list, deduped, with save/reuse of class lists
 - Generate hands everything off to the grid
 
 Grid view:
@@ -42,15 +55,18 @@ Grid view:
 ```
 index.html               Setup view + grid view markup
 css/styles.css            All styling
-js/config.js               Apps Script URL + tunable thresholds
-js/dataService.js          Talks to the Apps Script backend
-js/selectionEngine.js      Question picking: recency methods, level/topic rules, duplicate-free refresh
+csv/pearson_books.csv      Book -> chapter -> hidden Dr Frost ref numbers
+csv/practice_set.csv       The question bank
+js/config.js               CSV paths + tunable thresholds + Dr Frost sheet link
+js/dataService.js          Loads and normalises the two CSVs (via PapaParse)
+js/poolBuilder.js          Filters the practice set by book/chapters or by Dr Frost refs
+js/selectionEngine.js      Question picking: recency methods, level rules, duplicate-free refresh
 js/studentPicker.js        Fair round-robin (Generate) + random-excluding (refresh)
 js/saveQuiz.js              Save/load a fixed 9-question layout to this browser (2-day expiry)
 js/audio.js                 Synthesized correct/incorrect tones
 js/timer.js                  Header stopwatch: 00:00 start, +1/-1 min, start/pause
 js/grid.js                  Renders and manages the 9 squares, shutters, pastel colours
-js/setup.js                 Setup page controller, including the saved-quiz picker
+js/setup.js                 Setup page controller: the three selection-method tabs, students, saved starters
 js/app.js                   View switching + grid header controls
 ```
 

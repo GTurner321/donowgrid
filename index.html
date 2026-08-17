@@ -29,23 +29,46 @@
 
       <div class="setup-col setup-col--quiz">
 
-        <div class="field" id="savedQuizField" hidden>
-          <label for="savedQuizSelect">Use saved quiz</label>
-          <select id="savedQuizSelect">
-            <option value="none">None (start fresh)</option>
-          </select>
-          <p class="hint" id="savedQuizHint" hidden>This picks up exactly the same 9 questions as when it was saved — just add the class list and load.</p>
+        <div class="method-tabs" id="methodTabs">
+          <button type="button" class="method-tab" data-method="pearsonBook">Pearson book</button>
+          <button type="button" class="method-tab" data-method="dfRefs">Dr Frost skills</button>
+          <button type="button" class="method-tab" data-method="saved">Saved starter</button>
         </div>
 
-        <div id="quizNormalFields">
-
+        <div class="method-panel" id="panelPearsonBook">
           <div class="field">
-            <label for="bankSelect">Question bank</label>
-            <select id="bankSelect" disabled>
+            <label for="bookSelect">Book</label>
+            <select id="bookSelect" disabled>
               <option value="" selected>Loading…</option>
             </select>
           </div>
+          <div class="field">
+            <span class="field__label">Chapters</span>
+            <p class="hint" id="chapterHelp">Choose a book first…</p>
+            <div class="topic-checklist" id="chapterChecklist"></div>
+          </div>
+        </div>
 
+        <div class="method-panel" id="panelDfRefs" hidden>
+          <div class="field">
+            <label for="dfRefsInput">Dr Frost skill numbers</label>
+            <input type="text" id="dfRefsInput" placeholder="e.g. 112, 115">
+            <p class="hint">Separate multiple numbers with commas.</p>
+            <a href="#" id="dfRefsLookupLink" class="hint-link" target="_blank" rel="noopener" hidden>Look up Dr Frost skill numbers →</a>
+          </div>
+        </div>
+
+        <div class="method-panel" id="panelSaved" hidden>
+          <div class="field">
+            <label for="savedQuizSelect">Use saved starter</label>
+            <select id="savedQuizSelect">
+              <option value="none">None saved yet</option>
+            </select>
+            <p class="hint" id="savedQuizHint" hidden>This picks up exactly the same 9 questions as when it was saved — just add the class list and load.</p>
+          </div>
+        </div>
+
+        <div id="commonQuizFields">
           <div class="field field--spaced">
             <label for="methodSelect">Selection method</label>
             <select id="methodSelect">
@@ -56,28 +79,15 @@
           </div>
 
           <div class="field field--spaced">
-            <label class="checkbox" for="topicToggle">
-              <input type="checkbox" id="topicToggle">
-              Choose by topic
-            </label>
-            <p class="hint" id="topicHelp">Questions will be chosen from the entire set.</p>
-            <div class="topic-checklist" id="topicChecklist" hidden>
-              <p class="hint">Choose a bank first…</p>
-            </div>
-          </div>
-
-          <div class="field field--spaced">
             <label for="levelSelect">Question level</label>
             <select id="levelSelect">
               <option value="mix">Full random mix (ignore levels)</option>
-              <option value="progressive" data-requires-levels>Level 1–3 progressive (top row easiest)</option>
-              <option value="1" data-requires-levels>Level 1 only</option>
-              <option value="2" data-requires-levels>Level 2 only</option>
-              <option value="3" data-requires-levels>Level 3 only</option>
+              <option value="progressive">Level 1–3 progressive (top row easiest)</option>
+              <option value="1">Level 1 only</option>
+              <option value="2">Level 2 only</option>
+              <option value="3">Level 3 only</option>
             </select>
-            <p class="hint" id="levelHint" hidden></p>
           </div>
-
         </div>
 
       </div>
@@ -152,8 +162,10 @@
   <div class="grid" id="gridContainer"></div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="js/config.js"></script>
 <script src="js/dataService.js"></script>
+<script src="js/poolBuilder.js"></script>
 <script src="js/selectionEngine.js"></script>
 <script src="js/studentPicker.js"></script>
 <script src="js/saveQuiz.js"></script>
