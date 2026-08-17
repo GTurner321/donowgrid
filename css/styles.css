@@ -309,6 +309,55 @@ button:focus-visible {
   resize: vertical;
 }
 
+/* ---------- Method tabs (Pearson book / Dr Frost skills / Saved starter) ---------- */
+
+.method-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  background: #FAF8F3;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.method-tab {
+  flex: 1;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 8px 10px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.method-tab:hover { color: var(--ink); }
+
+.method-tab--active {
+  background: var(--board);
+  color: var(--chalk-yellow);
+}
+
+.method-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+/* ---------- Hint link (e.g. Dr Frost reference sheet) ---------- */
+
+.hint-link {
+  font-size: 0.85rem;
+  color: var(--chalk-blue);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.hint-link:hover { text-decoration: underline; }
+
 /* ---------- Topic checklist ---------- */
 
 .topic-checklist[hidden] {
