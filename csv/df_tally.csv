@@ -1,0 +1,946 @@
+﻿DF Topic #,DF Topic Name,Tally,used
+1,Numbers up to 100,,n
+2,Increasing and decreasing by 1,,n
+3,Comparing amounts using words,,n
+4,"Counting by skipping in 2s, 3s, 5s or 10s",,n
+5,Odd and even numbers,,n
+6,Understanding (positive) whole numbers on a number line,,n
+7,Pictorial addition and subtraction (numbers up to 20),,n
+8,Number bonds for numbers up to 20,,n
+9,Addition using numbers up to 20,,n
+10,Subtraction using numbers up to 20,,n
+11,Multiplication as arrays and repeated addition,,n
+12,Division as grouping and sharing,,n
+13,Understanding directional language,,n
+14,Reading integer values off a scale,1,n
+15,"Measuring using scales of lengths, mass and capacity",1,n
+16,Describing time,,n
+17,Understanding place value involving tens and ones,,n
+18,Number bonds for numbers up to 100,,n
+19,Adding numbers up to 2 digits with answers up to 100,,n
+20,Subtracting numbers up to 2 digits,,n
+21,Properties of addition and subtraction,,n
+22,"Make up monetary values with coins and notes, with no decimal notation (GBP/Euro/Dollars)",,n
+23,Multiplication and division notation,,n
+24,"The 2, 5 and 10 times tables",,n
+25,Introduction to 2D shapes,,n
+26,"Recognising and using halves, quarters and thirds",,n
+27,Reading values from a table of discrete or categorical data,,n
+28,Tally charts (discrete and categorical data),,n
+29,Block diagrams,,n
+30,Line and dot plots,,n
+31,Pictograms,2,n
+32,Introduction to 3D shapes,,n
+33,Tell the time using an analogue clock,,n
+34,Numbers above 100,,n
+35,Place value above the 100s digit,,n
+36,Comparing and ordering positive numbers above 100,,n
+37,"Rounding a number to nearest 10, 100, 1000 and beyond",,n
+38,Further counting by skipping,,n
+39,Mental addition and subtraction strategies,1,y
+40,Column addition,1,y
+41,Column subtraction,1,y
+42,Times tables up to 12 × 12,,n
+43,Properties of multiplication and division,,n
+44,Multiplying numbers by 1 or 0 and divide by 1,,n
+45,"Multiplying and dividing integers by 10, 100, 1000, etc.",,n
+46,The Commutative and Associative Laws,,n
+47,The Distributive Law and the area model for multiplication,,n
+48,Related number facts with place value,2,y
+49,Dividing a large number by a 1 digit number using partitioning,,n
+50,"Solving one-step and two-step arithmetic problems, including working with money in the same unit",,n
+51,Checking calculations,,n
+52,Multiples of a number,2,y
+53,Factors of a number,2,y
+54,Recognising and using fractions with denominators to 12,2,y
+55,Comparing and ordering fractions where one part is the same,,n
+56,Adding and subtracting fractions with the same denominator,,n
+57,Fractions of an amount,,n
+58,Roman numerals,,n
+59,Time conversions,1,y
+60,Reading times on digital clocks,,n
+61,Difference between two times or the end time after a time has elapsed,,n
+62,Identifying right-angles and relating to other angles and turns,,n
+63,"Identifying vertical, horizontal, parallel and perpendicular lines",1,n
+64,Perimeter of a 2D shape by counting squares,1,n
+65,Bar charts and vertical line charts,3,n
+66,Short column multiplication,1,y
+67,Long column multiplication,1,y
+68,"Recognising and using tenths, hundredths and thousandths",1,y
+69,"Decimal place value, including basic fraction and decimal equivalence",1,y
+70,"Multiplying and dividing by 10, 100, 1000, including decimals",2,y
+71,Compare decimals,2,y
+72,Number bonds with decimals,1,y
+73,"Making up monetary values with coins and notes, with decimal notation (GBP/Euro/Dollars)",1,y
+74,Adding and subtracting decimal numbers,5,y
+75,Rounding a number to a given number of decimal places,3,y
+76,Types of angle,1,y
+77,Types of quadrilaterals and triangles,4,y
+78,Properties of polygons,2,y
+79,Perimeter of a 2D shape by adding lengths,1,y
+80,Area of shapes by counting squares,1,n
+81,Reflecting a shape in a mirror line (no axes),1,n
+82,Translating a shape using directional language (no axes),1,n
+83,Coordinates in the first quadrant,2,y
+84,Map grid references,,n
+85,Counting up and down with negative numbers,1,y
+86,Comparing and ordering positive and negative numbers,1,y
+87,Using negative numbers in context,1,y
+88,"Power notation and calculate simple powers, e.g. squares, cubes",2,y
+89,Completing short divisions with no remainders,1,y
+90,Completing long divisions with no remainders,1,y
+91,Completing divisions with remainders as integers,1,y
+92,Completing divisions with remainders as fractions and decimals,1,y
+93,Halfway between two numbers,1,y
+94,Common multiples by listing,1,y
+95,Common factors by listing,1,y
+96,Highest Common Factor and Lowest Common Multiple by listing,1,y
+97,Prime numbers,2,y
+98,Fractional equivalence using factors and multiples,3,y
+99,Comparing and ordering fractions where the denominators are multiples of each other,1,y
+100,Adding and subtracting fractions where the denominators are multiples of each other,1,y
+101,Converting between mixed numbers and improper fractions,1,y
+102,Adding and subtracting mixed numbers with the same denominator,1,y
+103,Adding and subtracting mixed numbers where one denominator is a multiple of another,1,y
+104,"Fraction and decimal equivalence for halves, quarters and fifths",1,y
+105,Understanding percentages as values out of 100,2,y
+106,Basic percentage and decimal equivalence,1,y
+107,Converting between metric units of measure,2,y
+108,"Equivalence of metric and imperial units (inches, pints, pounds and miles)",1,y
+109,Measuring and drawing non-reflex angles in degrees with a protractor,1,n
+110,Sum of the angles on a straight line and angles around a point,1,y
+111,Measuring and drawing reflex angles in degrees with a protractor,1,n
+112,Estimating the size of an angle,1,n
+113,Reading and using timetables and distance charts,1,y
+114,Interpreting and presenting data in simple graphs,6,n
+115,Order of operations (no powers and roots),2,y
+116,Comparing and ordering fractions with different denominators.,2,y
+117,Adding and subtracting fractions with any denominator,3,y
+118,Adding and subtracting mixed numbers with different denominators,1,y
+119,Multiplying fractions and mixed numbers by an integer,4,y
+120,Multiplying proper fractions with no simplifying,5,y
+121,Dividing fractions by integers,3,y
+122,Multiplying a decimal (up to 2dp) by an integer,5,y
+123,Multiplying decimal numbers,5,y
+124,Dividing a decimal (up to 2dp) by an integer,5,y
+125,Dividing by decimal numbers,5,y
+126,"Worded problems with all four arithmetic operations and decimals, excluding money",,n
+127,Calculating with money in decimal notation (GBP/EUR/USD),1,y
+128,Multiplicative scaling with integer scale factors and ratio notation,1,y
+129,Similar shapes with integer scale factors,3,y
+130,"Calculating a simple percentage of an amount, using chunking",3,y
+131,Pie charts with simple fractions and percentages,4,y
+132,Mean as an average,3,y
+133,Function machines,2,y
+134,Algebraic thinking,1,y
+135,Introduction to sequences,3,y
+136,"Basic substitution with positive integers (limited to addition, subtraction, division and multiplication)",3,y
+137,Drawing 2D shapes to scale given dimensions and angles,3,n
+138,Area of a rectangle by using the formula,3,y
+139,Area of a parallelogram,3,y
+140,Area of a triangle,4,y
+141,Basic terms in relation to circles,1,y
+142,Properties of prisms and cylinders,4,y
+143,Nets of 3D shapes,1,y
+144,Volume of rectilinear prisms using unit length blocks,1,n
+145,Volume of a cube or cuboid,2,y
+146,Platonic solids,2,y
+147,Vertically opposite angles,1,y
+148,Properties of triangle lengths,1,y
+149,Sum of angles in a triangle,3,y
+150,Base angles of an isosceles triangle,3,y
+151,Sum of angles in a quadrilateral,4,y
+152,Coordinates in all four quadrants,1,y
+153,Reflecting a shape on axes using a given mirror line,3,y
+154,Translating a shape on axes using directional language,1,y
+155,Adding or subtracting a mixture of positive and negative numbers,2,n
+156,Multiplying or dividing a mixture of positive and negative numbers,2,y
+157,Roots and further powers,4,y
+158,Numerical index laws (basic),6,y
+159,Reciprocals,1,y
+160,Using a scientific calculator,1,y
+161,Prime factorisation of a number,2,y
+162,Lowest Common Multiple or Highest Common Factor by prime factorisation,2,y
+163,Divisibility laws from 3 to 11 and dealing with larger divisors,1,y
+164,"Properties of a number based on its prime factorisation (e.g. identify factors, if it is square, trailing zeroes)",1,y
+165,Further multiplying proper fractions (including simplification),3,y
+166,Dividing proper and improper fractions,3,y
+167,Multiplying fractions involving a mixed number,4,y
+168,Dividing fractions involving a mixed number,4,y
+169,Fractional increase and decrease,1,y
+170,Fractional original value problems,1,y
+171,Problem solving involving a fraction of an amount,1,y
+172,"Converting between any terminating decimal, fraction and percentage less than 100%",5,y
+173,Converting from a fraction to a recurring decimal or a percentage,1,y
+174,"Converting between terminating decimals, fractions and percentages greater than 100%",3,y
+175,"Comparing and ordering fractions, decimal and percentages",5,y
+176,Multiplicative scaling and numerical proportion relationships,12,y
+177,Exchange rates,1,y
+178,Conversion graphs,1,n
+179,Geometric notation for shapes and lines,,n
+180,Perimeter of rectilinear shapes,2,y
+181,Area of composite rectilinear shapes,3,y
+182,Area of composite shapes using rectangles and triangles,3,y
+183,Area of kites,1,y
+184,Area of trapeziums,3,y
+185,Related shape problems,1,y
+186,Estimating measures in context,1,y
+187,Rounding a number to a given number of significant figures,2,y
+188,Estimating by rounding,2,y
+189,Rounding errors (round-off errors),1,y
+190,Algebraic terminology,2,y
+191,Multiplying single algebraic terms (no index laws),1,y
+192,Dividing single algebraic terms (no index laws),1,y
+193,Collecting like terms,3,y
+194,Algebraic index laws (basic),4,y
+195,"Function machines involving decimals, negative numbers and algebraic inputs",1,y
+196,"Further substitution with positive integers (including powers, roots and brackets)",2,y
+197,"Substitution with decimals, negative integers and fractions",7,y
+198,Forming linear algebraic expressions and formulae from a given context,7,y
+199,Solving linear equations where the variable appears on one side of the equation only,7,y
+200,Solving equations involving integer powers and their roots as inverses,1,y
+201,"Changing the subject where the variable appears once only, excluding brackets",3,y
+202,Distinguishing between different types of sequences,1,y
+203,"Describing, generating and continuing sequences using term-to-term rules",2,y
+204,Generating terms of a sequence given a position-to-term rule,3,y
+205,nth term formula for arithmetic sequences (no standard formulae),3,y
+206,Determining if a term belongs in an arithmetic sequence,1,y
+207,"Mode, median, range from listed data",5,y
+208,Combining means or dealing with changes to a mean,1,y
+209,Circumference of a full circle,4,y
+210,Area of a full circle,3,y
+211,Area or perimeter of simple fractions of circles,1,y
+212,Perimeter of compound shapes that includes curved edges,1,y
+213,Area of composite shapes involving circles,2,y
+214,Determining what percentage one number is of another,1,y
+215,Percentage change,3,y
+216,Percentage error and relative error,1,y
+217,"Percentage of an amount, greater than 100%, by chunking",1,y
+218,"Percentage of an amount, by multiplying by an equivalent fraction",2,y
+219,"Percentage of an amount, using decimal multipliers",3,y
+220,"Value after a simple percentage change, using non-calculator methods",2,y
+221,"Value after a general percentage change, using decimal multipliers",3,y
+222,Reverse percentage problems using chunking,1,y
+223,Reverse percentage problems using decimal multipliers,1,y
+224,Simplifying ratios and forming ratios from a given context,6,y
+225,"Finding a quantity within a ratio where either the total amount, a particular amount or a difference in an amount is given",8,y
+226,"Relationship between fractions, percentages and ratio",3,y
+227,Combining ratios and proportions into a single ratio,1,y
+228,"Front elevation, side elevation and plan of a 3D shape",2,y
+229,Draw 3D shapes on isometric paper,1,n
+230,Problem solving involving volume of a cuboid,1,y
+231,Volume of a prism,4,y
+232,Surface area of a cuboid and prisms,5,y
+233,Volume of a cylinder,4,y
+234,Surface area of a cylinder,4,y
+235,Reading and interpreting ungrouped frequency tables,2,y
+236,Mean from ungrouped frequency tables,2,y
+237,"Median, mode and range from ungrouped frequency tables",4,y
+238,Two-way tables,2,y
+239,Dual and stacked bar charts,2,n
+240,Stem-and-leaf diagrams,4,y
+241,Frequency trees,1,y
+242,Construct Venn diagrams,3,y
+243,"Union, intersection and complements of sets, including the universal and empty sets",1,y
+244,Scatter graphs/scatterplots and correlation,3,y
+245,Line of best fit,3,y
+246,Pie charts with any proportion,3,y
+247,Probabilities using worded terms or placed on a number line between 0 and 1,1,y
+248,Theoretical probabilities using counts,3,y
+249,Sample space diagrams,3,y
+250,Probabilities of mutually exclusive events,4,y
+251,"Experimental probabilities, expectation and bias",5,y
+252,Expanding a single bracket,4,y
+253,Factorising out a single term,4,y
+254,"Solving linear equations where the variable appears on one side of the equation only, including brackets",1,y
+255,Custom operators,,n
+256,Finding integer solutions to linear equations (linear Diophantine equations),,n
+257,Solving linear equations where the variable appears on both sides of the equation,4,y
+258,Solving equations involving integer powers or roots,2,y
+259,Forming and solving linear equations from a given context (excluding angles),1,y
+260,"Changing the subject of a formula where the subject appears once only, including brackets, powers and roots",1,y
+261,Interior and exterior angles of regular and irregular polygons,7,y
+262,"Alternate, corresponding and co-interior angles",9,y
+263,Algebraic expressions and equations using angle facts,4,y
+264,Bearings (excluding trigonometry),1,y
+265,Midpoint of two points,2,y
+266,Splitting a line segment in a ratio,1,y
+267,Plotting a straight line from a table of values,6,y
+268,Relationship between a line and its equation,2,y
+269,x and y intercepts of a line,3,y
+270,Gradient of a line,4,y
+271,Understanding the equation of a straight line in slope-intercept form (y=mx+c) or standard form (ax + by = c),5,y
+272,Determining the equation of a straight line in slope-intercept or standard form,3,y
+273,Drawing a line from its equation,3,n
+274,Equations of parallel lines,1,y
+275,Solving linear simultaneous equations/systems of equations using graphical methods,6,n
+276,Solving linear simultaneous equations/systems of equations using elimination or substitution,5,y
+277,Converting from a recurring decimal to a fraction,1,y
+278,Reflecting a shape in a line with given equation,1,y
+279,Describing a reflection,3,y
+280,Rotational symmetry,1,y
+281,Rotating a shape by a given angle around a given point,3,y
+282,Describing a rotation,3,y
+283,Scale drawings including map scales,4,y
+284,Constructions with lines and angles,3,y
+285,Loci,2,y
+286,Drawing and constructing triangles,2,y
+287,Fractals,,n
+288,Pythagoras' theorem in 2D (excluding surds),4,y
+289,Distance between two points given their coordinates,4,y
+290,Properties of congruent shapes,4,y
+291,Properties of similar shapes,4,y
+292,Determine unknown lengths in similar shapes,5,y
+293,Midpoint theorem and intercept theorem,,n
+294,Describing an enlargement/dilation for a positive integer scale factor,6,y
+295,Enlarging/dilating a shape by a given positive integer scale factor,4,y
+296,Describing an enlargement/dilation for a positive fractional scale factor,5,y
+297,Enlarging/dilating a shape by a positive fractional scale factor,4,y
+298,Negative indices,2,y
+299,Expanding double brackets,4,y
+300,Expanding three (or more) brackets,2,y
+301,Conversion of large numbers to and from standard form/scientific notation,4,y
+302,Conversion of small numbers to and from standard form/scientific notation,4,y
+303,Adding or subtracting numbers in standard form/scientific notation,3,y
+304,Multiplying and dividing numbers in standard form/scientific notation,3,y
+305,Bases of number systems and counting in different bases,,n
+306,Converting numbers to decimal from another base,,n
+307,Converting a number from decimal to another base.,,n
+308,Converting to and from other ancient number systems,,n
+309,Understanding algebraic statements of inequality,2,y
+310,Upper and lower bound of rounded values or identifying an error interval,2,y
+311,Forming a grouped frequency table (using inequality notation),1,y
+312,Estimating the mean from grouped frequency tables,3,y
+313,Modal and median class interval and estimate of the range from a grouped frequency table,1,y
+314,Histograms of equal class width,2,y
+315,Frequency polygons,2,y
+316,Analysing graphical representations,2,y
+317,"Further terms in relation to circles, including chord and segment",2,y
+318,Arc length of more general sectors,2,y
+319,Area of more general sectors,2,y
+320,Further constructions involving relationships of triangles and circles,1,y
+321,Trigonometry to determine side lengths in a right-angled triangle,9,y
+322,Trigonometry to determine angles in a right-angled triangle,3,y
+323,Converting between units of area and volume,3,y
+324,"Relationship between scale factors of length, area and volume",2,y
+325,Speed calculations for a single journey,2,y
+326,Speed calculations for multiple journeys or a journey in stages,2,y
+327,Constructing and reading distance-time graphs,4,y
+328,Density,1,y
+329,Pressure,2,y
+330,"Other compound measures (excluding speed, pressure and density)",3,y
+331,Convert between units for compound measures,3,y
+332,Real-life linear graphs,11,y
+333,Infinite number sets,,n
+334,Simplifying surds,2,y
+335,Multiplying and dividing surds,2,y
+336,Adding and subtracting surds,2,y
+337,Expanding brackets with surds,2,y
+338,Pythagoras' Theorem with surds,1,y
+339,Solving linear inequalities in one variable,3,y
+340,Solving linear inequalities with one variable on both sides,1,y
+341,Solving two-ended linear inequalities and combining inequalities,2,y
+342,Forming and solving linear inequalities from a given context,2,y
+343,Inequalities for expressions given a restricted domain on the variables,,n
+344,Types of data,1,y
+345,Populations and censuses versus sampling,2,y
+346,Data collection methods (excluding experiments),1,y
+347,Statistical experiments,,n
+348,Simple random sampling,2,y
+349,Non-random sampling,2,y
+350,Stratified sampling,2,y
+351,Capture-Recapture,,n
+352,Planning a statistical enquiry,1,y
+353,Probability of independent and successive independent events (including tree diagrams),3,n
+354,"Successive dependent events, i.e. sampling without replacement (including tree diagrams)",1,n
+355,Probabilities from Venn diagrams of frequencies (no set notation),3,n
+356,Probabilities from Venn diagrams of frequencies (using set notation),3,n
+357,Conditional probability (no set notation),4,n
+358,Expressing a power using a different base,1,n
+359,Calculating values after compound percentage changes,3,n
+360,Financial maths (excluding compound interest),,n
+361,Compound percentage problems with unknown period or step percentage change,1,n
+362,Factorising quadratic expressions given in the form x^2 + bx + c,3,n
+363,Factorising the difference of two squares,1,n
+364,Factorising a quadratic where the coefficient of the x^2 term is not 1,1,n
+365,Factorising more difficult expressions by combining factorisation techniques or substitution of a variable,1,n
+366,Plotting quadratic graphs from a table of values,5,n
+367,Solving quadratic equations by factorisation,3,n
+368,Quadratic graphs and their features,4,n
+369,nth term formula for a quadratic sequence,2,n
+370,nth term formula for a geometric sequence (no standard formulae),2,n
+371,nth term formula more complicated sequences,2,n
+372,Column vector notation,2,n
+373,"Adding, subtracting and scaling column vectors",3,n
+374,Translations of shapes by a vector,2,n
+375,Describing translations using vector notation,3,n
+376,Enlargement/dilation of shapes by a negative scale factor,2,n
+377,Describing enlargements/dilations for a negative scale factor,2,n
+378,Combining transformations,3,n
+379,Invariant points,,n
+380,Listing all combinations,1,n
+381,Product rule for counting (Fundamental Counting Principle),1,n
+382,"Non-multiplicative approaches to counting, including case analysis",,n
+383,Truncating a number to a given number of decimal places,,n
+384,Using lower and upper bounds within calculations to calculate a further lower/upper bound,1,n
+385,Tolerance,1,n
+386,Algebraic direct and inverse proportion,5,n
+387,Simplifying single algebraic fractions by cancelling common factors,3,n
+388,Multiplying and dividing algebraic fractions,3,n
+389,Adding and subtracting algebraic fractions (no factorisation of denominators required),3,n
+390,"Adding and subtracting algebraic fractions, requiring prior factorisation of the denominators",3,n
+391,Changing the subject of a formula where the subject appears multiple times,1,n
+392,Rationalising the denominator where the denominator consists of a single surd term,1,n
+393,Rationalising the denominator where the denominator consists of a surd and a second term,1,n
+394,Fractional indices,2,n
+395,Solving equations involving negative and fractional indices and surds,1,n
+396,Quartiles from discrete data,1,n
+397,Deciles and percentiles from discrete data,,n
+398,Cumulative frequency graphs,1,n
+399,Box plots / box and whisker diagrams (excluding outliers),1,n
+400,Time series and moving averages,2,n
+401,Histograms and frequency density (unequal class widths),2,n
+402,"Understanding the shape of data, including skewness",1,n
+403,Comparing data sets using different representations,4,n
+404,Cavalieri's principle,,n
+405,"Volume of a pyramid, cone or sphere",4,n
+406,Surface area of a cone or sphere/hemisphere,6,n
+407,Volume of more complex compound 3D shapes,1,n
+408,Surface area of more complex compound 3D shapes,2,n
+409,3D coordinates,,n
+410,Pythagoras' theorem in 3D shapes,1,n
+411,Trigonometry in 3D shapes (right-angled only),1,n
+412,Exact trigonometric values,1,n
+413,Completing the square to put an expression in the form (x+a)^2 + b,1,n
+414,Completing the square to put an expression in the form a(x+b)^2 + c,1,n
+415,Solving quadratic equations by using the quadratic formula,1,n
+416,Minimum or maximum point of a quadratic graph by completing the square,1,n
+417,Quadratic formula to solve quadratic equations,1,n
+418,Forming quadratic or non-linear expressions or equations from a given context (excluding probability problems),1,n
+419,Solving non-linear simultaneous equations/systems of equations by substitution,2,n
+420,Plotting simple cubic graphs,3,n
+421,Using graphs to count solutions and find approximate solutions to equations,4,n
+422,Plotting reciprocal graphs,5,n
+423,Plotting exponential graphs,3,n
+424,Properties of exponential graphs,1,n
+425,Determining the values of k and a in the exponential function y = ka^x,1,n
+426,"Recognising the shape of basic forms of cubic, reciprocal and exponential graphs based on their equations",5,n
+427,"Recognising the shape of more complex forms of quadratic, cubic, reciprocal and exponential graphs based on their equations",4,n
+428,Choosing a model given the shape of data,,n
+429,Coterminal and reference angles,,n
+430,Using the unit circle to find trigonometric values above 90°,,n
+431,Plotting and recognising graphs of trigonometric functions,4,n
+432,Function notation and calculating outputs or inputs or a function,1,n
+433,Graph representation of functions,1,n
+434,"Solving simple trigonometric equations, e.g. sin(x) = k, using a graph",1,n
+435,Composite functions (excluding exponentials and modulus),1,n
+436,Inverse functions (excluding exponentials and modulus),1,n
+437,Domain and range of simple functions,1,n
+438,Properties of functions,1,n
+439,Trial and improvement to approximate a solution to an equation,1,n
+440,General iterative processes,1,n
+441,Fixed point iteration to approximate a solution to an equation,,n
+442,Circle theorems,5,n
+443,Intersecting chord and intersecting secant theorems,1,n
+444,Proofs of circle theorems,1,n
+445,Equations of perpendicular lines,1,n
+446,Graphs of circles centred at the origin,1,n
+447,Equation of a tangent to a circle centred at the origin,1,n
+448,Graph transformations of y = f(x+a) and y = f(x) + a,2,n
+449,Graph transformations of y = f(-x) and y = -f(x),1,n
+450,Graph transformations of y = f(ax) and y = af(x) (dilations),2,n
+451,Combinations of graph transformations,1,n
+452,Graphs of root functions,1,n
+453,Testing conjectures and identifying counterexamples,2,n
+454,Algebraic proofs involving integers,1,n
+455,Equating coefficients in an identity f(x) ≡ g(x),,n
+456,"Inequalities in two variables, including their representation on a plane.",2,n
+457,Set builder notation,1,n
+458,Solving quadratic inequalities,1,n
+459,Understanding and drawing speed-time (or positive velocity-time) graphs,1,n
+460,Estimating area under a curved graph,1,n
+461,Estimating the gradient of a curve,1,n
+462,Solving equations involving fractions that lead to a quadratic equation,3,n
+463,Algebraic probability problems involving independent/dependent events,1,n
+464,Algebraic techniques for ratio problems,1,n
+465,Sine rule (Law of Sines),2,n
+466,Cosine rule (Law of Cosines),1,n
+467,Area of a triangle using two lengths and the angle between them,1,n
+468,Advanced formulae for area involving side lengths only,,n
+469,Bearings problems involving non-right-angled trigonometry,1,n
+470,3D shape problems involving non-right-angled trigonometry,1,n
+471,"Proving triangle congruence using SSS, SAS, ASA and RHS",5,n
+472,Converting a vector between component form and magnitude and direction form,1,n
+473,Vectors using variables,2,n
+474,Parallel vectors and straight line proofs using vectors,1,n
+475,Solving vector problems by introduction of a scalar,1,n
+476,Statistical fallacies,,n
+477,Risk,,n
+478,Cost-benefit and risk analysis,,n
+479,Comparative pie charts,,n
+480,Population pyramids,,n
+481,Choropleth maps,,n
+482,Heat maps,,n
+483,Bubble charts,,n
+484,Birth and death rates,,n
+485,Solving hidden quadratic equations (no logs or trigonometric functions),,n
+486,Simultaneous equations/systems of equations involving 3 variables,,n
+487,Piecewise functions,,n
+488,Stepwise functions,,n
+489,Dimensional analysis,,n
+490,Dealing with logical true-false statements (Boolean algebra),,n
+491,Syllogisms and tautologies,,n
+492,Discriminant of a quadratic function,,n
+493,Graphs of more general reciprocal functions,,n
+494,"Graphs of polynomials of order 3 or more, particularly cubic and quartic functions",,n
+495,Determine the equation of a straight line in point-slope form y-y_1 = m(x-x_1),,n
+496,Coordinate geometry on circles and the equation of a circle with any centre,,n
+497,Algebraic division,,n
+498,The factor theorem,,n
+499,The remainder theorem,,n
+500,Solving cubic equations,,n
+501,Binomial expansion of (a + bx)^n where n is a positive integer,,n
+502,"Constructing proofs involving sin, cos and tan (excluding double angle formulae), and simplifying expressions",,n
+503,"Solving trigonometric equations, involving \sin, \cos and \tan, in an interval in degrees",,n
+504,Writing vectors in terms of unit vectors,,n
+505,Position vectors and the distance between two points from their position vectors,,n
+506,Trigonometry involving vectors,,n
+507,Limit notation and limiting values from graphs or tables,,n
+508,Combining limits using graphs,,n
+509,Determining limits for a finite value using algebraic manipulation,,n
+510,Unbounded limits and determining limits to infinity (including limiting values of sequences),,n
+511,Differentiating from first principles for small positive powers of x,,n
+512,Differentiating ||x^n|| for rational values of ||n||,,n
+513,Mean value theorem and Rolle's theorem,,n
+514,Differentiability of functions,,n
+515,Second derivative of a polynomial function (involving powers of x only),,n
+516,Increasing and decreasing polynomial functions (involving powers of x only),,n
+517,Maxima and minima and stationary points for powers of x,,n
+518,Optimisation problems involving powers of x,,n
+519,"Sketching the gradient function for a given curve, e.g. in relation to speed and acceleration",,n
+520,Equations of tangents and normals (powers of x only),,n
+521,Integrating x^n (excluding n=-1) for rational n,,n
+522,"Determining a function given its derivative and a point, for polynomials",,n
+523,Riemann sums,,n
+524,The fundamental theorem of calculus and accumulation functions,,n
+525,"Evaluating definite integrals for powers of x, e.g. to find an area under a curve or area between curves",,n
+526,Graphs of exponential functions y = e^{ax+b} + c and exponential growth and decay,,n
+527,Laws of logs (excluding ln(x)),,n
+528,Solving equations and manipulate expressions involving e^x and ln(x),,n
+529,Graphs of y = log_a(x) and y = ln(x),,n
+530,Using log graphs to estimate parameters in y = ax^b and y = ab^x for given data in x and y,,n
+531,"Further sampling techniques, including systematic, quota and opportunity sampling",,n
+532,Sigma notation and mean in a statistical context,,n
+533,Mean absolute deviation,,n
+534,Variance and standard deviation of grouped or ungrouped data,,n
+535,Standardised scores,,n
+536,Outliers,,n
+537,Quality assurance,,n
+538,Weighted mean,,n
+539,Geometric mean,,n
+540,Average of rates and sum of rates,,n
+541,Logarithmic scales and modelling,,n
+542,Simple index numbers,,n
+543,Chain base index numbers,,n
+544,"Interpolation to determine median, quartiles and percentiles",,n
+545,Coding data,,n
+546,Using and interpreting the equation of a regression line,,n
+547,"Discrete random variables, including functional notation for probability distributions",,n
+548,Binomial distribution,,n
+549,Hypothesis tests on a proportion p in a binomial model,,n
+550,Displacement-time graphs and velocity-time graphs,,n
+551,suvat' equations (excluding forces),,n
+552,Projectile motion in 1D,,n
+553,"Forces on a single particle in equilibrium, not on an inclined plane, no F = μR",,n
+554,Forces as vectors,,n
+555,"Forces on an accelerating single particle, not on an inclined plane, no F = μR",,n
+556,"Forces on accelerating connected particles, not on an inclined plane, no F = μR",,n
+557,Considering forces on accelerating particles (no inclines nor F = μR) to make calculations about subsequent motion,,n
+558,"Calculus in kinematics for motion in a straight line, e.g. v = dr/dt, in 1 dimension",,n
+559,Decompose rational expressions into partial fractions,,n
+560,Proof by deduction/Direct proof,,n
+561,Proof by exhaustion,,n
+562,Proof by contradiction,,n
+563,"Advanced concepts of proof, including 'if and only if', sufficient conditions and necessary conditions",,n
+564,Domain and range of more advanced functions (e.g. exponential),,n
+565,One-to-one vs many-to-one functions,,n
+566,"Surjective, injective and bijective functions",,n
+567,"Composite functions involving e^x, ln x or algebraic fractions",,n
+568,Inverse functions with domain/range and more advanced functions,,n
+569,Graphs of inverse functions,,n
+570,Sketching graphs involving the modulus function,,n
+571,Solving equations involving the modulus equation,,n
+572,Solving inequalities involving the modulus function,,n
+573,nth term formula for arithmetic sequences (using standard formulae),,n
+574,Sum terms in an arithmetic series,,n
+575,nth term formula for a geometric sequence (using standard formulae),,n
+576,Tests for convergence of a series,,n
+577,Alternating series error bound,,n
+578,Summing terms in a geometric series (including the sum to infinity),,n
+579,Equivalent interest rates,,n
+580,"Annuities, amortisation and investments with periodic payments",,n
+581,Sigma notation for sums of series,,n
+582,Recurrence relations given in the form x_{n+1} = f(x_n),,n
+583,Binomial expansion of (a + bx)^n where n is any rational number,,n
+584,"Using radians for arc lengths and areas of sectors, and lengths, angles and areas of triangles",,n
+585,Properties of sinusoidal graphs (in radians) and sinusoidal modelling,,n
+586,"Small angle approximations for sin, cos and tan when in radians",,n
+587,"Solving trigonometric equations, involving sin, cos and tan, in an interval in radians",,n
+588,Sketching y = 1/f(x) and y = [f(x)]^2,,n
+589,"Graphs of sec, cosec and cot",,n
+590,"Angle sum and double/half angle formulae for sin, cos and tan",,n
+591,Expressing a cos(x) + b sin(x) in the form R cos(x + α) or R sin(x+α),,n
+592,"Constructing proofs involving sec, cosec and cot",,n
+593,"Solving trigonometric equations, involving sec, cosec and cot, in an interval",,n
+594,Parametric equations and conversion between Cartesian and parametric forms,,n
+595,Differentiating exponential functions and ln(x),,n
+596,Differentiating sin x and cos x,,n
+597,"Product, quotient and chain rules",,n
+598,"Differentiating tan x, reciprocal trigonometric functions, and powers of these",,n
+599,Graphs of reciprocal functions with quadratics,,n
+600,Implicit differentiation,,n
+601,Logarithmic differentiation,,n
+602,Concavity and points of inflection,,n
+603,Connected rates of change,,n
+604,Differentiating parametric equations,,n
+605,Continued fractions,,n
+606,Continued fractions,,n
+607,Differentiating expressions given in the form x = f(y) for trigonometric functions,,n
+608,Differentiating inverse trigonometric functions,,n
+609,(Fixed point) iteration on more advanced functions and use of cobweb and staircase diagrams,,n
+610,Applying relaxations to a fixed point convergence,,n
+611,Solving equations using the Newton-Raphson method (Newton's method),,n
+612,Bisection method,,n
+613,Linear interpolation method (false position method) for locating roots,,n
+614,Secant method,,n
+615,Order of convergence of numerical methods for locating roots,,n
+616,Forward difference method and central difference method for approximating derivatives,,n
+617,"Integrating exponential, trigonometric functions and 1/x",,n
+618,Integration by inspection,,n
+619,Integration by substitution,,n
+620,Integration by parts,,n
+621,Integration using partial fractions,,n
+622,Solving linearly separable first order differential equations,,n
+623,Logistic models f(x) = L / (1 + Ce^(-kx)),,n
+624,Integrating parametric equations,,n
+625,The trapezium rule (trapezoidal rule),,n
+626,Covariance,,n
+627,"Using Pearson's product moment correlation coefficient (PMCC), including the effect of coding",,n
+628,Calculating Pearson's product moment correlation coefficient (PMCC),,n
+629,Spearman's rank correlation coefficient,,n
+630,Hypothesis tests on a product moment correlation coefficient,,n
+631,Hypothesis tests on a Spearman's rank correlation coefficient,,n
+632,Venn diagrams of probabilities (using set notation),,n
+633,Probability law for independent events (multiplication rule),,n
+634,Addition rule for probability,,n
+635,Probability law for conditional events,,n
+636,Bayes' Theorem,,n
+637,Permutations and Combinations,,n
+638,Further properties of Pascal's triangle,,n
+639,Calculating the skewness of data,,n
+640,Properties of the normal distribution and finding the probability of ranges,,n
+641,Inverse normal distribution,,n
+642,Conditional probabilities involving a normal distribution,,n
+643,Standard normal distribution (including unknown mean and standard deviation),,n
+644,Normal distribution as an approximation to a binomial distribution,,n
+645,Hypothesis tests on the mean of a population by using a sample,,n
+646,"Moments with horizontal/vertical forces (e.g. rods, suspended bars)",,n
+647,"Forces on a single particle in equilibrium, not on an inclined plane, using F = μR",,n
+648,Determining components of angled forces and manipulating the resultant force vector,,n
+649,"Forces on a single particle in equilibrium, on an inclined plane/inclined forces, no F = μR",,n
+650,"Forces on a single particle in equilibrium, on an inclined plane/inclined forces, using F = μR",,n
+651,"Forces on an accelerating single particle, not on an inclined plane, using F = μR",,n
+652,"Forces on an accelerating single particle, on an inclined plane/inclined forces, no F = μR",,n
+653,"Forces on an accelerating single particle, on an inclined plane/inclined forces, using F = μR",,n
+654,Projectile motion in 2D,,n
+655,"Forces on accelerating connected particles, not on an inclined plane, using F = μR",,n
+656,"Forces on accelerating connected particles, on an inclined plane/inclined forces, no F = μR",,n
+657,"Forces on accelerating connected particles, on an inclined plane/inclined forces, using F = μR",,n
+658,Considering forces on accelerating particles (with an incline and possibly F = μR) to make calculations about subsequent motion,,n
+659,"Moments for static rigid bodies with angled forces (e.g. hinges, ladders)",,n
+660,Vector calculations for displacement or velocity with constant velocity,,n
+661,Vector calculations given a constant acceleration vector,,n
+662,Vector calculations for displacement or velocity with variable acceleration,,n
+663,Calculus in 1D for non-constant acceleration with more advanced functions,,n
+664,Understanding imaginary numbers,,n
+665,"Adding, subtracting and multiplying complex numbers",,n
+666,Complex conjugation,,n
+667,Division of complex numbers,,n
+668,Solving quadratic equations to find potentially complex roots,,n
+669,Solving cubic and quartic equations to find potentially complex roots,,n
+670,Argand diagrams,,n
+671,Conversion between Cartesian (rectangular) and modulus-argument (polar) form,,n
+672,Multiplying and dividing complex numbers in modulus-argument form,,n
+673,Simple loci in an Argand diagram,,n
+674,"Formulae for sums of integers, squares and cubes",,n
+675,"Relationship between roots and coefficients of polynomial equations, up to quartics",,n
+676,Polynomial equations whose roots are a linear transformation of the roots of a given polynomial equation,,n
+677,Volumes of revolution (powers of x only),,n
+678,"Volumes of revolution (for non-polynomials, excluding hyperbolics)",,n
+679,Adding and subtracting matrices and scalar multiplication,,n
+680,Multiplying matrices,,n
+681,Transpose of a matrix,,n
+682,Calculating determinants of 2×2 matrices,,n
+683,Calculating determinants of 3×3 matrices,,n
+684,Inverse of a 2×2 matrix,,n
+685,Inverse of a 3×3 matrix,,n
+686,Algebraic identities involving matrices,,n
+687,Solving simultaneous equations/systems of equations (up to 3 variables) by use of an inverse matrix,,n
+688,Gaussian elimination / row reduction and general solutions to simultaneous equations/systems of equations,,n
+689,Cramer's rule,,n
+690,Geometrically interpreting the solution and failure of the solution to three simultaneous linear equations,,n
+691,Using matrices to represent an arbitrary linear transformation,,n
+692,"Using matrices to represent reflections, enlargements/dilations and rotations by multiples of 90°",,n
+693,Using matrices to represent 2D rotations by any angle,,n
+694,Using matrices to represent a reflection in the line y = (tan θ)x or a projection onto it,,n
+695,Using the inverse of a matrix to represent undoing a transformation,,n
+696,Using matrices to represent 3D transformations,,n
+697,Matrix representations of combined transformations,,n
+698,Geometrically interpreting the determinant of a 2×2 matrix,,n
+699,Geometrically interpreting the determinant of a 3×3 matrix,,n
+700,Invariant points and lines for a linear transformation,,n
+701,Homogeneous coordinates and affine transformations,,n
+702,"Proof by induction for summations, divisibility, powers of matrices and inequalities",,n
+703,Strong induction,,n
+704,Vector form of a straight line in 2D and 3D,,n
+705,Cartesian (rectangular) form of an equation of a straight line in 2D and 3D,,n
+706,Point of intersection of two straight lines in 3D,,n
+707,Vector equations of planes in the form r = a + λb + μc,,n
+708,Dot/scalar product and angles between vectors,,n
+709,Cartesian equation of a plane and r · n = a · n form,,n
+710,Point of intersection of a line and a plane or a plane and plane,,n
+711,Angles between a combination of lines and planes,,n
+712,"Shortest distance between points or lines, and lines or planes",,n
+713,Reflection of points in planes,,n
+714,Limits involving trigonometric functions,,n
+715,Squeeze theorem,,n
+716,Discontinuity at points,,n
+717,Continuity at points and intervals,,n
+718,Euler's formula e^{iθ} = cos(θ) + i sin(θ),,n
+719,Powers of complex numbers using de Moivre's theorem,,n
+720,Proving trigonometric identities using de Moivre's theorem,,n
+721,Sums of series using de Moivre's theorem,,n
+722,"nth roots of unity and other complex numbers, and geometric problems",,n
+723,Method of differences for summation of series,,n
+724,Maclaurin series,,n
+725,Approximations for π,,n
+726,Improper integrals where one of the limits extends to infinity,,n
+727,Integrating functions given in the form 1/{a^2 - x^2} and 1/{a^2 + x^2},,n
+728,Mean value of a function,,n
+729,Conversion between polar and Cartesian coordinates,,n
+730,Sketching polar curves with r given as a function of θ,,n
+731,Determining the area enclosed by a polar curve,,n
+732,Tangents and normals to polar curves,,n
+733,Definitions and graphs of hyperbolic functions,,n
+734,Inverse hyperbolic functions and solving hyperbolic equations,,n
+735,Differentiating hyperbolic and inverse hyperbolic functions,,n
+736,Integrating hyperbolic functions,,n
+737,Integrating functions given in the form 1/√(x^2 + a^2) and 1/√(x^2 - a^2),,n
+738,Using integrating factors to solve differential equations given in the form dy/dx + P(x)y = Q(x),,n
+739,Homogeneous second order differential equations,,n
+740,Non-homogeneous second order differential equations,,n
+741,Simple Harmonic Motion (excluding springs),,n
+742,Modelling damped oscillations using second order differential equations,,n
+743,Modelling forced harmonic motion using non-homogeneous second order differential equations,,n
+744,Coupled first order linear differential equations (no use of eigenvalues),,n
+745,Partitions of a set,,n
+746,Pigeonhole principle / Dirichlet's box principle,,n
+747,Inclusion-exclusion principle,,n
+748,Derangements,,n
+749,Stirling numbers of the second kind,,n
+750,Vector product a × b of two vectors,,n
+751,Components of vectors in an arbitrary direction,,n
+752,Scalar triple product a · b × c,,n
+753,Equations of lines and planes and shortest distances using vector products,,n
+754,Geometric definitions of conic sections,,n
+755,Parabolas (with vertex at the origin) and their focus and directrix,,n
+756,Rectangular hyperbolae,,n
+757,Ellipses and hyperbolae (excluding eccentricity),,n
+758,Eccentricity in ellipses and hyperbolae,,n
+759,"Loci problems involving parabolas, ellipses and hyperbolae",,n
+760,Translated parabolas,,n
+761,General Cartesian equations of conics and their rotation,,n
+762,Conic sections in polar form,,n
+763,Solving cubic and quartic inequalities and inequalities involving fractions,,n
+764,Taylor series,,n
+765,Lagrange error bound (Taylor remainder theorem),,n
+766,Series solution of differential equations using Taylor series,,n
+767,Leibnitz's theorem,,n
+768,L'Hopital's rule,,n
+769,Tangent half-angle substitution (t-formulae or Weierstrass substitution) for integration,,n
+770,Slope fields/tangent fields,,n
+771,Euler's method for numerical solutions to first-order differential equations,,n
+772,Midpoint method for numerical solutions to first-order differential equations,,n
+773,Runge-Kutta methods,,n
+774,Euler's method for numerical solutions to second order differential equations,,n
+775,Mid-ordinate rule/midpoint rule,,n
+776,Simpson's rule,,n
+777,Lagrange's interpolating polynomial,,n
+778,Newton's forward difference interpolation method,,n
+779,Angle bisector theorem,,n
+780,Apollonius' circle theorem,,n
+781,Menelaus' theorem,,n
+782,Ceva's theorem,,n
+783,Ptolemy's theorem for cyclic quadrilaterals,,n
+784,Substitutions to reduce a differential equation,,n
+785,Division theorem and Euclidean algorithm,,n
+786,Bezout's Identity,,n
+787,Modular arithmetic,,n
+788,Equivalence relations and equivalence classes,,n
+789,Partial orders,,n
+790,Wilson's theorem,,n
+791,Solving congruence equations,,n
+792,The Chinese remainder theorem,,n
+793,Fermat's little theorem,,n
+794,Euler's totient function and Euler's theorem,,n
+795,Methods in cryptography,,n
+796,Non-linear Diophantine equations,,n
+797,Pell's equation,,n
+798,Pythagorean triples,,n
+799,Axioms of a group,,n
+800,Cayley tables and cyclic groups,,n
+801,Other symmetries and frieze patterns,,n
+802,"Orders of groups, orders of elements and subgroups",,n
+803,Isomorphism,,n
+804,More complex loci in an Argand diagram,,n
+805,Elementary transformations from one complex plane to another,,n
+806,"Fibonacci-like sequences, steady-states and ratio between terms",,n
+807,Solutions of recurrence relations,,n
+808,Solutions of second-order recurrence relations,,n
+809,Proof by induction with recurrence relations,,n
+810,"Eigenvalues, eigenvectors and diagonal form",,n
+811,Homogeneous coupled first-order linear differential equations (using eigenvalues),,n
+812,Sketching phase portraits,,n
+813,The Cayley-Hamilton theorem,,n
+814,Set difference and symmetric difference,,n
+815,Cross products of sets,,n
+816,Power sets,,n
+817,De Morgan's law,,n
+818,"Vector spaces, spans of vectors, subspaces and the basis of a vector space",,n
+819,Null spaces (kernels),,n
+820,Column spaces (images),,n
+821,Dimensions of spaces,,n
+822,Reduction formulae,,n
+823,"Arc length for Cartesian, parametric or polar equations",,n
+824,Area of surface of revolution,,n
+825,Equations of curved surfaces,,n
+826,Partial derivatives,,n
+827,Gradient vector ▽f,,n
+828,Stationary points and tangent planes on 3D surfaces,,n
+829,Envelopes,,n
+830,Non-Euclidean geometry,,n
+831,AM-GM inequality,,n
+832,Cauchy-Schwarz inequality,,n
+833,Generalised triangle inequality,,n
+834,Expected value E(X) and variance Var(X) of a discrete random variable,,n
+835,Expected value and variance of a binomial distribution,,n
+836,Expected value and variance of a discrete uniform distribution,,n
+837,Bernoulli distribution,,n
+838,Linear combinations of random variables,,n
+839,Coding with discrete random variables,,n
+840,Poisson distribution,,n
+841,Sum of Poisson distributed random variables,,n
+842,Approximations involving the Poisson distribution,,n
+843,Geometric distributions,,n
+844,Hypergeometric distributions,,n
+845,Negative binomial distributions,,n
+846,Exponential distributions,,n
+847,Chebyshev's inequality,,n
+848,Hypothesis tests for the Poisson distribution,,n
+849,Hypothesis tests for the geometric distribution,,n
+850,Central Limit Theorem for sample mean,,n
+851,Goodness of fit tests,,n
+852,Normal probability plots and Kolmogorov-Smirnov tests,,n
+853,Hypothesis tests with contingency tables (two-way tables),,n
+854,Reliability and validity tests,,n
+855,Probability generating functions,,n
+856,Moment generating functions,,n
+857,"Type I and II errors, Power and Size of tests",,n
+858,Equations of least squares regression line for linear data,,n
+859,Residual sum of squares (RSS or SS_res),,n
+860,Regression with non-linear functions,,n
+861,Coefficient of determination (R^2),,n
+862,Probability density functions and areas under their graphs,,n
+863,Cumulative distribution functions for continuous random variables,,n
+864,Mean and variance of continuous random variables,,n
+865,"Mode, median and percentiles of continuous random variables",,n
+866,Continuous uniform (rectangular) distribution,,n
+867,Expected value and variance of linear combinations of random variables,,n
+868,Central Limit Theorem for sums of identically distributed variables,,n
+869,General sampling distributions,,n
+870,Standard error,,n
+871,Estimators and bias,,n
+872,z-tests for the population mean,,n
+873,Confidence intervals for a population mean,,n
+874,z-tests for a difference of means,,n
+875,z-tests for a population proportion,,n
+876,z-tests for a difference of two proportions,,n
+877,F-distributions and hypothesis tests on the variance of a normal distribution,,n
+878,t-distribution,,n
+879,Analysis of variance,,n
+880,Effect size,,n
+881,Non-parametric tests,,n
+882,Hypothesis tests on the slope of a regression model,,n
+883,Momentum and impulse (no coefficient of restitution),,n
+884,Work and energy,,n
+885,Power,,n
+886,Hooke's Law,,n
+887,Energy in elastic springs and strings,,n
+888,Elastic collisions in 1D,,n
+889,Elastic collisions in 2D (oblique collisions),,n
+890,Horizontal circular motion,,n
+891,Motion of a pendulum,,n
+892,Vertical circular motion,,n
+893,Centre of mass of particles on a line or plane,,n
+894,Centre of mass of a lamina,,n
+895,Centre of mass of a framework,,n
+896,Lamina and frameworks in equilibrium,,n
+897,Using calculus to find the centre of mass,,n
+898,Centre of mass of 3D solids or shells,,n
+899,Toppling and sliding,,n
+900,Acceleration varying with displacement and velocity,,n
+901,Forces as functions of time and displacement,,n
+902,Simple Harmonic Motion involving springs and elastic strings,,n
+903,Understanding and using algorithms,,n
+904,Sorting algorithms,,n
+905,Binary search,,n
+906,Bin-packing algorithms,,n
+907,Packing problems in 2D or 3D,,n
+908,Knapsack problems,,n
+909,Order of algorithms,,n
+910,"Graphs, connected graphs and the degree of vertices",,n
+911,Complete and bipartite graphs,,n
+912,Chromatic number of a graph,,n
+913,Directed graphs (digraphs),,n
+914,Adjacency matrices,,n
+915,Walks using adjacency matrices,,n
+916,Weighted adjacency tables,,n
+917,Planar graphs and testing for planarity,,n
+918,Minimum spanning trees,,n
+919,Dijkstra's algorithm,,n
+920,Floyd's algorithm.,,n
+921,Eulerian and semi-Eulerian graphs,,n
+922,Hamiltonian cycles,,n
+923,The travelling salesman problem,,n
+924,Linear programming,,n
+925,The simplex algorithm,,n
+926,The Big M method,,n
+927,Modelling a project as a graph,,n
+928,"Early and late event times, critical activities, and floats",,n
+929,Gantt charts (cascade chart),,n
+930,Resource histograms and scheduling diagrams,,n
+931,Voronoi diagrams,,n
+932,Transportation problems,,n
+933,Allocation problems,,n
+934,Flows and cuts in networks,,n
+935,Maximising flows in networks,,n
+936,Flows in networks with lower capacity,,n
+937,Supersources and supersinks,,n
+938,Restricted capacity nodes,,n
+939,Dynamic programming,,n
+940,Game theory,,n
+941,Formulating games as LP problems,,n
+942,Decision trees,,n
+943,Utility,,n
+944,Transition matrices for probabilities and regular Markov chains,,n
+945,Bijections for infinite sets,,n
