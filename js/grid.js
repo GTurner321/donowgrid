@@ -110,14 +110,16 @@ const Grid = (() => {
   }
 
   /**
-   * Returns { bank, order } describing the current 9-box layout, ready
-   * to hand to SaveQuiz.save(). order[i] is the question's orderAdded
-   * value, or null for a blank box.
+   * Returns { descriptor, order } describing the current 9-box layout,
+   * ready to hand to SaveQuiz.save(). descriptor records how the pool
+   * was chosen (Pearson book + chapters, or Dr Frost skill numbers) so
+   * it can be rebuilt on load. order[i] is the question's Q#
+   * (orderAdded), or null for a blank box.
    */
   function getSaveData() {
     if (!config) return null;
     return {
-      bank: config.bank,
+      descriptor: config.source,
       order: squares.map(s => s ? s.question.orderAdded : null)
     };
   }

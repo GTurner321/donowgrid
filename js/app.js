@@ -96,7 +96,7 @@ const App = (() => {
   function onSaveClick() {
     const data = Grid.getSaveData();
     if (!data) return;
-    const slotName = SaveQuiz.save(data.bank, data.order);
+    const slotName = SaveQuiz.save(data.descriptor, data.order);
     el.saveConfirm.textContent = `Saved as ${slotName} — expires in 2 days, only visible in this browser.`;
     el.saveConfirm.hidden = false;
     setTimeout(() => { el.saveConfirm.hidden = true; }, 5000);

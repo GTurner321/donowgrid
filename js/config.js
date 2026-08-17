@@ -1,17 +1,19 @@
 // Question Grid — central configuration
-// Update APPS_SCRIPT_URL if the Apps Script deployment is ever recreated
-// (a "New version" deploy keeps the same URL and needs no change here).
+// CSV files live in /csv alongside /css and /js at the repo root.
+// Paste your shared Dr Frost reference Google Sheet link into
+// DF_REFS_SHEET_URL below - the "look up skill numbers" link on the
+// setup page stays hidden until this is filled in.
 
 const CONFIG = {
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyDn-6v0PmCbp421QJidFpQhKbh5qPCpg8LhJM2uki7TWcTqzBy0WzjVY2CmWsrFGV6/exec',
+  PRACTICE_SET_CSV: 'csv/practice_set.csv',
+  PEARSON_BOOKS_CSV: 'csv/pearson_books.csv',
 
-  // Minimum number of eligible questions a topic needs to appear in the
-  // "By topic" dropdown at all.
-  MIN_QUESTIONS_PER_TOPIC: 1,
+  DF_REFS_SHEET_URL: '', // e.g. 'https://docs.google.com/spreadsheets/d/.../edit'
 
-  // Minimum number of level-tagged questions (level 1-4) a bank needs
-  // before level-specific selection options are offered. Below this,
-  // the level dropdown falls back to "Full random mix" only.
+  // Minimum number of level-tagged questions (level 1-3) a pool needs
+  // before level-specific selection is meaningful. Currently unused by
+  // setup.js (level select is always fully enabled), but still read by
+  // SelectionEngine.bankHasUsableLevels if you wire that back in.
   MIN_LEVEL_TAGGED_QUESTIONS: 4,
 
   // "Most recent" draws from the newest slice of the eligible pool;

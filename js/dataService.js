@@ -1,32 +1,107 @@
 // Question Grid — data layer
-// Thin wrapper around the Apps Script Web App. Every function here does
-// exactly one network call; the rest of the app never talks to the
-// network directly, which is what makes the "fetch once at Generate,
-// then survive a connection loss" design possible.
+// Loads and normalises the two CSV files the app needs at runtime:
+// the practice set (the question bank) and the Pearson books curriculum
+// map (book -> chapter -> hidden DF ref numbers). Each is fetched and
+// parsed once, then cached in memory for the rest of the session -
+// nothing here talks to a network again after the first successful load.
+//
+// Requires PapaParse (loaded via CDN in index.html) for CSV parsing,
+// since question/answer text can contain commas and needs proper
+// quote-aware parsing rather than a naive split.
 
 const DataService = (() => {
 
-  async function listBanks() {
-    const url = `${CONFIG.APPS_SCRIPT_URL}?action=listBanks`;
-    const res = await fetch(url);
-    if (!res.ok) {
-      throw new Error('Could not reach the question bank service (network error).');
-    }
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-    return data.banks;
+  let practiceSetPromise = null;
+  let pearsonBooksPromise = null;
+
+  function parseCsv(url) {
+    return new Promise((resolve, reject) => {
+      Papa.parse(url, {
+        download: true,
+        header: true,
+        skipEmptyLines: true,
+        complete: results => resolve(results.data),
+        error: err => reject(new Error(`Could not load ${url}: ${err.message || err}`))
+      });
+    });
   }
 
-  async function getBank(name) {
-    const url = `${CONFIG.APPS_SCRIPT_URL}?action=getBank&name=${encodeURIComponent(name)}`;
-    const res = await fetch(url);
-    if (!res.ok) {
-      throw new Error('Could not reach the question bank service (network error).');
-    }
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-    return data.questions;
+  // Prefers the "(notated)" column when it has content, falling back
+  // to "(raw)" - the notated columns are mostly still empty, so most
+  // questions run on raw for now.
+  function pickNotatedOrRaw(row, notatedKey, rawKey) {
+    const notated = (row[notatedKey] || '').toString().trim();
+    return notated ? notated : row[rawKey];
   }
 
-  return { listBanks, getBank };
+  function normalisePracticeRow(row) {
+    const levelRaw = row['Level'];
+    const level = (levelRaw !== undefined && String(levelRaw).trim() !== '')
+      ? Number(levelRaw)
+      : null;
+    const qNum = Number(row['Q#']);
+
+    return {
+      orderAdded: qNum, // global, sequential - doubles as the "recent" ranking key
+      q: qNum,
+      dfRef: row['DF ref'],
+      dfRefNum: Number(row['DF ref #']),
+      level: (level !== null && !isNaN(level)) ? level : null,
+      calculator: row['Calculator'],
+      question: pickNotatedOrRaw(row, 'Question (notated)', 'Question (raw)'),
+      answer: pickNotatedOrRaw(row, 'Answer (notated)', 'Answer (raw)'),
+      wrong1: pickNotatedOrRaw(row, 'Wrong1 (notated)', 'Wrong1 (raw)'),
+      wrong2: pickNotatedOrRaw(row, 'Wrong 2 (notated)', 'Wrong 2 (raw)'),
+      workedAnswer: pickNotatedOrRaw(row, 'Worked Answer (notated)', 'Worked Answer (raw)'),
+      hint: row['Hint']
+    };
+  }
+
+  function normalisePearsonRow(row) {
+    const refs = String(row['DF Topic Refs'] || '')
+      .split(';')
+      .map(s => s.trim())
+      .filter(Boolean)
+      .map(Number)
+      .filter(n => !isNaN(n));
+
+    return {
+      book: row['Book'],
+      chapter: row['Chapter'],
+      subTopic: row['Sub-Topic'],
+      refs
+    };
+  }
+
+  /**
+   * Returns every practice-set question that has a DF ref number and
+   * question text - i.e. skips any placeholder/not-yet-written rows.
+   */
+  async function loadPracticeSet() {
+    if (!practiceSetPromise) {
+      practiceSetPromise = parseCsv(CONFIG.PRACTICE_SET_CSV).then(rows =>
+        rows
+          .filter(r => r['DF ref #'] && String(r['DF ref #']).trim() !== '')
+          .map(normalisePracticeRow)
+          .filter(q => !isNaN(q.dfRefNum) && !isNaN(q.orderAdded) && q.question)
+      );
+    }
+    return practiceSetPromise;
+  }
+
+  /**
+   * Returns every Pearson-books row (one per book/chapter/sub-topic)
+   * with its DF ref numbers already parsed out of the hidden
+   * semicolon-joined column.
+   */
+  async function loadPearsonBooks() {
+    if (!pearsonBooksPromise) {
+      pearsonBooksPromise = parseCsv(CONFIG.PEARSON_BOOKS_CSV).then(rows =>
+        rows.filter(r => r['Book']).map(normalisePearsonRow)
+      );
+    }
+    return pearsonBooksPromise;
+  }
+
+  return { loadPracticeSet, loadPearsonBooks };
 })();

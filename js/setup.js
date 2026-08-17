@@ -1,15 +1,21 @@
 // Question Grid — setup view controller
-// Owns everything on the landing page: loading banks, reacting to
-// dropdown changes, the student paste-in box, the saved-quiz picker,
-// the saved-class-list picker, and building the config object that
-// Generate hands off to the grid.
+// Owns everything on the landing page: loading the two CSVs, the
+// three-way selection method (Pearson book / Dr Frost skill numbers /
+// saved starter), the student paste-in box, and building the config
+// object that Generate hands off to the grid.
 
 const Setup = (() => {
 
-  let currentBank = null;       // name of the selected bank
-  let currentQuestions = [];    // full question array for that bank
+  let currentMethod = 'pearsonBook'; // 'pearsonBook' | 'dfRefs' | 'saved'
+
+  let practiceSet = [];         // full practice set, loaded once
+  let pearsonBooks = [];        // full Pearson books map, loaded once
+  let books = [];                // unique book names, in sheet order
+  let currentBook = null;
+  let currentChapters = [];      // chapter names available for currentBook
+
   let students = [];            // parsed, deduped student names
-  let savedQuizzes = [];        // valid (non-expired) saved quizzes
+  let savedQuizzes = [];        // valid (non-expired) saved starters
   let savedGroups = [];         // saved class lists (group1..group10)
 
   const el = {}; // populated in init() once the DOM exists
@@ -17,29 +23,37 @@ const Setup = (() => {
   function init() {
     cacheElements();
     bindEvents();
-    loadBanks();
+    loadData();
     loadSavedQuizzes();
     loadSavedGroups();
+    setupDfRefsLink();
+    switchMethod('pearsonBook');
   }
 
   function cacheElements() {
-    el.savedQuizField = document.getElementById('savedQuizField');
+    el.methodTabs = document.getElementById('methodTabs');
+
+    el.panelPearsonBook = document.getElementById('panelPearsonBook');
+    el.panelDfRefs = document.getElementById('panelDfRefs');
+    el.panelSaved = document.getElementById('panelSaved');
+    el.commonQuizFields = document.getElementById('commonQuizFields');
+
+    el.bookSelect = document.getElementById('bookSelect');
+    el.chapterChecklist = document.getElementById('chapterChecklist');
+    el.chapterHelp = document.getElementById('chapterHelp');
+
+    el.dfRefsInput = document.getElementById('dfRefsInput');
+    el.dfRefsLookupLink = document.getElementById('dfRefsLookupLink');
+
     el.savedQuizSelect = document.getElementById('savedQuizSelect');
     el.savedQuizHint = document.getElementById('savedQuizHint');
-    el.quizNormalFields = document.getElementById('quizNormalFields');
 
-    el.bankSelect = document.getElementById('bankSelect');
-    el.topicToggle = document.getElementById('topicToggle');
-    el.topicHelp = document.getElementById('topicHelp');
-    el.topicChecklist = document.getElementById('topicChecklist');
     el.methodSelect = document.getElementById('methodSelect');
     el.levelSelect = document.getElementById('levelSelect');
-    el.levelHint = document.getElementById('levelHint');
 
     el.savedGroupField = document.getElementById('savedGroupField');
     el.savedGroupSelect = document.getElementById('savedGroupSelect');
     el.studentsNormalFields = document.getElementById('studentsNormalFields');
-    el.studentsPanel = document.getElementById('studentsPanel');
     el.studentsInput = document.getElementById('studentsInput');
     el.addStudentsBtn = document.getElementById('addStudentsBtn');
     el.saveClassListBtn = document.getElementById('saveClassListBtn');
@@ -50,11 +64,13 @@ const Setup = (() => {
   }
 
   function bindEvents() {
+    el.methodTabs.addEventListener('click', onMethodTabClick);
+
+    el.bookSelect.addEventListener('change', onBookChange);
+    el.chapterChecklist.addEventListener('change', updateGenerateAvailability);
+    el.dfRefsInput.addEventListener('input', updateGenerateAvailability);
     el.savedQuizSelect.addEventListener('change', onSavedQuizChange);
     el.savedGroupSelect.addEventListener('change', onSavedGroupChange);
-
-    el.bankSelect.addEventListener('change', onBankChange);
-    el.topicToggle.addEventListener('change', onTopicToggle);
 
     el.addStudentsBtn.addEventListener('click', onAddStudents);
     el.saveClassListBtn.addEventListener('click', onSaveClassList);
@@ -62,35 +78,133 @@ const Setup = (() => {
     el.generateBtn.addEventListener('click', onGenerate);
   }
 
-  // ---------------- Saved quizzes ----------------
+  function setupDfRefsLink() {
+    if (CONFIG.DF_REFS_SHEET_URL) {
+      el.dfRefsLookupLink.href = CONFIG.DF_REFS_SHEET_URL;
+      el.dfRefsLookupLink.hidden = false;
+    } else {
+      el.dfRefsLookupLink.hidden = true;
+    }
+  }
+
+  // ---------------- Method tabs ----------------
+
+  function onMethodTabClick(e) {
+    const btn = e.target.closest('.method-tab');
+    if (!btn) return;
+    switchMethod(btn.dataset.method);
+  }
+
+  function switchMethod(method) {
+    currentMethod = method;
+
+    Array.from(el.methodTabs.querySelectorAll('.method-tab')).forEach(btn => {
+      btn.classList.toggle('method-tab--active', btn.dataset.method === method);
+    });
+
+    el.panelPearsonBook.hidden = method !== 'pearsonBook';
+    el.panelDfRefs.hidden = method !== 'dfRefs';
+    el.panelSaved.hidden = method !== 'saved';
+    el.commonQuizFields.hidden = method === 'saved';
+
+    el.generateBtn.textContent = method === 'saved' ? 'Load saved starter' : 'Generate';
+    setStatus('');
+    updateGenerateAvailability();
+  }
+
+  // ---------------- Data loading ----------------
+
+  async function loadData() {
+    setStatus('Loading question data…', 'info');
+    try {
+      const [practice, pearson] = await Promise.all([
+        DataService.loadPracticeSet(),
+        DataService.loadPearsonBooks()
+      ]);
+      practiceSet = practice;
+      pearsonBooks = pearson;
+
+      books = [];
+      pearson.forEach(row => { if (!books.includes(row.book)) books.push(row.book); });
+
+      el.bookSelect.innerHTML = '<option value="" disabled selected>Choose a book…</option>';
+      books.forEach(book => {
+        const opt = document.createElement('option');
+        opt.value = book;
+        opt.textContent = book;
+        el.bookSelect.appendChild(opt);
+      });
+      el.bookSelect.disabled = false;
+
+      setStatus('');
+    } catch (err) {
+      setStatus(`Couldn't load question data: ${err.message}`, 'error');
+    }
+    updateGenerateAvailability();
+  }
+
+  // ---------------- Pearson book flow ----------------
+
+  function onBookChange() {
+    currentBook = el.bookSelect.value;
+    currentChapters = [];
+    pearsonBooks.forEach(row => {
+      if (row.book === currentBook && !currentChapters.includes(row.chapter)) {
+        currentChapters.push(row.chapter);
+      }
+    });
+
+    el.chapterChecklist.innerHTML = '';
+    if (!currentChapters.length) {
+      el.chapterChecklist.innerHTML = '<p class="hint">No chapters found for this book.</p>';
+    } else {
+      currentChapters.forEach(chapter => {
+        const id = 'chapter-' + chapter.replace(/\s+/g, '-').toLowerCase();
+        const label = document.createElement('label');
+        label.innerHTML = `
+          <input type="checkbox" id="${id}" value="${escapeHtml(chapter)}">
+          <span>${escapeHtml(chapter)}</span>
+        `;
+        el.chapterChecklist.appendChild(label);
+      });
+    }
+    el.chapterHelp.hidden = true;
+    updateGenerateAvailability();
+  }
+
+  function getSelectedChapters() {
+    return Array.from(el.chapterChecklist.querySelectorAll('input[type="checkbox"]:checked'))
+      .map(cb => cb.value);
+  }
+
+  // ---------------- Dr Frost skill numbers flow ----------------
+
+  function parseDfRefsInput() {
+    return el.dfRefsInput.value
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean)
+      .map(Number)
+      .filter(n => !isNaN(n));
+  }
+
+  // ---------------- Saved starters ----------------
 
   function loadSavedQuizzes() {
     savedQuizzes = SaveQuiz.listValid();
-    if (!savedQuizzes.length) {
-      el.savedQuizField.hidden = true;
-      return;
-    }
-
-    el.savedQuizSelect.innerHTML = '<option value="none">None (start fresh)</option>';
-    savedQuizzes.forEach(q => {
+    el.savedQuizSelect.innerHTML = '<option value="none">None saved yet</option>';
+    savedQuizzes.forEach(sq => {
       const opt = document.createElement('option');
-      opt.value = String(q.slot);
-      opt.textContent = `quiz${q.slot} — ${q.bank} (${SaveQuiz.relativeTime(q.savedAt)})`;
+      opt.value = String(sq.slot);
+      opt.textContent = `quiz${sq.slot} — ${PoolBuilder.describeDescriptor(sq.descriptor)} (${SaveQuiz.relativeTime(sq.savedAt)})`;
       el.savedQuizSelect.appendChild(opt);
     });
-    el.savedQuizField.hidden = false;
   }
 
   function onSavedQuizChange() {
     const usingSaved = el.savedQuizSelect.value !== 'none';
-    el.quizNormalFields.hidden = usingSaved;
     el.savedQuizHint.hidden = !usingSaved;
-    el.generateBtn.textContent = usingSaved ? 'Load saved quiz' : 'Generate';
-
-    // A saved quiz doesn't need a bank picked separately, but Generate
-    // is disabled by default until a bank load enables it - re-enable
-    // here since the saved quiz already has its own valid bank.
-    if (usingSaved) el.generateBtn.disabled = false;
+    updateGenerateAvailability();
   }
 
   function getSelectedSavedQuiz() {
@@ -136,100 +250,6 @@ const Setup = (() => {
     }
   }
 
-  // ---------------- Normal bank flow ----------------
-
-  async function loadBanks() {
-    setStatus('Loading question banks…', 'info');
-    try {
-      const banks = await DataService.listBanks();
-      el.bankSelect.innerHTML = '<option value="" disabled selected>Choose a question bank…</option>';
-      banks.forEach(name => {
-        const opt = document.createElement('option');
-        opt.value = name;
-        opt.textContent = name;
-        el.bankSelect.appendChild(opt);
-      });
-      el.bankSelect.disabled = false;
-      setStatus(banks.length ? '' : 'No question banks found — check the spreadsheet has at least one tab with the correct headers.', banks.length ? '' : 'warn');
-    } catch (err) {
-      setStatus(`Couldn't load question banks: ${err.message}`, 'error');
-    }
-  }
-
-  async function onBankChange() {
-    currentBank = el.bankSelect.value;
-    el.generateBtn.disabled = true;
-    setStatus('Loading questions…', 'info');
-
-    try {
-      currentQuestions = await DataService.getBank(currentBank);
-
-      if (!currentQuestions.length) {
-        setStatus(`"${currentBank}" has no eligible questions (check the select-column gating).`, 'warn');
-      } else {
-        setStatus(`${currentQuestions.length} eligible question${currentQuestions.length === 1 ? '' : 's'} loaded from "${currentBank}".`, 'success');
-      }
-
-      populateTopics();
-      populateLevelAvailability();
-      el.generateBtn.disabled = currentQuestions.length === 0;
-    } catch (err) {
-      setStatus(`Couldn't load "${currentBank}": ${err.message}`, 'error');
-      currentQuestions = [];
-    }
-  }
-
-  function populateTopics() {
-    const topics = SelectionEngine.getEligibleTopics(currentQuestions);
-    el.topicChecklist.innerHTML = '';
-
-    if (!topics.length) {
-      el.topicChecklist.innerHTML = '<p class="hint">No topics available for this bank.</p>';
-    } else {
-      topics.forEach(({ topic, count }) => {
-        const id = 'topic-' + topic.replace(/\s+/g, '-').toLowerCase();
-        const label = document.createElement('label');
-        label.innerHTML = `
-          <input type="checkbox" id="${id}" value="${escapeHtml(topic)}">
-          <span>${escapeHtml(topic)}</span>
-          <span class="count">${count}</span>
-        `;
-        el.topicChecklist.appendChild(label);
-      });
-    }
-
-    // Keep checklist visibility consistent with the current toggle state
-    el.topicChecklist.hidden = !el.topicToggle.checked;
-  }
-
-  function onTopicToggle() {
-    const checked = el.topicToggle.checked;
-    el.topicChecklist.hidden = !checked;
-    el.topicHelp.textContent = checked
-      ? 'Tick one or more — questions will be drawn from all ticked topics combined.'
-      : 'Questions will be chosen from the entire set.';
-  }
-
-  function getSelectedTopics() {
-    return Array.from(el.topicChecklist.querySelectorAll('input[type="checkbox"]:checked'))
-      .map(cb => cb.value);
-  }
-
-  function populateLevelAvailability() {
-    const usable = SelectionEngine.bankHasUsableLevels(currentQuestions);
-    const restrictedOptions = el.levelSelect.querySelectorAll('option[data-requires-levels]');
-
-    restrictedOptions.forEach(opt => { opt.disabled = !usable; });
-
-    if (!usable) {
-      el.levelSelect.value = 'mix';
-      el.levelHint.textContent = 'This bank doesn\'t have enough level-tagged questions — level selection is unavailable.';
-      el.levelHint.hidden = false;
-    } else {
-      el.levelHint.hidden = true;
-    }
-  }
-
   // ---------------- Students ----------------
 
   function parseStudentsFromTextarea() {
@@ -239,7 +259,6 @@ const Setup = (() => {
       .map(s => s.trim())
       .filter(s => s.length > 0);
 
-    // Dedupe while preserving first-seen order
     const seen = new Set();
     return parsed.filter(name => {
       const key = name.toLowerCase();
@@ -250,8 +269,6 @@ const Setup = (() => {
   }
 
   function flashSummarySaved() {
-    // Visible confirmation that the action actually registered - the box
-    // switches from its default pale-yellow to pale-green briefly.
     el.studentsSummary.classList.add('hint-box--saved');
     setTimeout(() => el.studentsSummary.classList.remove('hint-box--saved'), 2200);
   }
@@ -278,56 +295,78 @@ const Setup = (() => {
     loadSavedGroups();
   }
 
+  // ---------------- Generate availability ----------------
+
+  function updateGenerateAvailability() {
+    if (currentMethod === 'pearsonBook') {
+      el.generateBtn.disabled = !currentBook || getSelectedChapters().length === 0;
+    } else if (currentMethod === 'dfRefs') {
+      el.generateBtn.disabled = parseDfRefsInput().length === 0;
+    } else {
+      el.generateBtn.disabled = !getSelectedSavedQuiz();
+    }
+  }
+
   // ---------------- Generate / Load ----------------
 
   function buildConfig() {
-    const method = el.methodSelect.value;
+    let pool, source;
+
+    if (currentMethod === 'pearsonBook') {
+      const chapters = getSelectedChapters();
+      pool = PoolBuilder.fromPearsonBook(practiceSet, pearsonBooks, currentBook, chapters);
+      source = { method: 'pearsonBook', book: currentBook, chapters };
+    } else {
+      const dfRefs = parseDfRefsInput();
+      pool = PoolBuilder.fromDfRefs(practiceSet, dfRefs);
+      source = { method: 'dfRefs', dfRefs };
+    }
+
     return {
-      bank: currentBank,
-      questions: currentQuestions,
-      method,
-      topics: el.topicToggle.checked ? getSelectedTopics() : [],
+      source,
+      questions: pool,
+      topics: [],
+      method: el.methodSelect.value,
       levelMode: el.levelSelect.value,
       students: students.slice()
     };
   }
 
-  async function onGenerate() {
-    const savedQuiz = getSelectedSavedQuiz();
-
-    if (savedQuiz) {
-      await loadSavedQuiz(savedQuiz);
+  function onGenerate() {
+    if (currentMethod === 'saved') {
+      const savedQuiz = getSelectedSavedQuiz();
+      if (savedQuiz) loadSavedStarter(savedQuiz);
       return;
     }
 
     const config = buildConfig();
 
-    if (el.topicToggle.checked && config.topics.length === 0) {
-      setStatus('Tick at least one topic, or turn off "Choose by topic".', 'error');
+    if (config.questions.length === 0) {
+      setStatus("No questions found for that selection — this Dr Frost skill hasn't been written into the practice set yet.", 'error');
       return;
     }
 
     App.showGrid(config);
   }
 
-  async function loadSavedQuiz(savedQuiz) {
-    setStatus(`Loading "${savedQuiz.bank}"…`, 'info');
-    el.generateBtn.disabled = true;
-    try {
-      const questions = await DataService.getBank(savedQuiz.bank);
-      const config = {
-        bank: savedQuiz.bank,
-        questions,
-        method: 'mix',
-        topics: [],
-        levelMode: 'mix',
-        students: students.slice()
-      };
-      App.showGridFromSaved(config, savedQuiz.order);
-    } catch (err) {
-      setStatus(`Couldn't load saved quiz: ${err.message}`, 'error');
-      el.generateBtn.disabled = false;
+  function loadSavedStarter(savedQuiz) {
+    const pool = PoolBuilder.fromDescriptor(practiceSet, pearsonBooks, savedQuiz.descriptor);
+
+    if (pool.length === 0) {
+      setStatus("Couldn't rebuild this saved starter — none of its questions are in the practice set anymore.", 'error');
+      return;
     }
+
+    const config = {
+      source: savedQuiz.descriptor,
+      questions: pool,
+      topics: [],
+      method: 'mix',
+      levelMode: 'mix',
+      students: students.slice()
+    };
+
+    App.showGridFromSaved(config, savedQuiz.order);
   }
 
   function setStatus(message, kind) {
