@@ -893,6 +893,69 @@ sup {
   .grid { grid-template-columns: 1fr; grid-template-rows: repeat(9, minmax(110px, 1fr)); }
 }
 
+/* ---------- Quotes popup ---------- */
+
+.quotes-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 26, 48, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 100;
+}
+
+.quotes-modal {
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 40px 36px;
+  max-width: 560px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  text-align: center;
+}
+
+.quotes-modal__text {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.quotes-modal__author {
+  margin: 0;
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.quotes-modal__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.quotes-modal__refresh {
+  background: var(--board);
+  color: var(--chalk-yellow);
+  border-color: var(--board);
+  font-size: 1.1rem;
+  padding: 8px 14px;
+}
+
+.quotes-modal__refresh:hover { background: #0F1A30; }
+
+#quotesBtn {
+  margin-right: 8px;
+}
+
 /* ---------- Reduced motion ---------- */
 
 @media (prefers-reduced-motion: reduce) {
