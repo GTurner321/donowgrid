@@ -47,6 +47,11 @@
             <p class="hint" id="chapterHelp">Choose a book first…</p>
             <div class="topic-checklist" id="chapterChecklist"></div>
           </div>
+          <div class="field">
+            <span class="field__label">Sub-topics</span>
+            <p class="hint" id="subtopicHelp">Choose at least one chapter first…</p>
+            <div class="topic-checklist" id="subtopicChecklist"></div>
+          </div>
         </div>
 
         <div class="method-panel" id="panelDfRefs" hidden>
@@ -72,21 +77,23 @@
           <div class="field field--spaced">
             <label for="methodSelect">Selection method</label>
             <select id="methodSelect">
-              <option value="recent">Most recently added</option>
+              <option value="mix" selected>Full mix</option>
               <option value="weighted">Weighted towards recent</option>
-              <option value="mix">Full mix</option>
             </select>
           </div>
 
           <div class="field field--spaced">
             <label for="levelSelect">Question level</label>
             <select id="levelSelect">
+              <option value="progressive" selected>Level 1–3 progressive (top row easiest)</option>
               <option value="mix">Full random mix (ignore levels)</option>
-              <option value="progressive">Level 1–3 progressive (top row easiest)</option>
               <option value="1">Level 1 only</option>
+              <option value="levels12">Levels 1 and 2</option>
               <option value="2">Level 2 only</option>
+              <option value="levels23">Levels 2 and 3</option>
               <option value="3">Level 3 only</option>
             </select>
+            <p class="hint" id="levelCountHint" hidden></p>
           </div>
         </div>
 
