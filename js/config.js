@@ -7,6 +7,7 @@
 const CONFIG = {
   PRACTICE_SET_CSV: 'csv/practice_set.csv',
   PEARSON_BOOKS_CSV: 'csv/pearson_books.csv',
+  QUOTES_CSV: 'csv/quotes.csv',
 
   DF_REFS_SHEET_URL: '', // e.g. 'https://docs.google.com/spreadsheets/d/.../edit'
 

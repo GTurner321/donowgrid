@@ -13,6 +13,7 @@ const DataService = (() => {
 
   let practiceSetPromise = null;
   let pearsonBooksPromise = null;
+  let quotesPromise = null;
 
   function parseCsv(url) {
     return new Promise((resolve, reject) => {
@@ -103,5 +104,27 @@ const DataService = (() => {
     return pearsonBooksPromise;
   }
 
-  return { loadPracticeSet, loadPearsonBooks };
+  function normaliseQuoteRow(row) {
+    return {
+      number: row['number'],
+      quote: row['quote'],
+      author: (row['author'] || '').trim()
+    };
+  }
+
+  /**
+   * Returns every quote row that actually has quote text.
+   */
+  async function loadQuotes() {
+    if (!quotesPromise) {
+      quotesPromise = parseCsv(CONFIG.QUOTES_CSV).then(rows =>
+        rows
+          .filter(r => r['quote'] && String(r['quote']).trim() !== '')
+          .map(normaliseQuoteRow)
+      );
+    }
+    return quotesPromise;
+  }
+
+  return { loadPracticeSet, loadPearsonBooks, loadQuotes };
 })();

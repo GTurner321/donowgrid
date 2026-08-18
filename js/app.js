@@ -16,6 +16,7 @@ const App = (() => {
     el.gridView = document.getElementById('gridView');
 
     el.backBtn = document.getElementById('backBtn');
+    el.quotesBtn = document.getElementById('quotesBtn');
     el.hideAllBtn = document.getElementById('hideAllBtn');
     el.globalStudentBtn = document.getElementById('globalStudentBtn');
     el.saveBtn = document.getElementById('saveBtn');
@@ -24,6 +25,7 @@ const App = (() => {
     el.returnQuizBtn = document.getElementById('returnQuizBtn');
 
     el.backBtn.addEventListener('click', backToSetup);
+    el.quotesBtn.addEventListener('click', () => QuotesModal.open());
     el.hideAllBtn.addEventListener('click', onHideRevealClick);
     el.globalStudentBtn.addEventListener('click', () => Grid.toggleGlobalStudents());
     el.saveBtn.addEventListener('click', onSaveClick);
@@ -39,6 +41,7 @@ const App = (() => {
     Setup.init();
     Grid.init();
     Timer.init();
+    QuotesModal.init();
   }
 
   function resetShutterToggle() {
