@@ -132,6 +132,7 @@
   <header class="board board--grid">
     <div class="board--grid__row">
       <button type="button" class="icon-btn icon-btn--symbol" id="backBtn" title="Back to setup">←</button>
+      <button type="button" class="icon-btn icon-btn--symbol" id="quotesBtn" title="Show a quote">...</button>
       <h1 class="board__title board__title--small">
         <span class="board__title-fade">Do Now 9</span>
         <span class="board__title-main">Do Now 9</span>
@@ -162,9 +163,21 @@
   <div class="grid" id="gridContainer"></div>
 </div>
 
+<div class="quotes-overlay" id="quotesOverlay" hidden>
+  <div class="quotes-modal">
+    <p class="quotes-modal__text" id="quotesText"></p>
+    <p class="quotes-modal__author" id="quotesAuthor"></p>
+    <div class="quotes-modal__actions">
+      <button type="button" class="icon-btn icon-btn--symbol quotes-modal__refresh" id="quotesRefreshBtn" title="Another quote">↻</button>
+      <button type="button" class="btn btn--secondary" id="quotesCloseBtn">Close</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="js/config.js"></script>
 <script src="js/dataService.js"></script>
+<script src="js/quotesModal.js"></script>
 <script src="js/poolBuilder.js"></script>
 <script src="js/selectionEngine.js"></script>
 <script src="js/studentPicker.js"></script>
