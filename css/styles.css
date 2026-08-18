@@ -398,6 +398,13 @@ button:focus-visible {
   margin-left: auto;
 }
 
+.checklist-select-all {
+  font-weight: 600 !important;
+  padding-bottom: 6px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--line);
+}
+
 /* ---------- Checkbox rows ---------- */
 
 .checkbox {
