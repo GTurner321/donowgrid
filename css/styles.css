@@ -80,24 +80,36 @@ body {
   display: flex;
   justify-content: center;
   align-items: baseline;
-  gap: 2.2rem;
-  flex-wrap: nowrap;
+  gap: 1.4rem;
+  overflow: hidden;
+}
+
+.board__title-text {
+  color: var(--chalk-yellow);
+  flex-shrink: 0;
   white-space: nowrap;
 }
 
-.board__title-main {
-  color: var(--chalk-yellow);
-  flex-shrink: 0;
-}
-
-.board__title-fade {
-  color: var(--chalk-yellow-faded);
-  flex-shrink: 0;
-}
-
-.board__title-fade2 {
+.board__title-squares {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  letter-spacing: 0.35em;
   color: var(--chalk-yellow-faded2);
-  flex-shrink: 0;
+  font-size: 0.85em;
+}
+
+.board__title-squares--left {
+  -webkit-mask-image: linear-gradient(to right, transparent, black 90%);
+  mask-image: linear-gradient(to right, transparent, black 90%);
+  text-align: right;
+}
+
+.board__title-squares--right {
+  -webkit-mask-image: linear-gradient(to left, transparent, black 90%);
+  mask-image: linear-gradient(to left, transparent, black 90%);
+  text-align: left;
 }
 
 /* ---------- Layout ---------- */
@@ -594,6 +606,11 @@ button:focus-visible {
   overflow: hidden;
 }
 
+.grid--four {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+
 /* ---------- Square ---------- */
 
 .square {
@@ -887,6 +904,31 @@ sup {
   );
   cursor: pointer;
   z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 10px;
+}
+
+.square__shutter-text {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.3rem;
+  line-height: 1.2;
+  color: #C7C7BE;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.55), -1px -1px 1px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.02em;
+}
+
+.square__shutter-text sup {
+  font-size: 0.65em;
+}
+
+.square__shutter-text--title {
+  text-transform: uppercase;
+  font-size: 1.05rem;
+  letter-spacing: 0.1em;
 }
 
 /* ---------- Responsive ---------- */
@@ -898,6 +940,7 @@ sup {
 
 @media (max-width: 700px) {
   .grid { grid-template-columns: 1fr; grid-template-rows: repeat(9, minmax(110px, 1fr)); }
+  .grid--four { grid-template-rows: repeat(4, minmax(110px, 1fr)); }
 }
 
 /* ---------- Quotes popup ---------- */
