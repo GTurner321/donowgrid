@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Do Now 9 — Lesson Setup</title>
+<title>9 Square — Lesson Setup</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
@@ -14,11 +14,9 @@
 <div id="setupView">
 <header class="board">
   <h1 class="board__title">
-    <span class="board__title-fade2">Do Now 9</span>
-    <span class="board__title-fade">Do Now 9</span>
-    <span class="board__title-main">Do Now 9</span>
-    <span class="board__title-fade">Do Now 9</span>
-    <span class="board__title-fade2">Do Now 9</span>
+    <span class="board__title-squares board__title-squares--left" aria-hidden="true">☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐</span>
+    <span class="board__title-text">9 SQUARE</span>
+    <span class="board__title-squares board__title-squares--right" aria-hidden="true">☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐</span>
   </h1>
 </header>
 
@@ -74,14 +72,6 @@
         </div>
 
         <div id="commonQuizFields">
-          <div class="field field--spaced">
-            <label for="methodSelect">Selection method</label>
-            <select id="methodSelect">
-              <option value="mix" selected>Full mix</option>
-              <option value="weighted">Weighted towards recent</option>
-            </select>
-          </div>
-
           <div class="field field--spaced">
             <label for="levelSelect">Question level</label>
             <select id="levelSelect">
@@ -139,23 +129,23 @@
   <header class="board board--grid">
     <div class="board--grid__row">
       <button type="button" class="icon-btn icon-btn--symbol" id="backBtn" title="Back to setup">←</button>
-      <button type="button" class="icon-btn icon-btn--symbol" id="quotesBtn" title="Show a quote">...</button>
+      <button type="button" class="icon-btn icon-btn--symbol" id="quotesBtn" title="Show a quote">&#8220;&#8221;</button>
       <h1 class="board__title board__title--small">
-        <span class="board__title-fade">Do Now 9</span>
-        <span class="board__title-main">Do Now 9</span>
-        <span class="board__title-fade">Do Now 9</span>
+        <span class="board__title-squares board__title-squares--left" aria-hidden="true">☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐</span>
+        <span class="board__title-text">9 SQUARE</span>
+        <span class="board__title-squares board__title-squares--right" aria-hidden="true">☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐</span>
       </h1>
       <div class="timer-inline">
         <span class="timer-inline__display" id="timerDisplay">00:00</span>
         <button type="button" class="icon-btn" id="timerAddMinute" title="Add 1 minute">+1</button>
         <button type="button" class="icon-btn" id="timerSubMinute" title="Subtract 1 minute">−1</button>
-        <button type="button" class="icon-btn" id="timerStart" title="Start">▶</button>
-        <button type="button" class="icon-btn" id="timerPause" title="Pause">⏸</button>
+        <button type="button" class="icon-btn" id="timerToggle" title="Start">▶</button>
       </div>
       <div class="grid-header-actions">
         <button type="button" class="icon-btn" id="hideAllBtn" title="Reveal all questions">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
+        <button type="button" class="icon-btn icon-btn--symbol" id="gridSizeBtn" title="Switch to 4 squares">9-4</button>
         <button type="button" class="icon-btn" id="globalStudentBtn" title="Show/hide all students">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </button>

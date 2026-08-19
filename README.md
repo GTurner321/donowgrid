@@ -46,7 +46,9 @@ Grid view:
 - Answer choices: click one, correct highlights green, both wrong ones show red with a strike-through, with a short correct/incorrect tone
 - ↻ refresh picks a different question for that square only, never duplicating what's showing elsewhere
 - Student banner (only shown if a class list was pasted): first reveal uses a fair round-robin so everyone's used once before anyone repeats; the icon becomes a refresh after reveal for a genuinely random re-pick (never clashing with names currently shown elsewhere)
-- Header: back to setup, reveal-all (shutters), global student show/hide-all, save, fullscreen; a stopwatch (00:00, +1/-1 min, start/pause) sits inline in the header row
+- Header: back to setup, quote popup, reveal-all (shutters), 9↔4 square toggle, global student show/hide-all, save, fullscreen; a stopwatch (00:00, +1/-1 min, single play/pause toggle) sits inline in the header row
+- Covered squares show an embossed sum-to-9 expression (random per square); the centre square always shows the "9 SQUARE" title instead - purely cosmetic, the real question underneath is unaffected
+- The 9↔4 toggle hides 5 squares (keeping the 4 corners) without discarding them - switching back restores the hidden 5 exactly as they were. While in 4-square mode, the refresh (↻) button draws from those 5 hidden questions first, in reading order, before falling back to a normal random pick
 - Question text auto-shrinks to fit its square, and re-checks on entering/exiting fullscreen
 - Save: stores just the bank name + each box's question (by "order added") to this browser's localStorage, expiring after 2 days; the setup page shows a "Use saved quiz" picker when any exist, which collapses everything down to just the student list
 
