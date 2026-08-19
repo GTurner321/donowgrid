@@ -53,7 +53,6 @@ const Setup = (() => {
     el.savedQuizSelect = document.getElementById('savedQuizSelect');
     el.savedQuizHint = document.getElementById('savedQuizHint');
 
-    el.methodSelect = document.getElementById('methodSelect');
     el.levelSelect = document.getElementById('levelSelect');
     el.levelCountHint = document.getElementById('levelCountHint');
 
@@ -475,7 +474,7 @@ const Setup = (() => {
       source,
       questions,
       topics: [],
-      method: el.methodSelect.value,
+      method: 'mix', // selection-method dropdown removed - full mix is the only mode
       levelMode,
       students: students.slice()
     };

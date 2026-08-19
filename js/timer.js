@@ -1,9 +1,12 @@
 // Question Grid — timer
 // A countdown built into the grid header. Starts at 00:00; use +1/-1
-// to set a target duration before pressing start, which then counts
-// down to zero. At zero, an alarm sounds and the pause button becomes
+// to set a target duration before pressing play, which then counts
+// down to zero. At zero, an alarm sounds and the toggle button becomes
 // a stop button (to silence it early) - it also auto-stops after 10
 // seconds regardless.
+//
+// Play/pause share a single button: it shows ▶ when idle or paused,
+// ⏸ while running, and ■ while the alarm is sounding.
 
 const Timer = (() => {
   let el = {};
@@ -15,13 +18,11 @@ const Timer = (() => {
 
   function init() {
     el.display = document.getElementById('timerDisplay');
-    el.startBtn = document.getElementById('timerStart');
-    el.pauseBtn = document.getElementById('timerPause');
+    el.toggleBtn = document.getElementById('timerToggle');
     el.addMinuteBtn = document.getElementById('timerAddMinute');
     el.subMinuteBtn = document.getElementById('timerSubMinute');
 
-    el.startBtn.addEventListener('click', start);
-    el.pauseBtn.addEventListener('click', onPauseOrStopClick);
+    el.toggleBtn.addEventListener('click', onToggleClick);
     el.addMinuteBtn.addEventListener('click', () => adjust(60));
     el.subMinuteBtn.addEventListener('click', () => adjust(-60));
 
@@ -33,6 +34,20 @@ const Timer = (() => {
     stopAlarm();
     remainingSeconds = 0;
     updateDisplay();
+    updateToggleButton();
+  }
+
+  function onToggleClick() {
+    if (alarmActive) {
+      stopAlarm();
+      return;
+    }
+    if (intervalId) {
+      pause();
+    } else {
+      start();
+    }
+    updateToggleButton();
   }
 
   function start() {
@@ -56,24 +71,16 @@ const Timer = (() => {
     }
   }
 
-  function onPauseOrStopClick() {
-    if (alarmActive) {
-      stopAlarm();
-    } else {
-      pause();
-    }
-  }
-
   function adjust(deltaSeconds) {
     if (alarmActive) stopAlarm();
     remainingSeconds = Math.max(0, remainingSeconds + deltaSeconds);
     updateDisplay();
+    updateToggleButton();
   }
 
   function triggerAlarm() {
     alarmActive = true;
-    el.pauseBtn.textContent = '■';
-    el.pauseBtn.title = 'Stop sound';
+    updateToggleButton();
     Sound.playTimerEnd();
     alarmIntervalId = setInterval(() => Sound.playTimerEnd(), 1200);
     alarmTimeoutId = setTimeout(stopAlarm, 10000);
@@ -83,8 +90,20 @@ const Timer = (() => {
     if (alarmIntervalId) { clearInterval(alarmIntervalId); alarmIntervalId = null; }
     if (alarmTimeoutId) { clearTimeout(alarmTimeoutId); alarmTimeoutId = null; }
     alarmActive = false;
-    el.pauseBtn.textContent = '⏸';
-    el.pauseBtn.title = 'Pause';
+    updateToggleButton();
+  }
+
+  function updateToggleButton() {
+    if (alarmActive) {
+      el.toggleBtn.textContent = '■';
+      el.toggleBtn.title = 'Stop sound';
+    } else if (intervalId) {
+      el.toggleBtn.textContent = '⏸';
+      el.toggleBtn.title = 'Pause';
+    } else {
+      el.toggleBtn.textContent = '▶';
+      el.toggleBtn.title = 'Start';
+    }
   }
 
   function updateDisplay() {

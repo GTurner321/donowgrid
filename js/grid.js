@@ -15,6 +15,50 @@ const Grid = (() => {
   let globalRevealed = false;
   let cachedBasePool = null;
 
+  let gridMode = '9';        // '9' | '4'
+  const CENTER_INDEX = 4;
+  const CORNER_INDICES = [0, 2, 6, 8];
+  const HIDDEN_INDICES = [1, 3, 4, 5, 7]; // reading order - the 5 squares dropped in 4-mode
+  let refreshQueue = [];     // indices from HIDDEN_INDICES, consumed by refresh while in 4-mode
+
+  // Sum-to-9 expressions shown (embossed) on the shutter face of every
+  // covered square except the centre one, which always shows the title
+  // instead. Purely decorative - has no bearing on the real question
+  // underneath, which is revealed as normal once the shutter is clicked.
+  const SHUTTER_SUMS_9 = [
+    '81<sup>1/2</sup>',
+    '3²',
+    '1² + 2² + 2²',
+    '9 × 10⁰',
+    '9 ÷ 1',
+    '∛729',
+    '9¹',
+    '27<sup>2/3</sup>',
+    '1.5 × 6',
+    '3³ ÷ 3',
+    '0.9 × 10',
+    '3 + 3 + 3',
+    '√100 − 1',
+    '3! + 3'
+  ];
+
+  // Used for the 4 corner squares once in 4-square mode - there's no
+  // centre square in a 2x2 layout, so no title exception here.
+  const SHUTTER_SUMS_4 = [
+    '4¹',
+    '2²',
+    '√16',
+    '16<sup>1/2</sup>',
+    '∛64',
+    '64<sup>2/3</sup>',
+    '4 × 10⁰',
+    '4 ÷ 1',
+    '0.4 × 10',
+    '2 + 2',
+    '2 × 2',
+    '1 + 1 + 1 + 1'
+  ];
+
   // Pastel palette: background + a darker shade of the same hue for
   // text, so each square reads clearly without needing a separate
   // contrast check per colour.
@@ -137,20 +181,73 @@ const Grid = (() => {
         studentName: hasStudents ? StudentPicker.next(studentQueue) : null,
         studentRevealed: false,
         shuttered: true,
-        color: PALETTE[Math.floor(Math.random() * PALETTE.length)]
+        color: PALETTE[Math.floor(Math.random() * PALETTE.length)],
+        shutterKind: null,
+        shutterHtml: null
       };
     });
 
+    assignShutterContent([0, 1, 2, 3, 4, 5, 6, 7, 8], SHUTTER_SUMS_9, true);
+
+    gridMode = '9';
+    refreshQueue = [];
     globalRevealed = false;
     render();
   }
 
+  /**
+   * Assigns shutter cover artwork to the given square indices, drawn
+   * (shuffled, no repeats) from sumsList. When allowTitle is true, the
+   * centre square gets the "9 SQUARE" title instead of a sum - only
+   * meaningful for the full 9-square layout, since 4-square mode has
+   * no centre square among its indices anyway.
+   */
+  function assignShutterContent(indices, sumsList, allowTitle) {
+    const shuffled = shuffle(sumsList);
+    let cursor = 0;
+    indices.forEach(i => {
+      const state = squareStates[i];
+      if (!state) return;
+      if (allowTitle && i === CENTER_INDEX) {
+        state.shutterKind = 'title';
+        state.shutterHtml = null;
+      } else {
+        state.shutterKind = 'sum';
+        state.shutterHtml = shuffled[cursor++ % shuffled.length];
+      }
+    });
+  }
+
+  function visibleIndices() {
+    return gridMode === '4' ? CORNER_INDICES : [0, 1, 2, 3, 4, 5, 6, 7, 8];
+  }
+
   function render() {
     el.container.innerHTML = '';
-    squares.forEach((square, i) => {
-      el.container.appendChild(renderSquare(square, squareStates[i], i));
+    el.container.classList.toggle('grid--four', gridMode === '4');
+    visibleIndices().forEach(i => {
+      el.container.appendChild(renderSquare(squares[i], squareStates[i], i));
     });
     requestAnimationFrame(autosizeAll);
+  }
+
+  /**
+   * Switches between the 9-square and 4-square (corners only) layouts.
+   * Squares outside the 4-square view aren't destroyed, just not
+   * rendered - so switching back to 9 always restores them exactly as
+   * they were, with whatever the visible corners did in the meantime
+   * left untouched. Returns the new mode.
+   */
+  function toggleGridMode() {
+    gridMode = gridMode === '9' ? '4' : '9';
+    if (gridMode === '4') {
+      refreshQueue = HIDDEN_INDICES.slice();
+      assignShutterContent(CORNER_INDICES, SHUTTER_SUMS_4, false);
+    } else {
+      assignShutterContent(CORNER_INDICES, SHUTTER_SUMS_9, false);
+    }
+    render();
+    return gridMode;
   }
 
   // ---------------- Rendering ----------------
@@ -190,7 +287,7 @@ const Grid = (() => {
         </div>
         ${hasStudents ? renderStudentChip(state) : ''}
       </div>
-      ${state.shuttered ? '<div class="square__shutter" data-shutter="true"></div>' : ''}
+      ${state.shuttered ? `<div class="square__shutter" data-shutter="true"><span class="square__shutter-text${state.shutterKind === 'title' ? ' square__shutter-text--title' : ''}">${state.shutterKind === 'title' ? '9 SQUARE' : state.shutterHtml}</span></div>` : ''}
     `;
 
     return wrap;
@@ -389,6 +486,19 @@ const Grid = (() => {
   }
 
   function handleRefreshQuestion(index) {
+    if (gridMode === '4') {
+      while (refreshQueue.length > 0) {
+        const sourceIndex = refreshQueue.shift();
+        const sourceSquare = squares[sourceIndex];
+        if (sourceSquare) {
+          applyReplacement(index, sourceSquare.question, sourceSquare.levelTarget);
+          return;
+        }
+      }
+      // Queue exhausted (or the hidden squares it pointed to were
+      // already blank) - fall through to the normal random refresh.
+    }
+
     const currentlyDisplayed = new Set(
       squares
         .filter((s, i) => s && i !== index)
@@ -407,7 +517,11 @@ const Grid = (() => {
       return;
     }
 
-    squares[index] = { question: replacement, levelTarget };
+    applyReplacement(index, replacement, levelTarget);
+  }
+
+  function applyReplacement(index, question, levelTarget) {
+    squares[index] = { question, levelTarget };
     squareStates[index] = {
       activePanel: null,
       choiceOrder: null,
@@ -415,7 +529,9 @@ const Grid = (() => {
       studentName: squareStates[index].studentName,
       studentRevealed: squareStates[index].studentRevealed,
       shuttered: false, // a square already interacted with (refreshed) stays unshuttered
-      color: squareStates[index].color
+      color: squareStates[index].color,
+      shutterKind: squareStates[index].shutterKind,
+      shutterHtml: squareStates[index].shutterHtml
     };
     rerenderSquare(index);
   }
@@ -503,6 +619,9 @@ const Grid = (() => {
     const answerBox = squareEl.querySelector('.answer-box');
     if (answerBox) autosizeElement(answerBox, 1.15, 0.65);
 
+    const shutterText = squareEl.querySelector('.square__shutter-text');
+    if (shutterText) autosizeElement(shutterText, 1.4, 0.8);
+
     squareEl.querySelectorAll('.choice-btn__label').forEach(label => {
       autosizeElement(label, 0.95, 0.6);
     });
@@ -541,5 +660,5 @@ const Grid = (() => {
     return d.innerHTML;
   }
 
-  return { init, generate, generateFromSaved, getSaveData, toggleGlobalStudents, hideAllShutters, revealAllShutters, autosizeAll };
+  return { init, generate, generateFromSaved, getSaveData, toggleGlobalStudents, hideAllShutters, revealAllShutters, autosizeAll, toggleGridMode };
 })();

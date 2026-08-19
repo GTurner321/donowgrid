@@ -9,7 +9,7 @@ const CONFIG = {
   PEARSON_BOOKS_CSV: 'csv/pearson_books.csv',
   QUOTES_CSV: 'csv/quotes.csv',
 
-  DF_REFS_SHEET_URL: '', // e.g. 'https://docs.google.com/spreadsheets/d/.../edit'
+  DF_REFS_SHEET_URL: 'https://docs.google.com/spreadsheets/d/11OmFm5H_AHGHPGFbjY3X6-VAVuiJWHZUR_W-bwZhhYk/edit?usp=sharing',
 
   // Minimum number of level-tagged questions (level 1-3) a pool needs
   // before level-specific selection is meaningful. Currently unused by

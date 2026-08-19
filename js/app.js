@@ -18,6 +18,7 @@ const App = (() => {
     el.backBtn = document.getElementById('backBtn');
     el.quotesBtn = document.getElementById('quotesBtn');
     el.hideAllBtn = document.getElementById('hideAllBtn');
+    el.gridSizeBtn = document.getElementById('gridSizeBtn');
     el.globalStudentBtn = document.getElementById('globalStudentBtn');
     el.saveBtn = document.getElementById('saveBtn');
     el.fullscreenBtn = document.getElementById('fullscreenBtn');
@@ -27,6 +28,7 @@ const App = (() => {
     el.backBtn.addEventListener('click', backToSetup);
     el.quotesBtn.addEventListener('click', () => QuotesModal.open());
     el.hideAllBtn.addEventListener('click', onHideRevealClick);
+    el.gridSizeBtn.addEventListener('click', onGridSizeClick);
     el.globalStudentBtn.addEventListener('click', () => Grid.toggleGlobalStudents());
     el.saveBtn.addEventListener('click', onSaveClick);
     el.fullscreenBtn.addEventListener('click', toggleFullscreen);
@@ -50,6 +52,18 @@ const App = (() => {
     el.hideAllBtn.title = 'Reveal all questions';
   }
 
+  function resetGridSizeToggle() {
+    el.gridSizeBtn.textContent = '9-4';
+    el.gridSizeBtn.title = 'Switch to 4 squares';
+  }
+
+  function onGridSizeClick() {
+    const mode = Grid.toggleGridMode();
+    el.gridSizeBtn.textContent = mode === '4' ? '4-9' : '9-4';
+    el.gridSizeBtn.title = mode === '4' ? 'Switch back to 9 squares' : 'Switch to 4 squares';
+    requestAnimationFrame(() => Grid.autosizeAll());
+  }
+
   function onHideRevealClick() {
     if (shutterToggleState === 'hide') {
       Grid.hideAllShutters();
@@ -70,6 +84,7 @@ const App = (() => {
     Grid.generate(config);
     Timer.reset();
     resetShutterToggle();
+    resetGridSizeToggle();
   }
 
   function showGridFromSaved(config, orderList) {
@@ -78,6 +93,7 @@ const App = (() => {
     Grid.generateFromSaved(config, orderList);
     Timer.reset();
     resetShutterToggle();
+    resetGridSizeToggle();
   }
 
   function backToSetup() {
