@@ -88,14 +88,20 @@ const PoolBuilder = (() => {
   }
 
   function describeDescriptor(descriptor) {
+    if (!descriptor || !descriptor.method) return 'Unknown selection';
     if (descriptor.method === 'pearsonBook') {
-      return descriptor.books.join(', ');
+      // Older saved starters (pre multi-book) used a singular `book`
+      // field instead of `books` - fall back gracefully rather than
+      // throwing, since a stale localStorage entry shouldn't be able
+      // to break the whole setup page.
+      const books = descriptor.books || (descriptor.book ? [descriptor.book] : []);
+      return books.length ? books.join(', ') : 'Pearson book selection';
     }
     if (descriptor.method === 'dfRefs') {
-      return `DF refs ${descriptor.dfRefs.join(', ')}`;
+      return `DF refs ${(descriptor.dfRefs || []).join(', ')}`;
     }
     if (descriptor.method === 'yearCourse') {
-      return `Year/course: ${descriptor.tag}`;
+      return `Year/course: ${descriptor.tag || '?'}`;
     }
     return 'Unknown selection';
   }

@@ -117,7 +117,7 @@ body {
 .setup {
   flex: 1;
   width: 100%;
-  max-width: 920px;
+  max-width: 980px;
   margin: 0 auto;
   padding: 16px 20px 20px;
   display: flex;
@@ -140,7 +140,7 @@ body {
 
 .setup-columns {
   display: flex;
-  gap: 28px;
+  gap: 56px;
   align-items: flex-start;
 }
 

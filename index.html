@@ -95,14 +95,12 @@
       <div class="setup-col setup-col--students">
         <span class="field__label">Add Students</span>
 
-        <div class="field" id="savedGroupField" hidden>
-          <label for="savedGroupSelect">Use saved group</label>
-          <select id="savedGroupSelect">
-            <option value="none">None (start fresh)</option>
-          </select>
+        <div class="method-tabs" id="studentMethodTabs">
+          <button type="button" class="method-tab" data-method="fresh">Start fresh</button>
+          <button type="button" class="method-tab" data-method="saved">Saved group</button>
         </div>
 
-        <div id="studentsNormalFields">
+        <div class="method-panel" id="panelStudentsFresh">
           <p class="hint hint-box" id="studentsSummary">No students added yet — question squares will show no student banner.</p>
 
           <div class="students-panel" id="studentsPanel">
@@ -112,6 +110,15 @@
               <button type="button" class="btn btn--primary" id="addStudentsBtn" title="Add students for one-time random question assigning">Add students</button>
               <button type="button" class="btn btn--ghost" id="saveClassListBtn" title="Saves list locally for future use; max 10 groups, 11th saves back as group1">Save class list</button>
             </div>
+          </div>
+        </div>
+
+        <div class="method-panel" id="panelStudentsSaved" hidden>
+          <div class="field">
+            <label for="savedGroupSelect">Use saved group</label>
+            <select id="savedGroupSelect">
+              <option value="none">None saved yet</option>
+            </select>
           </div>
         </div>
       </div>

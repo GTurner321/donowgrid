@@ -44,10 +44,18 @@ const App = (() => {
       requestAnimationFrame(() => Grid.autosizeAll());
     });
 
-    Setup.init();
-    Grid.init();
-    Timer.init();
-    QuotesModal.init();
+    // Each module's init runs independently - a bug in one (e.g. bad
+    // data left over in localStorage) shouldn't be able to prevent the
+    // others from initializing too, which is what actually happened
+    // when a stale saved-starter entry once broke Setup.init() and, as
+    // a side effect, silently skipped Grid.init() right after it.
+    [Setup, Grid, Timer, QuotesModal].forEach(mod => {
+      try {
+        mod.init();
+      } catch (err) {
+        console.error('Module failed to initialize:', err);
+      }
+    });
   }
 
   function resetShutterToggle() {

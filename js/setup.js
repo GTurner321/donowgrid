@@ -14,6 +14,7 @@ const Setup = (() => {
   let books = [];                 // unique book names, in sheet order
   let currentChapterFlatItems = []; // {book, chapter} pairs, parallel to chapterChecklist's rendered indices
   let currentSubtopicRows = [];   // Pearson-books rows available for the selected chapters (single-book mode only)
+  let currentSubtopicFlatItems = []; // rows parallel to subtopicChecklist's rendered (grouped-by-chapter) indices
 
   let students = [];             // parsed, deduped student names
   let savedQuizzes = [];         // valid (non-expired) saved starters
@@ -32,6 +33,7 @@ const Setup = (() => {
     loadSavedGroups();
     setupDfRefsLink();
     switchMethod('pearsonBook');
+    switchStudentMethod('fresh');
   }
 
   function cacheElements() {
@@ -59,9 +61,10 @@ const Setup = (() => {
     el.levelSelect = document.getElementById('levelSelect');
     el.levelCountHint = document.getElementById('levelCountHint');
 
-    el.savedGroupField = document.getElementById('savedGroupField');
+    el.studentMethodTabs = document.getElementById('studentMethodTabs');
+    el.panelStudentsFresh = document.getElementById('panelStudentsFresh');
+    el.panelStudentsSaved = document.getElementById('panelStudentsSaved');
     el.savedGroupSelect = document.getElementById('savedGroupSelect');
-    el.studentsNormalFields = document.getElementById('studentsNormalFields');
     el.studentsInput = document.getElementById('studentsInput');
     el.addStudentsBtn = document.getElementById('addStudentsBtn');
     el.saveClassListBtn = document.getElementById('saveClassListBtn');
@@ -73,6 +76,7 @@ const Setup = (() => {
 
   function bindEvents() {
     el.methodTabs.addEventListener('click', onMethodTabClick);
+    el.studentMethodTabs.addEventListener('click', onStudentMethodTabClick);
 
     el.bookChecklist.addEventListener('change', onBookChecklistChange);
     el.chapterChecklist.addEventListener('change', onChapterChecklistChange);
@@ -120,6 +124,37 @@ const Setup = (() => {
     el.generateBtn.textContent = method === 'saved' ? 'Load saved starter' : 'Generate';
     setStatus('');
     onSelectionChanged();
+  }
+
+  // ---------------- Student method tabs ----------------
+
+  let currentStudentMethod = 'fresh'; // 'fresh' | 'saved'
+
+  function onStudentMethodTabClick(e) {
+    const btn = e.target.closest('.method-tab');
+    if (!btn) return;
+    switchStudentMethod(btn.dataset.method);
+  }
+
+  function switchStudentMethod(method) {
+    currentStudentMethod = method;
+
+    Array.from(el.studentMethodTabs.querySelectorAll('.method-tab')).forEach(btn => {
+      btn.classList.toggle('method-tab--active', btn.dataset.method === method);
+    });
+
+    el.panelStudentsFresh.hidden = method !== 'fresh';
+    el.panelStudentsSaved.hidden = method !== 'saved';
+
+    // Require an explicit action in whichever tab is now active (Add
+    // students, or picking a saved group) rather than silently reusing
+    // whatever the other tab had set - avoids students staying loaded
+    // from a saved group while the UI reads as "start fresh", or vice versa.
+    students = [];
+    el.studentsSummary.textContent = 'No students added yet — question squares will show no student banner.';
+    if (method === 'saved') {
+      el.savedGroupSelect.value = savedGroups.length ? '' : 'none';
+    }
   }
 
   // ---------------- Data loading ----------------
@@ -300,19 +335,24 @@ const Setup = (() => {
     // chapters directly (equivalent to "everything ticked").
     if (selectedBooks.length === 1) {
       el.subtopicField.hidden = false;
-      currentSubtopicRows = PoolBuilder.getSubtopicRows(pearsonBooks, selectedBooks[0], chapterPairs.map(p => p.chapter));
+      const book = selectedBooks[0];
+      const chapterNames = chapterPairs.map(p => p.chapter);
+      currentSubtopicRows = PoolBuilder.getSubtopicRows(pearsonBooks, book, chapterNames);
 
-      // A sub-topic name occasionally repeats under two different
-      // chapters with different DF refs attached - disambiguate those
-      // with the chapter name, but only when it's actually ambiguous.
-      const nameCounts = {};
-      currentSubtopicRows.forEach(row => { nameCounts[row.subTopic] = (nameCounts[row.subTopic] || 0) + 1; });
+      // Grouped by chapter, in the order chapters were selected - each
+      // chapter's sub-topics sit under their own header/divider, so a
+      // name that happens to repeat across chapters (e.g. "Surds")
+      // reads unambiguously without needing a "(chapter)" suffix.
+      const groups = chapterNames
+        .map(chapter => ({
+          header: chapter,
+          items: currentSubtopicRows
+            .filter(row => row.chapter === chapter)
+            .map(row => ({ label: row.subTopic, data: row }))
+        }))
+        .filter(g => g.items.length > 0);
 
-      const items = currentSubtopicRows.map(row => ({
-        label: nameCounts[row.subTopic] > 1 ? `${row.subTopic} (${row.chapter})` : row.subTopic
-      }));
-
-      renderChecklist(el.subtopicChecklist, items, 'Select all', true);
+      currentSubtopicFlatItems = renderGroupedChecklist(el.subtopicChecklist, groups, 'Select all', true);
 
       if (!currentSubtopicRows.length) {
         el.subtopicChecklist.innerHTML = '<p class="hint">No sub-topics — choose at least one chapter above.</p>';
@@ -321,13 +361,14 @@ const Setup = (() => {
     } else {
       el.subtopicField.hidden = true;
       currentSubtopicRows = [];
+      currentSubtopicFlatItems = [];
     }
 
     onSelectionChanged();
   }
 
   function getSelectedSubtopicRows() {
-    return readCheckedIndices(el.subtopicChecklist).map(idx => currentSubtopicRows[idx]);
+    return readCheckedIndices(el.subtopicChecklist).map(idx => currentSubtopicFlatItems[idx]);
   }
 
   /**
@@ -368,10 +409,15 @@ const Setup = (() => {
 
     el.savedQuizSelect.innerHTML = '<option value="" disabled selected>Choose a saved starter…</option>';
     savedQuizzes.forEach(sq => {
-      const opt = document.createElement('option');
-      opt.value = String(sq.slot);
-      opt.textContent = `quiz${sq.slot} — ${PoolBuilder.describeDescriptor(sq.descriptor)} (${SaveQuiz.relativeTime(sq.savedAt)})`;
-      el.savedQuizSelect.appendChild(opt);
+      try {
+        const opt = document.createElement('option');
+        opt.value = String(sq.slot);
+        opt.textContent = `quiz${sq.slot} — ${PoolBuilder.describeDescriptor(sq.descriptor)} (${SaveQuiz.relativeTime(sq.savedAt)})`;
+        el.savedQuizSelect.appendChild(opt);
+      } catch (err) {
+        // A stale/unreadable saved entry shouldn't be able to break
+        // page load for everything else - skip it and carry on.
+      }
     });
   }
 
@@ -391,36 +437,29 @@ const Setup = (() => {
 
   function loadSavedGroups() {
     savedGroups = SaveClass.listValid();
+
     if (!savedGroups.length) {
-      el.savedGroupField.hidden = true;
+      el.savedGroupSelect.innerHTML = '<option value="none">None saved yet</option>';
       return;
     }
 
-    el.savedGroupSelect.innerHTML = '<option value="none">None (start fresh)</option>';
+    el.savedGroupSelect.innerHTML = '<option value="" disabled selected>Choose a saved group…</option>';
     savedGroups.forEach(g => {
       const opt = document.createElement('option');
       opt.value = String(g.slot);
       opt.textContent = `group${g.slot} — ${g.students.length} student${g.students.length === 1 ? '' : 's'} (${SaveQuiz.relativeTime(g.savedAt)})`;
       el.savedGroupSelect.appendChild(opt);
     });
-    el.savedGroupField.hidden = false;
   }
 
   function onSavedGroupChange() {
     const val = el.savedGroupSelect.value;
-    const usingSaved = val !== 'none';
-    el.studentsNormalFields.hidden = usingSaved;
+    const group = val && val !== 'none' ? savedGroups.find(g => String(g.slot) === val) : null;
 
-    if (usingSaved) {
-      const group = savedGroups.find(g => String(g.slot) === val);
-      if (group) {
-        students = group.students.slice();
-        el.studentsSummary.textContent =
-          `${students.length} student${students.length === 1 ? '' : 's'} loaded from group${group.slot} (${SaveQuiz.relativeTime(group.savedAt)}).`;
-      }
+    if (group) {
+      students = group.students.slice();
     } else {
       students = [];
-      el.studentsSummary.textContent = 'No students added yet — question squares will show no student banner.';
     }
   }
 
