@@ -30,6 +30,7 @@
         <div class="method-tabs" id="methodTabs">
           <button type="button" class="method-tab" data-method="pearsonBook">Pearson book</button>
           <button type="button" class="method-tab" data-method="dfRefs">Dr Frost skills</button>
+          <button type="button" class="method-tab" data-method="yearCourse">Year/course</button>
           <button type="button" class="method-tab" data-method="saved">Saved starter</button>
         </div>
 
@@ -58,6 +59,21 @@
             <input type="text" id="dfRefsInput" placeholder="e.g. 112, 115">
             <p class="hint">Separate multiple numbers with commas.</p>
             <a href="#" id="dfRefsLookupLink" class="hint-link" target="_blank" rel="noopener" hidden>Look up Dr Frost skill numbers →</a>
+          </div>
+        </div>
+
+        <div class="method-panel" id="panelYearCourse" hidden>
+          <div class="field">
+            <label for="yearSelect">Year / course</label>
+            <select id="yearSelect">
+              <option value="" disabled selected>Choose a year/course…</option>
+              <option value="KS3">KS3</option>
+              <option value="Year 7">Year 7</option>
+              <option value="Year 8">Year 8</option>
+              <option value="Year 9">Year 9</option>
+              <option value="GCSE Foundation">GCSE Foundation</option>
+              <option value="GCSE Higher">GCSE Higher</option>
+            </select>
           </div>
         </div>
 
