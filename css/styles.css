@@ -709,15 +709,22 @@ button:focus-visible {
   line-height: 1.85;
 }
 
-/* Choices split the content area top/bottom; hint/answer/explain
-   replace the question entirely (handled by the [hidden] attribute
-   in the markup, no split needed there). */
+/* Choices and answer split the content area top/bottom with the
+   question by default; hint/explain replace the question entirely
+   (handled by the [hidden] attribute in the markup, no split needed
+   there). The hide-question toggle removes the question from choices/
+   answer too, at which point this rule no longer applies. */
 .square__content--split .square__question {
   flex: 0 0 46%;
 }
 
 .square__panel-full {
-  flex: 1;
+  /* Only take as much height as the content actually needs - a short
+     answer or a hint/explanation shouldn't be forced to stretch across
+     the full available area - capped at 90% so a genuinely long one
+     still has most of the box once the question is hidden. */
+  flex: 0 1 auto;
+  max-height: 90%;
   min-height: 0;
   width: 100%;
   display: flex;
@@ -793,12 +800,19 @@ button:focus-visible {
 .frac__num,
 .frac__den {
   padding: 0 0.1em;
+  line-height: 1.1;
 }
 
-.frac__num {
+.frac__num--line {
   text-decoration: underline;
   text-decoration-thickness: 0.08em;
   text-underline-offset: 0.18em;
+}
+
+.frac__den--line {
+  text-decoration: overline;
+  text-decoration-thickness: 0.08em;
+  padding-top: 0.12em;
 }
 
 .vector {
@@ -811,14 +825,11 @@ button:focus-visible {
   margin: 0 0.15em;
 }
 
-.nowrap-group {
-  white-space: nowrap;
-}
 
 .vector__bracket {
   font-family: var(--font-mono);
   font-weight: 300;
-  font-size: 1.5em;
+  font-size: 1.75em;
   line-height: 1;
   transform: scaleY(1.15);
 }
@@ -833,20 +844,23 @@ button:focus-visible {
 .vector__top,
 .vector__bottom {
   padding: 0 0.05em;
+  line-height: 1.1;
 }
 
 sub {
   position: relative;
-  bottom: -0.25em;
-  font-size: 0.65em;
+  bottom: -0.15em;
+  font-size: 0.62em;
   line-height: 0;
+  vertical-align: baseline;
 }
 
 sup {
   position: relative;
-  top: -0.5em;
-  font-size: 0.65em;
+  top: -0.35em;
+  font-size: 0.62em;
   line-height: 0;
+  vertical-align: baseline;
 }
 
 .radical {
@@ -867,7 +881,8 @@ sup {
 /* ---------- Answer choices (side by side buttons) ---------- */
 
 .choices {
-  flex: 1;
+  flex: 0 1 auto;
+  max-height: 90%;
   min-height: 0;
   display: flex;
   flex-direction: row;
@@ -884,7 +899,7 @@ sup {
   border-radius: 6px;
   border: 1px solid var(--line);
   background: rgba(255,255,255,0.65);
-  padding: 6px;
+  padding: 10px 6px;
   cursor: pointer;
   overflow: hidden;
   transition: opacity 1s ease;
@@ -997,7 +1012,7 @@ sup {
   position: absolute;
   inset: 0;
   background: repeating-linear-gradient(
-    45deg, #BEBEB4, #BEBEB4 14px, #9F9F94 14px, #9F9F94 28px
+    45deg, #BEBEB4, #BEBEB4 8px, #9F9F94 8px, #9F9F94 16px
   );
   cursor: pointer;
   z-index: 5;
@@ -1010,11 +1025,11 @@ sup {
 
 .square__shutter-text {
   font-family: 'Open Sans', var(--font-body);
-  font-weight: 800;
+  font-weight: 400;
   font-size: 2.1rem;
   line-height: 1.15;
-  color: #DEDED3;
-  text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.7), -2px -2px 3px rgba(0, 0, 0, 0.5);
+  color: #C9C9BE;
+  text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.35), 1px 1px 1px rgba(255, 255, 255, 0.55);
   letter-spacing: 0.02em;
 }
 
@@ -1054,9 +1069,10 @@ sup {
 }
 
 .quotes-modal {
+  position: relative;
   background: var(--panel);
   border-radius: var(--radius);
-  padding: 40px 36px;
+  padding: 44px 36px 36px;
   max-width: 560px;
   width: 100%;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
@@ -1069,7 +1085,7 @@ sup {
 
 .quotes-modal__text {
   margin: 0;
-  font-size: 1.35rem;
+  font-size: 1.5rem;
   font-weight: 600;
   line-height: 1.5;
   color: var(--ink);
@@ -1077,27 +1093,37 @@ sup {
 
 .quotes-modal__author {
   margin: 0;
+  align-self: stretch;
+  text-align: right;
   font-size: 1rem;
   font-style: italic;
   color: var(--muted);
 }
 
-.quotes-modal__actions {
+.quotes-modal__topbar {
+  position: absolute;
+  top: 14px;
+  right: 14px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 6px;
+  gap: 8px;
 }
 
-.quotes-modal__refresh {
+.quotes-modal__icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
   background: var(--board);
   color: var(--chalk-yellow);
-  border-color: var(--board);
-  font-size: 1.1rem;
-  padding: 8px 14px;
+  font-size: 1rem;
+  cursor: pointer;
 }
 
-.quotes-modal__refresh:hover { background: #0F1A30; }
+.quotes-modal__icon-btn:hover { background: #0F1A30; }
 
 /* ---------- Reduced motion ---------- */
 

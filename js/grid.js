@@ -1,10 +1,11 @@
 // Question Grid — grid view controller
 // Owns the 9 squares once Generate has been pressed: rendering,
 // shutters, answer/hint/choices/explanation panels (one open at a time
-// per square, hint/answer/explain replace the question entirely,
-// choices split top/bottom), student assignment and reveal, and
-// refresh - all operating on data already fetched, so it keeps working
-// through a connection drop.
+// per square; choices and answer split the box top/bottom with the
+// question, and can hand the question's share to the panel via the
+// hide-question toggle; hint/explain fully replace the question),
+// student assignment and reveal, and refresh - all operating on data
+// already fetched, so it keeps working through a connection drop.
 
 const Grid = (() => {
   let el = {};
@@ -99,15 +100,6 @@ const Grid = (() => {
   function renderMath(rawText) {
     let text = escapeHtml(rawText == null ? '' : String(rawText));
 
-    // Short parenthetical groups (coordinates, ordered pairs, small
-    // bracketed expressions) read as one visual unit and shouldn't
-    // break across a line - e.g. (1,2) or (x+1). Longer ones are left
-    // free to wrap normally rather than risk overflowing a small
-    // square. Runs on raw text, before any HTML gets inserted, so the
-    // character count reflects what's actually visible.
-    text = text.replace(/\(([^()]+)\)/g, (m, inner) =>
-      inner.length <= 12 ? `<span class="nowrap-group">(${inner})</span>` : m);
-
     // Roots first, since they also consume a {...} span.
     text = text.replace(/sqrt\{([^{}]+)\}/g, (m, inner) =>
       `<span class="radical"><span class="radical__sym">√</span><span class="radical__body">${inner}</span></span>`);
@@ -128,13 +120,18 @@ const Grid = (() => {
     // authoring rules, {a/b} is only ever used standalone (never mixed
     // into a sentence), so it doesn't need to be shrunk to avoid
     // colliding with surrounding prose - one consistently larger size
-    // for both numeric and algebraic content.
+    // for both numeric and algebraic content. The divider line sits
+    // under the numerator normally, but switches to sitting over the
+    // denominator when the denominator has more characters - putting
+    // it under the shorter, narrower numerator would leave a divider
+    // that doesn't span the wider content below it.
     text = text.replace(/\{([^{}]+)\}/g, (m, inner) => {
       const slashIndex = inner.indexOf('/');
       if (slashIndex === -1) return m; // no slash - leave the braces as literal text
       const num = inner.slice(0, slashIndex);
       const den = inner.slice(slashIndex + 1);
-      return `<span class="frac"><span class="frac__num">${num}</span><span class="frac__den">${den}</span></span>`;
+      const denWider = den.length > num.length;
+      return `<span class="frac"><span class="frac__num${denWider ? '' : ' frac__num--line'}">${num}</span><span class="frac__den${denWider ? ' frac__den--line' : ''}">${den}</span></span>`;
     });
 
     // Column vectors: [top/bottom] - same stacking mechanism as a {}
@@ -304,8 +301,13 @@ const Grid = (() => {
     const calcRaw = String(q.calculator || '').trim().toLowerCase();
     const showCalcIcon = calcRaw === 'yes' || calcRaw === 'no';
     const isCalc = calcRaw === 'yes';
-    const isSplit = state.activePanel === 'choices' && !state.questionHidden;
-    const showHideToggle = state.activePanel === 'choices';
+    // 'choices' and 'answer' both show the question alongside the
+    // panel by default (question on top); hint/explain still fully
+    // replace the question, since there's no natural "3 buttons" or
+    // "one box" split for a block of explanatory text.
+    const splitPanels = ['choices', 'answer'];
+    const isSplit = splitPanels.includes(state.activePanel) && !state.questionHidden;
+    const showHideToggle = splitPanels.includes(state.activePanel);
 
     wrap.innerHTML = `
       <div class="square__content ${isSplit ? 'square__content--split' : ''}">
@@ -375,6 +377,8 @@ const Grid = (() => {
       // Same visual language as the revealed-correct choice button
       // (green box, centered, bold) - just delivered as a single box
       // rather than picked from three, since there's nothing to choose.
+      // Sits below the question by default (same split as choices);
+      // the hide-question toggle lets it claim the full box instead.
       // The box itself shrink-wraps to the answer text (answer-box-wrap
       // centers it within the full panel area) rather than stretching
       // the border edge-to-edge regardless of how short the answer is.

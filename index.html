@@ -140,7 +140,7 @@
     <div class="board--grid__row">
       <button type="button" class="icon-btn icon-btn--symbol" id="backBtn" title="Back to setup">←</button>
       <button type="button" class="icon-btn icon-btn--symbol" id="quotesBtn" title="Show a quote">&#8220; &#8221;</button>
-      <button type="button" class="icon-btn icon-btn--symbol" id="gridSizeBtn" title="Switch to 4 squares">9&#x27A7;4</button>
+      <button type="button" class="icon-btn icon-btn--symbol" id="gridSizeBtn" title="Switch to 4 squares">9&#x27A4;4</button>
       <h1 class="board__title board__title--small">
         <span class="board__title-squares board__title-squares--left" aria-hidden="true">☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐</span>
         <span class="board__title-text">9 SQUARE</span>
@@ -172,12 +172,12 @@
 
 <div class="quotes-overlay" id="quotesOverlay" hidden>
   <div class="quotes-modal">
+    <div class="quotes-modal__topbar">
+      <button type="button" class="quotes-modal__icon-btn" id="quotesRefreshBtn" title="Another quote">↻</button>
+      <button type="button" class="quotes-modal__icon-btn" id="quotesCloseBtn" title="Close">✕</button>
+    </div>
     <p class="quotes-modal__text" id="quotesText"></p>
     <p class="quotes-modal__author" id="quotesAuthor"></p>
-    <div class="quotes-modal__actions">
-      <button type="button" class="icon-btn icon-btn--symbol quotes-modal__refresh" id="quotesRefreshBtn" title="Another quote">↻</button>
-      <button type="button" class="btn btn--secondary" id="quotesCloseBtn">Close</button>
-    </div>
   </div>
 </div>
 
