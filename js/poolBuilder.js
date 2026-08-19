@@ -32,6 +32,21 @@ const PoolBuilder = (() => {
   }
 
   /**
+   * Filters the practice set to every question whose DF ref is tagged
+   * (in df_tally.csv) with the given Year/course tag, e.g. "GCSE
+   * Higher". Tag matching is case-insensitive since it's typed by hand
+   * into a spreadsheet cell.
+   */
+  function fromYearTag(practiceSet, dfTallyRows, tag) {
+    const wanted = tag.trim().toLowerCase();
+    const refSet = new Set();
+    dfTallyRows.forEach(row => {
+      if (row.tags.some(t => t.toLowerCase() === wanted)) refSet.add(row.topicNum);
+    });
+    return practiceSet.filter(q => refSet.has(q.dfRefNum));
+  }
+
+  /**
    * Filters the practice set directly against a hand-typed list of
    * Dr Frost skill numbers - no Pearson-books lookup involved.
    */
@@ -47,7 +62,7 @@ const PoolBuilder = (() => {
    * that were ticked (not just the chapters), since sub-topics can be
    * individually deselected.
    */
-  function fromDescriptor(practiceSet, pearsonRows, descriptor) {
+  function fromDescriptor(practiceSet, pearsonRows, dfTallyRows, descriptor) {
     if (descriptor.method === 'pearsonBook') {
       const wanted = new Set(descriptor.subtopics.map(s => s.chapter + '\u0000' + s.subTopic));
       const rows = pearsonRows.filter(row =>
@@ -57,6 +72,9 @@ const PoolBuilder = (() => {
     }
     if (descriptor.method === 'dfRefs') {
       return fromDfRefs(practiceSet, descriptor.dfRefs);
+    }
+    if (descriptor.method === 'yearCourse') {
+      return fromYearTag(practiceSet, dfTallyRows, descriptor.tag);
     }
     return [];
   }
@@ -68,8 +86,11 @@ const PoolBuilder = (() => {
     if (descriptor.method === 'dfRefs') {
       return `DF refs ${descriptor.dfRefs.join(', ')}`;
     }
+    if (descriptor.method === 'yearCourse') {
+      return `Year/course: ${descriptor.tag}`;
+    }
     return 'Unknown selection';
   }
 
-  return { getSubtopicRows, fromSubtopicRows, fromDfRefs, fromDescriptor, describeDescriptor };
+  return { getSubtopicRows, fromSubtopicRows, fromDfRefs, fromYearTag, fromDescriptor, describeDescriptor };
 })();

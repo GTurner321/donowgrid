@@ -1,15 +1,16 @@
 // Question Grid — setup view controller
-// Owns everything on the landing page: loading the two CSVs, the
-// three-way selection method (Pearson book / Dr Frost skill numbers /
-// saved starter), the student paste-in box, and building the config
+// Owns everything on the landing page: loading the CSVs, the four-way
+// selection method (Pearson book / Dr Frost skill numbers / Year-course
+// / saved starter), the student paste-in box, and building the config
 // object that Generate hands off to the grid.
 
 const Setup = (() => {
 
-  let currentMethod = 'pearsonBook'; // 'pearsonBook' | 'dfRefs' | 'saved'
+  let currentMethod = 'pearsonBook'; // 'pearsonBook' | 'dfRefs' | 'yearCourse' | 'saved'
 
   let practiceSet = [];          // full practice set, loaded once
   let pearsonBooks = [];         // full Pearson books map, loaded once
+  let dfTally = [];              // full df_tally map (DF ref -> Year/course tags), loaded once
   let books = [];                 // unique book names, in sheet order
   let currentBook = null;
   let currentChapters = [];       // chapter names available for currentBook
@@ -38,6 +39,7 @@ const Setup = (() => {
 
     el.panelPearsonBook = document.getElementById('panelPearsonBook');
     el.panelDfRefs = document.getElementById('panelDfRefs');
+    el.panelYearCourse = document.getElementById('panelYearCourse');
     el.panelSaved = document.getElementById('panelSaved');
     el.commonQuizFields = document.getElementById('commonQuizFields');
 
@@ -49,6 +51,8 @@ const Setup = (() => {
 
     el.dfRefsInput = document.getElementById('dfRefsInput');
     el.dfRefsLookupLink = document.getElementById('dfRefsLookupLink');
+
+    el.yearSelect = document.getElementById('yearSelect');
 
     el.savedQuizSelect = document.getElementById('savedQuizSelect');
     el.savedQuizHint = document.getElementById('savedQuizHint');
@@ -75,6 +79,7 @@ const Setup = (() => {
     el.chapterChecklist.addEventListener('change', onChapterChecklistChange);
     el.subtopicChecklist.addEventListener('change', onSelectionChanged);
     el.dfRefsInput.addEventListener('input', onSelectionChanged);
+    el.yearSelect.addEventListener('change', onSelectionChanged);
     el.savedQuizSelect.addEventListener('change', onSavedQuizChange);
     el.savedGroupSelect.addEventListener('change', onSavedGroupChange);
     el.levelSelect.addEventListener('change', updateLevelCount);
@@ -111,6 +116,7 @@ const Setup = (() => {
 
     el.panelPearsonBook.hidden = method !== 'pearsonBook';
     el.panelDfRefs.hidden = method !== 'dfRefs';
+    el.panelYearCourse.hidden = method !== 'yearCourse';
     el.panelSaved.hidden = method !== 'saved';
     el.commonQuizFields.hidden = method === 'saved';
 
@@ -124,12 +130,14 @@ const Setup = (() => {
   async function loadData() {
     setStatus('Loading question data…', 'info');
     try {
-      const [practice, pearson] = await Promise.all([
+      const [practice, pearson, tally] = await Promise.all([
         DataService.loadPracticeSet(),
-        DataService.loadPearsonBooks()
+        DataService.loadPearsonBooks(),
+        DataService.loadDfTally()
       ]);
       practiceSet = practice;
       pearsonBooks = pearson;
+      dfTally = tally;
 
       books = [];
       pearson.forEach(row => { if (!books.includes(row.book)) books.push(row.book); });
@@ -393,6 +401,9 @@ const Setup = (() => {
     if (currentMethod === 'dfRefs') {
       return PoolBuilder.fromDfRefs(practiceSet, parseDfRefsInput());
     }
+    if (currentMethod === 'yearCourse') {
+      return el.yearSelect.value ? PoolBuilder.fromYearTag(practiceSet, dfTally, el.yearSelect.value) : [];
+    }
     return [];
   }
 
@@ -430,6 +441,8 @@ const Setup = (() => {
       el.generateBtn.disabled = getSelectedSubtopicRows().length === 0 || getCurrentPool().length === 0;
     } else if (currentMethod === 'dfRefs') {
       el.generateBtn.disabled = parseDfRefsInput().length === 0 || getCurrentPool().length === 0;
+    } else if (currentMethod === 'yearCourse') {
+      el.generateBtn.disabled = !el.yearSelect.value || getCurrentPool().length === 0;
     } else {
       el.generateBtn.disabled = !getSelectedSavedQuiz();
     }
@@ -450,6 +463,9 @@ const Setup = (() => {
         chapters,
         subtopics: subtopicRows.map(row => ({ chapter: row.chapter, subTopic: row.subTopic }))
       };
+    } else if (currentMethod === 'yearCourse') {
+      pool = PoolBuilder.fromYearTag(practiceSet, dfTally, el.yearSelect.value);
+      source = { method: 'yearCourse', tag: el.yearSelect.value };
     } else {
       const dfRefs = parseDfRefsInput();
       pool = PoolBuilder.fromDfRefs(practiceSet, dfRefs);
@@ -498,7 +514,7 @@ const Setup = (() => {
   }
 
   function loadSavedStarter(savedQuiz) {
-    const pool = PoolBuilder.fromDescriptor(practiceSet, pearsonBooks, savedQuiz.descriptor);
+    const pool = PoolBuilder.fromDescriptor(practiceSet, pearsonBooks, dfTally, savedQuiz.descriptor);
 
     if (pool.length === 0) {
       setStatus("Couldn't rebuild this saved starter — none of its questions are in the practice set anymore.", 'error');
