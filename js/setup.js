@@ -6,15 +6,14 @@
 
 const Setup = (() => {
 
-  let currentMethod = 'pearsonBook'; // 'pearsonBook' | 'dfRefs' | 'yearCourse' | 'saved'
+  let currentMethod = 'pearsonBook'; // 'pearsonBook' | 'dfRefs' | 'saved'
 
   let practiceSet = [];          // full practice set, loaded once
   let pearsonBooks = [];         // full Pearson books map, loaded once
   let dfTally = [];              // full df_tally map (DF ref -> Year/course tags), loaded once
   let books = [];                 // unique book names, in sheet order
-  let currentBook = null;
-  let currentChapters = [];       // chapter names available for currentBook
-  let currentSubtopicRows = [];   // Pearson-books rows available for the selected chapters
+  let currentChapterFlatItems = []; // {book, chapter} pairs, parallel to chapterChecklist's rendered indices
+  let currentSubtopicRows = [];   // Pearson-books rows available for the selected chapters (single-book mode only)
 
   let students = [];             // parsed, deduped student names
   let savedQuizzes = [];         // valid (non-expired) saved starters
@@ -24,6 +23,7 @@ const Setup = (() => {
 
   function init() {
     cacheElements();
+    bindChecklistSelectAll(el.bookChecklist);
     bindChecklistSelectAll(el.chapterChecklist);
     bindChecklistSelectAll(el.subtopicChecklist);
     bindEvents();
@@ -39,20 +39,19 @@ const Setup = (() => {
 
     el.panelPearsonBook = document.getElementById('panelPearsonBook');
     el.panelDfRefs = document.getElementById('panelDfRefs');
-    el.panelYearCourse = document.getElementById('panelYearCourse');
     el.panelSaved = document.getElementById('panelSaved');
     el.commonQuizFields = document.getElementById('commonQuizFields');
 
-    el.bookSelect = document.getElementById('bookSelect');
+    el.bookChecklist = document.getElementById('bookChecklist');
     el.chapterChecklist = document.getElementById('chapterChecklist');
     el.chapterHelp = document.getElementById('chapterHelp');
+    el.subtopicField = document.getElementById('subtopicField');
     el.subtopicChecklist = document.getElementById('subtopicChecklist');
     el.subtopicHelp = document.getElementById('subtopicHelp');
 
     el.dfRefsInput = document.getElementById('dfRefsInput');
     el.dfRefsLookupLink = document.getElementById('dfRefsLookupLink');
 
-    el.yearSelect = document.getElementById('yearSelect');
 
     el.savedQuizSelect = document.getElementById('savedQuizSelect');
     el.savedQuizHint = document.getElementById('savedQuizHint');
@@ -75,11 +74,10 @@ const Setup = (() => {
   function bindEvents() {
     el.methodTabs.addEventListener('click', onMethodTabClick);
 
-    el.bookSelect.addEventListener('change', onBookChange);
+    el.bookChecklist.addEventListener('change', onBookChecklistChange);
     el.chapterChecklist.addEventListener('change', onChapterChecklistChange);
     el.subtopicChecklist.addEventListener('change', onSelectionChanged);
     el.dfRefsInput.addEventListener('input', onSelectionChanged);
-    el.yearSelect.addEventListener('change', onSelectionChanged);
     el.savedQuizSelect.addEventListener('change', onSavedQuizChange);
     el.savedGroupSelect.addEventListener('change', onSavedGroupChange);
     el.levelSelect.addEventListener('change', updateLevelCount);
@@ -116,7 +114,6 @@ const Setup = (() => {
 
     el.panelPearsonBook.hidden = method !== 'pearsonBook';
     el.panelDfRefs.hidden = method !== 'dfRefs';
-    el.panelYearCourse.hidden = method !== 'yearCourse';
     el.panelSaved.hidden = method !== 'saved';
     el.commonQuizFields.hidden = method === 'saved';
 
@@ -142,14 +139,7 @@ const Setup = (() => {
       books = [];
       pearson.forEach(row => { if (!books.includes(row.book)) books.push(row.book); });
 
-      el.bookSelect.innerHTML = '<option value="" disabled selected>Choose a book…</option>';
-      books.forEach(book => {
-        const opt = document.createElement('option');
-        opt.value = book;
-        opt.textContent = book;
-        el.bookSelect.appendChild(opt);
-      });
-      el.bookSelect.disabled = false;
+      renderChecklist(el.bookChecklist, books.map(b => ({ label: b })), 'Select all', false);
 
       setStatus('');
     } catch (err) {
@@ -194,6 +184,56 @@ const Setup = (() => {
     selectAllCb.checked = defaultChecked;
   }
 
+  /**
+   * Like renderChecklist, but items are organised into groups, each
+   * with its own header row - used for the chapter checklist once more
+   * than one book is selected, since chapter names aren't unique across
+   * books (every book has its own "Chapter 1"). Headers are only shown
+   * when there's more than one group; a single group renders exactly
+   * like a flat renderChecklist. `groups` is an array of
+   * { header, items: [{ label, data }] } - the caller reads back
+   * whichever `data` values ended up checked via
+   * readCheckedGroupedData(container, flatItems), where flatItems is
+   * this function's return value.
+   */
+  function renderGroupedChecklist(container, groups, selectAllLabel, defaultChecked) {
+    container.innerHTML = '';
+    const flatItems = [];
+
+    if (!groups.length) return flatItems;
+
+    const selectAllRow = document.createElement('label');
+    selectAllRow.className = 'checklist-select-all';
+    selectAllRow.innerHTML = `<input type="checkbox" data-role="select-all"><span>${escapeHtml(selectAllLabel)}</span>`;
+    container.appendChild(selectAllRow);
+
+    groups.forEach((group, gi) => {
+      if (groups.length > 1) {
+        const header = document.createElement('div');
+        header.className = 'checklist-group-header' + (gi === 0 ? ' checklist-group-header--first' : '');
+        header.textContent = group.header;
+        container.appendChild(header);
+      }
+      group.items.forEach(item => {
+        const idx = flatItems.length;
+        flatItems.push(item.data);
+        const label = document.createElement('label');
+        label.innerHTML = `
+          <input type="checkbox" data-index="${idx}">
+          <span>${escapeHtml(item.label)}</span>
+        `;
+        container.appendChild(label);
+      });
+    });
+
+    const selectAllCb = container.querySelector('[data-role="select-all"]');
+    const itemCbs = Array.from(container.querySelectorAll('input[data-index]'));
+    itemCbs.forEach(cb => { cb.checked = defaultChecked; });
+    selectAllCb.checked = defaultChecked;
+
+    return flatItems;
+  }
+
   function bindChecklistSelectAll(container) {
     container.addEventListener('change', e => {
       const target = e.target;
@@ -217,56 +257,92 @@ const Setup = (() => {
 
   // ---------------- Pearson book flow ----------------
 
-  function onBookChange() {
-    currentBook = el.bookSelect.value;
-    currentChapters = [];
-    pearsonBooks.forEach(row => {
-      if (row.book === currentBook && !currentChapters.includes(row.chapter)) {
-        currentChapters.push(row.chapter);
-      }
+  function getSelectedBooks() {
+    return readCheckedIndices(el.bookChecklist).map(idx => books[idx]);
+  }
+
+  function onBookChecklistChange() {
+    const selectedBooks = getSelectedBooks();
+
+    const groups = selectedBooks.map(book => {
+      const chapters = [];
+      pearsonBooks.forEach(row => {
+        if (row.book === book && !chapters.includes(row.chapter)) chapters.push(row.chapter);
+      });
+      return {
+        header: book,
+        items: chapters.map(chapter => ({ label: chapter, data: { book, chapter } }))
+      };
     });
 
-    const items = currentChapters.map(chapter => ({ label: chapter }));
-    renderChecklist(el.chapterChecklist, items, 'Select all', false);
+    currentChapterFlatItems = renderGroupedChecklist(el.chapterChecklist, groups, 'Select all', false);
 
-    if (!currentChapters.length) {
-      el.chapterChecklist.innerHTML = '<p class="hint">No chapters found for this book.</p>';
+    if (!selectedBooks.length) {
+      el.chapterChecklist.innerHTML = '<p class="hint">Choose at least one book above.</p>';
     }
     el.chapterHelp.hidden = true;
 
     onChapterChecklistChange();
   }
 
-  function getSelectedChapters() {
-    return readCheckedIndices(el.chapterChecklist).map(idx => currentChapters[idx]);
+  function getSelectedChapterPairs() {
+    return readCheckedIndices(el.chapterChecklist).map(idx => currentChapterFlatItems[idx]);
   }
 
   function onChapterChecklistChange() {
-    const chapters = getSelectedChapters();
-    currentSubtopicRows = PoolBuilder.getSubtopicRows(pearsonBooks, currentBook, chapters);
+    const selectedBooks = getSelectedBooks();
+    const chapterPairs = getSelectedChapterPairs();
 
-    // A sub-topic name occasionally repeats under two different
-    // chapters with different DF refs attached - disambiguate those
-    // with the chapter name, but only when it's actually ambiguous.
-    const nameCounts = {};
-    currentSubtopicRows.forEach(row => { nameCounts[row.subTopic] = (nameCounts[row.subTopic] || 0) + 1; });
+    // Sub-topic-level filtering only makes sense with one book on
+    // screen - with several books selected, the combined sub-topic
+    // list would be too large to be a useful filter, so it's hidden
+    // and the pool is built from every sub-topic under the selected
+    // chapters directly (equivalent to "everything ticked").
+    if (selectedBooks.length === 1) {
+      el.subtopicField.hidden = false;
+      currentSubtopicRows = PoolBuilder.getSubtopicRows(pearsonBooks, selectedBooks[0], chapterPairs.map(p => p.chapter));
 
-    const items = currentSubtopicRows.map(row => ({
-      label: nameCounts[row.subTopic] > 1 ? `${row.subTopic} (${row.chapter})` : row.subTopic
-    }));
+      // A sub-topic name occasionally repeats under two different
+      // chapters with different DF refs attached - disambiguate those
+      // with the chapter name, but only when it's actually ambiguous.
+      const nameCounts = {};
+      currentSubtopicRows.forEach(row => { nameCounts[row.subTopic] = (nameCounts[row.subTopic] || 0) + 1; });
 
-    renderChecklist(el.subtopicChecklist, items, 'Select all', true);
+      const items = currentSubtopicRows.map(row => ({
+        label: nameCounts[row.subTopic] > 1 ? `${row.subTopic} (${row.chapter})` : row.subTopic
+      }));
 
-    if (!currentSubtopicRows.length) {
-      el.subtopicChecklist.innerHTML = '<p class="hint">No sub-topics — choose at least one chapter above.</p>';
+      renderChecklist(el.subtopicChecklist, items, 'Select all', true);
+
+      if (!currentSubtopicRows.length) {
+        el.subtopicChecklist.innerHTML = '<p class="hint">No sub-topics — choose at least one chapter above.</p>';
+      }
+      el.subtopicHelp.hidden = true;
+    } else {
+      el.subtopicField.hidden = true;
+      currentSubtopicRows = [];
     }
-    el.subtopicHelp.hidden = true;
 
     onSelectionChanged();
   }
 
   function getSelectedSubtopicRows() {
     return readCheckedIndices(el.subtopicChecklist).map(idx => currentSubtopicRows[idx]);
+  }
+
+  /**
+   * The exact set of Pearson-books rows in play for the current
+   * selection - user-filtered sub-topics when one book is selected,
+   * or every sub-topic under the selected chapters when several books
+   * are selected. Used for both the live pool and the save descriptor,
+   * so the two always agree.
+   */
+  function getEffectiveSubtopicRows() {
+    const selectedBooks = getSelectedBooks();
+    if (selectedBooks.length === 1) {
+      return getSelectedSubtopicRows();
+    }
+    return PoolBuilder.getSubtopicRowsMultiBook(pearsonBooks, getSelectedChapterPairs());
   }
 
   // ---------------- Dr Frost skill numbers flow ----------------
@@ -284,7 +360,13 @@ const Setup = (() => {
 
   function loadSavedQuizzes() {
     savedQuizzes = SaveQuiz.listValid();
-    el.savedQuizSelect.innerHTML = '<option value="none">None saved yet</option>';
+
+    if (!savedQuizzes.length) {
+      el.savedQuizSelect.innerHTML = '<option value="none">None saved yet</option>';
+      return;
+    }
+
+    el.savedQuizSelect.innerHTML = '<option value="" disabled selected>Choose a saved starter…</option>';
     savedQuizzes.forEach(sq => {
       const opt = document.createElement('option');
       opt.value = String(sq.slot);
@@ -294,14 +376,14 @@ const Setup = (() => {
   }
 
   function onSavedQuizChange() {
-    const usingSaved = el.savedQuizSelect.value !== 'none';
+    const usingSaved = !!getSelectedSavedQuiz();
     el.savedQuizHint.hidden = !usingSaved;
     onSelectionChanged();
   }
 
   function getSelectedSavedQuiz() {
     const val = el.savedQuizSelect.value;
-    if (val === 'none') return null;
+    if (!val || val === 'none') return null;
     return savedQuizzes.find(q => String(q.slot) === val) || null;
   }
 
@@ -396,13 +478,10 @@ const Setup = (() => {
    */
   function getCurrentPool() {
     if (currentMethod === 'pearsonBook') {
-      return PoolBuilder.fromSubtopicRows(practiceSet, getSelectedSubtopicRows());
+      return PoolBuilder.fromSubtopicRows(practiceSet, getEffectiveSubtopicRows());
     }
     if (currentMethod === 'dfRefs') {
       return PoolBuilder.fromDfRefs(practiceSet, parseDfRefsInput());
-    }
-    if (currentMethod === 'yearCourse') {
-      return el.yearSelect.value ? PoolBuilder.fromYearTag(practiceSet, dfTally, el.yearSelect.value) : [];
     }
     return [];
   }
@@ -438,11 +517,9 @@ const Setup = (() => {
 
   function updateGenerateAvailability() {
     if (currentMethod === 'pearsonBook') {
-      el.generateBtn.disabled = getSelectedSubtopicRows().length === 0 || getCurrentPool().length === 0;
+      el.generateBtn.disabled = getSelectedChapterPairs().length === 0 || getCurrentPool().length === 0;
     } else if (currentMethod === 'dfRefs') {
       el.generateBtn.disabled = parseDfRefsInput().length === 0 || getCurrentPool().length === 0;
-    } else if (currentMethod === 'yearCourse') {
-      el.generateBtn.disabled = !el.yearSelect.value || getCurrentPool().length === 0;
     } else {
       el.generateBtn.disabled = !getSelectedSavedQuiz();
     }
@@ -454,18 +531,14 @@ const Setup = (() => {
     let pool, source;
 
     if (currentMethod === 'pearsonBook') {
-      const chapters = getSelectedChapters();
-      const subtopicRows = getSelectedSubtopicRows();
+      const subtopicRows = getEffectiveSubtopicRows();
       pool = PoolBuilder.fromSubtopicRows(practiceSet, subtopicRows);
       source = {
         method: 'pearsonBook',
-        book: currentBook,
-        chapters,
-        subtopics: subtopicRows.map(row => ({ chapter: row.chapter, subTopic: row.subTopic }))
+        books: getSelectedBooks(),
+        chapters: getSelectedChapterPairs(),
+        subtopics: subtopicRows.map(row => ({ book: row.book, chapter: row.chapter, subTopic: row.subTopic }))
       };
-    } else if (currentMethod === 'yearCourse') {
-      pool = PoolBuilder.fromYearTag(practiceSet, dfTally, el.yearSelect.value);
-      source = { method: 'yearCourse', tag: el.yearSelect.value };
     } else {
       const dfRefs = parseDfRefsInput();
       pool = PoolBuilder.fromDfRefs(practiceSet, dfRefs);

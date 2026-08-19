@@ -52,7 +52,7 @@ body {
 }
 
 #setupView {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
@@ -116,14 +116,12 @@ body {
 
 .setup {
   flex: 1;
-  min-height: 0;
   width: 100%;
   max-width: 920px;
   margin: 0 auto;
   padding: 16px 20px 20px;
   display: flex;
   align-items: stretch;
-  overflow-y: auto;
 }
 
 .card {
@@ -227,7 +225,10 @@ body {
 
 select,
 input[type="number"],
+input[type="text"],
 textarea {
+  width: 100%;
+  box-sizing: border-box;
   font-family: var(--font-body);
   font-size: 1rem;
   padding: 10px 12px;
@@ -417,6 +418,23 @@ button:focus-visible {
   border-bottom: 1px solid var(--line);
 }
 
+.checklist-group-header {
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  padding-top: 10px;
+  margin-top: 4px;
+  border-top: 1px solid var(--line);
+}
+
+.checklist-group-header--first {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 0;
+}
+
 /* ---------- Checkbox rows ---------- */
 
 .checkbox {
@@ -520,6 +538,11 @@ button:focus-visible {
   flex-wrap: wrap;
 }
 
+.board--grid__row .board__title {
+  flex: 1;
+  min-width: 0;
+}
+
 .board__title--small {
   font-size: 1.4rem;
   text-align: center;
@@ -612,6 +635,30 @@ button:focus-visible {
 }
 
 /* ---------- Square ---------- */
+
+.square__hide-question-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.square__hide-question-btn:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.6);
+}
 
 .square {
   position: relative;
@@ -749,6 +796,42 @@ button:focus-visible {
 
 .frac__num {
   border-bottom: 0.08em solid currentColor;
+}
+
+.vector {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  position: relative;
+  top: 0.15em;
+  font-size: 0.85em;
+}
+
+.vector__bracket {
+  font-family: var(--font-mono);
+  font-weight: 300;
+  font-size: 1.5em;
+  line-height: 1;
+  transform: scaleY(1.15);
+}
+
+.vector__stack {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 0.12em;
+}
+
+.vector__top,
+.vector__bottom {
+  padding: 0 0.05em;
+}
+
+sub {
+  position: relative;
+  bottom: -0.25em;
+  font-size: 0.65em;
+  line-height: 0;
 }
 
 sup {
@@ -900,7 +983,7 @@ sup {
   position: absolute;
   inset: 0;
   background: repeating-linear-gradient(
-    45deg, #B9B9B0, #B9B9B0 12px, #A8A89F 12px, #A8A89F 24px
+    45deg, #BEBEB4, #BEBEB4 14px, #9F9F94 14px, #9F9F94 28px
   );
   cursor: pointer;
   z-index: 5;
@@ -914,10 +997,10 @@ sup {
 .square__shutter-text {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.3rem;
-  line-height: 1.2;
-  color: #C7C7BE;
-  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.55), -1px -1px 1px rgba(0, 0, 0, 0.3);
+  font-size: 1.75rem;
+  line-height: 1.15;
+  color: #D6D6CC;
+  text-shadow: 1.5px 1.5px 0 rgba(255, 255, 255, 0.65), -1.5px -1.5px 2px rgba(0, 0, 0, 0.4);
   letter-spacing: 0.02em;
 }
 
@@ -927,7 +1010,7 @@ sup {
 
 .square__shutter-text--title {
   text-transform: uppercase;
-  font-size: 1.05rem;
+  font-size: 1.35rem;
   letter-spacing: 0.1em;
 }
 

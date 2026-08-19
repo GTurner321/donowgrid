@@ -12,12 +12,16 @@
 <body>
 
 <div id="setupView">
-<header class="board">
-  <h1 class="board__title">
-    <span class="board__title-squares board__title-squares--left" aria-hidden="true">☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐</span>
-    <span class="board__title-text">9 SQUARE</span>
-    <span class="board__title-squares board__title-squares--right" aria-hidden="true">☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐</span>
-  </h1>
+<header class="board board--grid">
+  <div class="board--grid__row">
+    <button type="button" class="icon-btn icon-btn--symbol" id="setupForwardBtn" title="Return to quiz" hidden>&#8594;</button>
+    <h1 class="board__title">
+      <span class="board__title-squares board__title-squares--left" aria-hidden="true">☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐</span>
+      <span class="board__title-text">9 SQUARE</span>
+      <span class="board__title-squares board__title-squares--right" aria-hidden="true">☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐☐</span>
+    </h1>
+    <button type="button" class="icon-btn icon-btn--symbol" id="setupFullscreenBtn" title="Fullscreen">⤢</button>
+  </div>
 </header>
 
 <main class="setup">
@@ -26,27 +30,25 @@
     <div class="setup-columns">
 
       <div class="setup-col setup-col--quiz">
+        <span class="field__label">Add Questions</span>
 
         <div class="method-tabs" id="methodTabs">
           <button type="button" class="method-tab" data-method="pearsonBook">Pearson book</button>
           <button type="button" class="method-tab" data-method="dfRefs">Dr Frost skills</button>
-          <button type="button" class="method-tab" data-method="yearCourse">Year/course</button>
           <button type="button" class="method-tab" data-method="saved">Saved starter</button>
         </div>
 
         <div class="method-panel" id="panelPearsonBook">
           <div class="field">
-            <label for="bookSelect">Book</label>
-            <select id="bookSelect" disabled>
-              <option value="" selected>Loading…</option>
-            </select>
+            <span class="field__label">Books</span>
+            <div class="topic-checklist" id="bookChecklist"><p class="hint">Loading books…</p></div>
           </div>
           <div class="field">
             <span class="field__label">Chapters</span>
-            <p class="hint" id="chapterHelp">Choose a book first…</p>
+            <p class="hint" id="chapterHelp">Choose at least one book first…</p>
             <div class="topic-checklist" id="chapterChecklist"></div>
           </div>
-          <div class="field">
+          <div class="field" id="subtopicField">
             <span class="field__label">Sub-topics</span>
             <p class="hint" id="subtopicHelp">Choose at least one chapter first…</p>
             <div class="topic-checklist" id="subtopicChecklist"></div>
@@ -59,21 +61,6 @@
             <input type="text" id="dfRefsInput" placeholder="e.g. 112, 115">
             <p class="hint">Separate multiple numbers with commas.</p>
             <a href="#" id="dfRefsLookupLink" class="hint-link" target="_blank" rel="noopener" hidden>Look up Dr Frost skill numbers →</a>
-          </div>
-        </div>
-
-        <div class="method-panel" id="panelYearCourse" hidden>
-          <div class="field">
-            <label for="yearSelect">Year / course</label>
-            <select id="yearSelect">
-              <option value="" disabled selected>Choose a year/course…</option>
-              <option value="KS3">KS3</option>
-              <option value="Year 7">Year 7</option>
-              <option value="Year 8">Year 8</option>
-              <option value="Year 9">Year 9</option>
-              <option value="GCSE Foundation">GCSE Foundation</option>
-              <option value="GCSE Higher">GCSE Higher</option>
-            </select>
           </div>
         </div>
 
@@ -161,7 +148,7 @@
         <button type="button" class="icon-btn" id="hideAllBtn" title="Reveal all questions">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
-        <button type="button" class="icon-btn icon-btn--symbol" id="gridSizeBtn" title="Switch to 4 squares">9-4</button>
+        <button type="button" class="icon-btn icon-btn--symbol" id="gridSizeBtn" title="Switch to 4 squares">9&#10132;4</button>
         <button type="button" class="icon-btn" id="globalStudentBtn" title="Show/hide all students">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </button>

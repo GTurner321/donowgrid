@@ -118,9 +118,24 @@ const Grid = (() => {
       return `<span class="frac"><span class="frac__num">${num}</span><span class="frac__den">${den}</span></span>`;
     });
 
+    // Column vectors: [top/bottom] - same stacking mechanism as a {}
+    // fraction, but square brackets and no dividing line.
+    text = text.replace(/\[([^\[\]]+)\]/g, (m, inner) => {
+      const slashIndex = inner.indexOf('/');
+      if (slashIndex === -1) return m; // no slash - leave the brackets as literal text
+      const top = inner.slice(0, slashIndex);
+      const bottom = inner.slice(slashIndex + 1);
+      return `<span class="vector"><span class="vector__bracket">[</span><span class="vector__stack"><span class="vector__top">${top}</span><span class="vector__bottom">${bottom}</span></span><span class="vector__bracket">]</span></span>`;
+    });
+
     // Exponents last, so ^{...} doesn't collide with fraction braces.
     text = text.replace(/\^(\{[^{}]+\}|-?[A-Za-z0-9])/g, (m, exp) =>
       `<sup>${exp.startsWith('{') ? exp.slice(1, -1) : exp}</sup>`);
+
+    // Subscripts: single character stays bare (x_n), multi-character
+    // is brace-wrapped in notated text (x_{n+1}).
+    text = text.replace(/_(\{[^{}]+\}|[A-Za-z0-9])/g, (m, sub) =>
+      `<sub>${sub.startsWith('{') ? sub.slice(1, -1) : sub}</sub>`);
 
     return text;
   }
@@ -178,6 +193,7 @@ const Grid = (() => {
         activePanel: null,
         choiceOrder: null,
         choiceResolved: false,
+        questionHidden: false,
         studentName: hasStudents ? StudentPicker.next(studentQueue) : null,
         studentRevealed: false,
         shuttered: true,
@@ -252,6 +268,9 @@ const Grid = (() => {
 
   // ---------------- Rendering ----------------
 
+  const ICON_EYE_SMALL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
+  const ICON_EYE_OFF_SMALL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.3 21.3 0 0 1 5.06-5.94M9.9 4.24A10.6 10.6 0 0 1 12 5c7 0 11 7 11 7a21.3 21.3 0 0 1-2.61 3.68M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+
   function renderSquare(square, state, index) {
     const wrap = document.createElement('div');
     wrap.className = 'square';
@@ -270,13 +289,15 @@ const Grid = (() => {
     const hasHint = !!q.hint;
     const hasExplain = !!q.workedAnswer;
     const hasStudents = config.students.length > 0;
-    const isSplit = state.activePanel === 'choices';
+    const isSplit = state.activePanel === 'choices' || (!!state.activePanel && !!state.questionHidden);
+    const showHideToggle = !!state.activePanel && state.activePanel !== 'choices';
 
     wrap.innerHTML = `
       <div class="square__content ${isSplit ? 'square__content--split' : ''}">
         <div class="square__question" ${state.activePanel && !isSplit ? 'hidden' : ''}>${renderMath(q.question)}</div>
         ${state.activePanel ? renderPanel(q, state) : ''}
       </div>
+      ${showHideToggle ? `<button class="square__hide-question-btn" data-action="toggle-question" title="${state.questionHidden ? 'Show question' : 'Hide question'}">${state.questionHidden ? ICON_EYE_SMALL : ICON_EYE_OFF_SMALL}</button>` : ''}
       <div class="square__footer">
         <div class="square__icons">
           <button class="icon" data-action="answer" title="Show answer" aria-pressed="${state.activePanel === 'answer'}">✓</button>
@@ -375,6 +396,13 @@ const Grid = (() => {
     const shutter = e.target.closest('.square__shutter');
     if (shutter) {
       state.shuttered = false;
+      rerenderSquare(index);
+      return;
+    }
+
+    const hideQuestionBtn = e.target.closest('[data-action="toggle-question"]');
+    if (hideQuestionBtn) {
+      state.questionHidden = !state.questionHidden;
       rerenderSquare(index);
       return;
     }
@@ -526,6 +554,7 @@ const Grid = (() => {
       activePanel: null,
       choiceOrder: null,
       choiceResolved: false,
+      questionHidden: false,
       studentName: squareStates[index].studentName,
       studentRevealed: squareStates[index].studentRevealed,
       shuttered: false, // a square already interacted with (refreshed) stays unshuttered
@@ -610,17 +639,22 @@ const Grid = (() => {
 
   function autosizeSquare(squareEl) {
     if (!squareEl) return;
-    const question = squareEl.querySelector('.square__question:not([hidden])');
-    if (question) autosizeElement(question, 1.3, 0.7);
+
+    // Answer box / panel text size first, since their footprint can
+    // change how much vertical space is left for the question above
+    // them - sizing the question before them would measure a stale
+    // container height and under- or over-shrink it.
+    const answerBox = squareEl.querySelector('.answer-box');
+    if (answerBox) autosizeElement(answerBox, 1.15, 0.65);
 
     const panelText = squareEl.querySelector('.panel-text');
     if (panelText) autosizeElement(panelText, 1.15, 0.65);
 
-    const answerBox = squareEl.querySelector('.answer-box');
-    if (answerBox) autosizeElement(answerBox, 1.15, 0.65);
+    const question = squareEl.querySelector('.square__question:not([hidden])');
+    if (question) autosizeElement(question, 1.3, 0.7);
 
     const shutterText = squareEl.querySelector('.square__shutter-text');
-    if (shutterText) autosizeElement(shutterText, 1.4, 0.8);
+    if (shutterText) autosizeElement(shutterText, 1.8, 1.0);
 
     squareEl.querySelectorAll('.choice-btn__label').forEach(label => {
       autosizeElement(label, 0.95, 0.6);

@@ -24,6 +24,8 @@ const App = (() => {
     el.fullscreenBtn = document.getElementById('fullscreenBtn');
     el.saveConfirm = document.getElementById('saveConfirm');
     el.returnQuizBtn = document.getElementById('returnQuizBtn');
+    el.setupForwardBtn = document.getElementById('setupForwardBtn');
+    el.setupFullscreenBtn = document.getElementById('setupFullscreenBtn');
 
     el.backBtn.addEventListener('click', backToSetup);
     el.quotesBtn.addEventListener('click', () => QuotesModal.open());
@@ -33,6 +35,8 @@ const App = (() => {
     el.saveBtn.addEventListener('click', onSaveClick);
     el.fullscreenBtn.addEventListener('click', toggleFullscreen);
     el.returnQuizBtn.addEventListener('click', returnToQuiz);
+    el.setupForwardBtn.addEventListener('click', returnToQuiz);
+    el.setupFullscreenBtn.addEventListener('click', toggleFullscreen);
 
     document.addEventListener('fullscreenchange', () => {
       // Layout dimensions change on entering/exiting fullscreen, so every
@@ -53,13 +57,13 @@ const App = (() => {
   }
 
   function resetGridSizeToggle() {
-    el.gridSizeBtn.textContent = '9-4';
+    el.gridSizeBtn.innerHTML = '9&#10132;4';
     el.gridSizeBtn.title = 'Switch to 4 squares';
   }
 
   function onGridSizeClick() {
     const mode = Grid.toggleGridMode();
-    el.gridSizeBtn.textContent = mode === '4' ? '4-9' : '9-4';
+    el.gridSizeBtn.innerHTML = mode === '4' ? '4&#10132;9' : '9&#10132;4';
     el.gridSizeBtn.title = mode === '4' ? 'Switch back to 9 squares' : 'Switch to 4 squares';
     requestAnimationFrame(() => Grid.autosizeAll());
   }
@@ -105,6 +109,7 @@ const App = (() => {
     // A live grid now exists to jump straight back to, without
     // re-generating or re-loading anything.
     el.returnQuizBtn.hidden = false;
+    el.setupForwardBtn.hidden = false;
   }
 
   function returnToQuiz() {

@@ -21,6 +21,16 @@ const PoolBuilder = (() => {
   }
 
   /**
+   * Like getSubtopicRows, but across several books at once - used when
+   * more than one book is selected, since chapter names alone aren't
+   * unique across books. bookChapterPairs is an array of { book, chapter }.
+   */
+  function getSubtopicRowsMultiBook(pearsonRows, bookChapterPairs) {
+    const wanted = new Set(bookChapterPairs.map(p => p.book + '\u0000' + p.chapter));
+    return pearsonRows.filter(row => wanted.has(row.book + '\u0000' + row.chapter));
+  }
+
+  /**
    * Unions the DF ref numbers of the given sub-topic rows, then
    * filters the practice set down to questions tagged with any of
    * those refs.
@@ -58,16 +68,14 @@ const PoolBuilder = (() => {
   /**
    * Rebuilds a pool from a saved descriptor - the same shape SaveQuiz
    * stores alongside a saved starter's box layout. For the Pearson-book
-   * method, the descriptor records the exact chapter+sub-topic pairs
-   * that were ticked (not just the chapters), since sub-topics can be
-   * individually deselected.
+   * method, the descriptor records the exact book+chapter+sub-topic
+   * triples that were ticked (not just the chapters), since sub-topics
+   * can be individually deselected and multiple books can be involved.
    */
   function fromDescriptor(practiceSet, pearsonRows, dfTallyRows, descriptor) {
     if (descriptor.method === 'pearsonBook') {
-      const wanted = new Set(descriptor.subtopics.map(s => s.chapter + '\u0000' + s.subTopic));
-      const rows = pearsonRows.filter(row =>
-        row.book === descriptor.book && wanted.has(row.chapter + '\u0000' + row.subTopic)
-      );
+      const wanted = new Set(descriptor.subtopics.map(s => s.book + '\u0000' + s.chapter + '\u0000' + s.subTopic));
+      const rows = pearsonRows.filter(row => wanted.has(row.book + '\u0000' + row.chapter + '\u0000' + row.subTopic));
       return fromSubtopicRows(practiceSet, rows);
     }
     if (descriptor.method === 'dfRefs') {
@@ -81,7 +89,7 @@ const PoolBuilder = (() => {
 
   function describeDescriptor(descriptor) {
     if (descriptor.method === 'pearsonBook') {
-      return `${descriptor.book}: ${descriptor.chapters.join(', ')}`;
+      return descriptor.books.join(', ');
     }
     if (descriptor.method === 'dfRefs') {
       return `DF refs ${descriptor.dfRefs.join(', ')}`;
@@ -92,5 +100,5 @@ const PoolBuilder = (() => {
     return 'Unknown selection';
   }
 
-  return { getSubtopicRows, fromSubtopicRows, fromDfRefs, fromYearTag, fromDescriptor, describeDescriptor };
+  return { getSubtopicRows, getSubtopicRowsMultiBook, fromSubtopicRows, fromDfRefs, fromYearTag, fromDescriptor, describeDescriptor };
 })();

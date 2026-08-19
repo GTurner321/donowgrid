@@ -33,7 +33,16 @@ const DataService = (() => {
   // questions run on raw for now.
   function pickNotatedOrRaw(row, notatedKey, rawKey) {
     const notated = (row[notatedKey] || '').toString().trim();
-    return notated ? notated : row[rawKey];
+    return stripLeadingApostrophe(notated ? notated : row[rawKey]);
+  }
+
+  // Question-writing convention leads a bare fraction cell (e.g. '5/14)
+  // with an apostrophe so Excel doesn't auto-convert it to a date. That
+  // apostrophe is an authoring escape only - never part of the actual
+  // question/answer text - so it's stripped here before display.
+  function stripLeadingApostrophe(str) {
+    if (typeof str !== 'string') return str;
+    return str.startsWith("'") ? str.slice(1) : str;
   }
 
   function normalisePracticeRow(row) {
@@ -55,7 +64,7 @@ const DataService = (() => {
       wrong1: pickNotatedOrRaw(row, 'Wrong1 (notated)', 'Wrong1 (raw)'),
       wrong2: pickNotatedOrRaw(row, 'Wrong 2 (notated)', 'Wrong 2 (raw)'),
       workedAnswer: pickNotatedOrRaw(row, 'Worked Answer (notated)', 'Worked Answer (raw)'),
-      hint: row['Hint']
+      hint: stripLeadingApostrophe(row['Hint'])
     };
   }
 
