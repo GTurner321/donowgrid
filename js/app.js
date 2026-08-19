@@ -65,13 +65,13 @@ const App = (() => {
   }
 
   function resetGridSizeToggle() {
-    el.gridSizeBtn.innerHTML = '9&#10132;4';
+    el.gridSizeBtn.innerHTML = '9&#x27A7;4';
     el.gridSizeBtn.title = 'Switch to 4 squares';
   }
 
   function onGridSizeClick() {
     const mode = Grid.toggleGridMode();
-    el.gridSizeBtn.innerHTML = mode === '4' ? '4&#10132;9' : '9&#10132;4';
+    el.gridSizeBtn.innerHTML = mode === '4' ? '4&#x27A7;9' : '9&#x27A7;4';
     el.gridSizeBtn.title = mode === '4' ? 'Switch back to 9 squares' : 'Switch to 4 squares';
     requestAnimationFrame(() => Grid.autosizeAll());
   }

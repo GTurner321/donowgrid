@@ -99,11 +99,30 @@ const Grid = (() => {
   function renderMath(rawText) {
     let text = escapeHtml(rawText == null ? '' : String(rawText));
 
+    // Short parenthetical groups (coordinates, ordered pairs, small
+    // bracketed expressions) read as one visual unit and shouldn't
+    // break across a line - e.g. (1,2) or (x+1). Longer ones are left
+    // free to wrap normally rather than risk overflowing a small
+    // square. Runs on raw text, before any HTML gets inserted, so the
+    // character count reflects what's actually visible.
+    text = text.replace(/\(([^()]+)\)/g, (m, inner) =>
+      inner.length <= 12 ? `<span class="nowrap-group">(${inner})</span>` : m);
+
     // Roots first, since they also consume a {...} span.
     text = text.replace(/sqrt\{([^{}]+)\}/g, (m, inner) =>
       `<span class="radical"><span class="radical__sym">√</span><span class="radical__body">${inner}</span></span>`);
     text = text.replace(/cbrt\{([^{}]+)\}/g, (m, inner) =>
       `<span class="radical radical--cube"><span class="radical__sym">∛</span><span class="radical__body">${inner}</span></span>`);
+
+    // Exponents and subscripts next, and specifically before the
+    // fraction pass below - x^{1/3} is a superscripted "1/3", not a
+    // stacked fraction sitting in superscript position, so ^{...}/_{...}
+    // need to claim their braces before the generic {a/b} fraction
+    // regex gets a chance to see them.
+    text = text.replace(/\^(\{[^{}]+\}|-?[A-Za-z0-9])/g, (m, exp) =>
+      `<sup>${exp.startsWith('{') ? exp.slice(1, -1) : exp}</sup>`);
+    text = text.replace(/_(\{[^{}]+\}|[A-Za-z0-9])/g, (m, sub) =>
+      `<sub>${sub.startsWith('{') ? sub.slice(1, -1) : sub}</sub>`);
 
     // Any {...} left with a slash inside is a fraction. Per the
     // authoring rules, {a/b} is only ever used standalone (never mixed
@@ -127,15 +146,6 @@ const Grid = (() => {
       const bottom = inner.slice(slashIndex + 1);
       return `<span class="vector"><span class="vector__bracket">[</span><span class="vector__stack"><span class="vector__top">${top}</span><span class="vector__bottom">${bottom}</span></span><span class="vector__bracket">]</span></span>`;
     });
-
-    // Exponents last, so ^{...} doesn't collide with fraction braces.
-    text = text.replace(/\^(\{[^{}]+\}|-?[A-Za-z0-9])/g, (m, exp) =>
-      `<sup>${exp.startsWith('{') ? exp.slice(1, -1) : exp}</sup>`);
-
-    // Subscripts: single character stays bare (x_n), multi-character
-    // is brace-wrapped in notated text (x_{n+1}).
-    text = text.replace(/_(\{[^{}]+\}|[A-Za-z0-9])/g, (m, sub) =>
-      `<sub>${sub.startsWith('{') ? sub.slice(1, -1) : sub}</sub>`);
 
     return text;
   }
@@ -270,6 +280,8 @@ const Grid = (() => {
 
   const ICON_EYE_SMALL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
   const ICON_EYE_OFF_SMALL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.3 21.3 0 0 1 5.06-5.94M9.9 4.24A10.6 10.6 0 0 1 12 5c7 0 11 7 11 7a21.3 21.3 0 0 1-2.61 3.68M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+  const ICON_CALC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="11" x2="8" y2="11.01"/><line x1="12" y1="11" x2="12" y2="11.01"/><line x1="16" y1="11" x2="16" y2="11.01"/><line x1="8" y1="15" x2="8" y2="15.01"/><line x1="12" y1="15" x2="12" y2="15.01"/><line x1="16" y1="15" x2="16" y2="15.01"/><line x1="8" y1="19" x2="8" y2="19.01"/><line x1="12" y1="19" x2="12" y2="19.01"/></svg>';
+  const ICON_NO_CALC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="11" x2="8" y2="11.01"/><line x1="12" y1="11" x2="12" y2="11.01"/><line x1="16" y1="11" x2="16" y2="11.01"/><line x1="8" y1="15" x2="8" y2="15.01"/><line x1="12" y1="15" x2="12" y2="15.01"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
 
   function renderSquare(square, state, index) {
     const wrap = document.createElement('div');
@@ -289,8 +301,11 @@ const Grid = (() => {
     const hasHint = !!q.hint;
     const hasExplain = !!q.workedAnswer;
     const hasStudents = config.students.length > 0;
-    const isSplit = state.activePanel === 'choices' || (!!state.activePanel && !!state.questionHidden);
-    const showHideToggle = !!state.activePanel && state.activePanel !== 'choices';
+    const calcRaw = String(q.calculator || '').trim().toLowerCase();
+    const showCalcIcon = calcRaw === 'yes' || calcRaw === 'no';
+    const isCalc = calcRaw === 'yes';
+    const isSplit = state.activePanel === 'choices' && !state.questionHidden;
+    const showHideToggle = state.activePanel === 'choices';
 
     wrap.innerHTML = `
       <div class="square__content ${isSplit ? 'square__content--split' : ''}">
@@ -300,6 +315,7 @@ const Grid = (() => {
       ${showHideToggle ? `<button class="square__hide-question-btn" data-action="toggle-question" title="${state.questionHidden ? 'Show question' : 'Hide question'}">${state.questionHidden ? ICON_EYE_SMALL : ICON_EYE_OFF_SMALL}</button>` : ''}
       <div class="square__footer">
         <div class="square__icons">
+          ${showCalcIcon ? `<span class="icon icon--indicator" title="${isCalc ? 'Calculator allowed' : 'No calculator'}">${isCalc ? ICON_CALC : ICON_NO_CALC}</span>` : ''}
           <button class="icon" data-action="answer" title="Show answer" aria-pressed="${state.activePanel === 'answer'}">✓</button>
           ${hasChoices ? `<button class="icon" data-action="choices" title="Show answer choices" aria-pressed="${state.activePanel === 'choices'}">☰</button>` : ''}
           ${hasHint ? `<button class="icon" data-action="hint" title="Show hint" aria-pressed="${state.activePanel === 'hint'}">?</button>` : ''}
@@ -651,18 +667,18 @@ const Grid = (() => {
     if (panelText) autosizeElement(panelText, 1.15, 0.65);
 
     const question = squareEl.querySelector('.square__question:not([hidden])');
-    if (question) autosizeElement(question, 1.3, 0.7);
+    if (question) autosizeElement(question, 1.3, 0.7, true);
 
     const shutterText = squareEl.querySelector('.square__shutter-text');
-    if (shutterText) autosizeElement(shutterText, 1.8, 1.0);
+    if (shutterText) autosizeElement(shutterText, 2.2, 1.2);
 
     squareEl.querySelectorAll('.choice-btn__label').forEach(label => {
       autosizeElement(label, 0.95, 0.6);
     });
   }
 
-  function autosizeElement(el, maxRem, minRem) {
-    const container = el.parentElement;
+  function autosizeElement(el, maxRem, minRem, measureSelf) {
+    const container = measureSelf ? el : el.parentElement;
     let size = maxRem;
     el.style.fontSize = size + 'rem';
     let guard = 0;
